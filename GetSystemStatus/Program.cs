@@ -112,10 +112,11 @@ namespace GetSystemStatus {
                 //专用GPU显存
                 List<long> dediGPUMem = sysInfo.GPUDedicatedMemory;
                 for (int i = 0; i < dediGPUMem.Count; i++) {
-                    int gscale = (int)Math.Floor(Math.Log(dediGPUMem[i], 1024));
+                    int gscale = (int)Math.Max(Math.Floor(Math.Log(dediGPUMem[i], 1024)), 0);
                     double memGPU = Math.Round((double)dediGPUMem[i] / Math.Pow(1024, gscale), 1);
                     string strscale = scale_unit[gscale];
-                    Console.WriteLine("GPU {0} Dedicated Memory Usage: {1}{2}", i, memGPU, strscale);
+                    string name = sysInfo.gpu_name[i];
+                    Console.WriteLine("GPU {0} {3}: Dedicated Memory Usage: {1}{2}", i, memGPU, strscale, name);
                 }
                 Thread.Sleep(1500);
             }
@@ -142,6 +143,8 @@ namespace GetSystemStatus {
         private Dictionary<string, PerformanceCounter> pcNetworkReceive;
         private Dictionary<string, PerformanceCounter> pcNetworkSend;
         private List<PerformanceCounter> pcDedicateGPUMemory;   //专用GPU显存占用率
+        public List<int> gpu_memory { get; }    //GPU显存
+        public List<string> gpu_name { get; }   //GPU名称
 
         // 构造函数，初始化计数器
         public SystemInfo() {
@@ -214,6 +217,15 @@ namespace GetSystemStatus {
             foreach (string gpu in instanceNames) {
                 pcDedicateGPUMemory.Add(new PerformanceCounter("GPU Adapter Memory", "Dedicated Usage", gpu));
             }
+
+            //GPU名称
+            var gpumem = new ManagementObjectSearcher("Select * from Win32_VideoController");
+            gpu_name = new List<string>();
+            foreach(var o in gpumem.Get()) {
+                var mo = (ManagementObject)o;
+                string c_gpu_name = (string)mo["name"].ToString();
+                gpu_name.Add(c_gpu_name);
+			}
         }
 
         // CPU
@@ -294,7 +306,7 @@ namespace GetSystemStatus {
                 foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
                     ret.Add((long)Math.Floor(pc.NextValue()));
                 }
-                ret.Remove(0);
+                //ret.Remove(0);
                 return ret;
             }
         }
