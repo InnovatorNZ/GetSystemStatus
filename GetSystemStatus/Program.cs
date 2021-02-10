@@ -221,11 +221,15 @@ namespace GetSystemStatus {
             //GPU名称
             var gpumem = new ManagementObjectSearcher("Select * from Win32_VideoController");
             gpu_name = new List<string>();
-            foreach(var o in gpumem.Get()) {
+            foreach (var o in gpumem.Get()) {
                 var mo = (ManagementObject)o;
                 string c_gpu_name = (string)mo["name"].ToString();
-                gpu_name.Add(c_gpu_name);
-			}
+                try {
+                    string mem = mo["AdapterRAM"].ToString();
+                    gpu_name.Add(c_gpu_name);
+                }
+                catch (Exception) { }
+            }
         }
 
         // CPU
@@ -306,7 +310,7 @@ namespace GetSystemStatus {
                 foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
                     ret.Add((long)Math.Floor(pc.NextValue()));
                 }
-                //ret.Remove(0);
+                ret.Remove(0);
                 return ret;
             }
         }
