@@ -37,6 +37,8 @@ namespace GetSystemStatus {
                 double memTotal = Math.Round((double)sysInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
                 Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
                 //磁盘占用与速率
+                //List<string> disk_load_display = new List<string>();
+                string[] disk_load_display = new string[sysInfo.m_DiskNum];
                 for (int i = 0; i < sysInfo.m_DiskNum; i++) {
                     //float fDiskRead = systemInfo.DiskReadTotal;
                     float fDiskRead = sysInfo.DiskRead(i);
@@ -49,8 +51,9 @@ namespace GetSystemStatus {
                     string[] speed_units = { "Bytes/sec", "KB/s", "MB/s", "GB/s", "TB/s" };
                     fDiskRead = (float)Math.Round(fDiskRead, 1);
                     fDiskWrite = (float)Math.Round(fDiskWrite, 1);
-                    string cDiskDesc = "Disk " + i + " ";
                     string[] csplit = sysInfo.DiskInstanceNames[i].Split(' ');
+                    int cid = int.Parse(csplit[0]);
+                    string cDiskDesc = "Disk " + csplit[0] + " ";
                     if (csplit.Length > 1) {
                         cDiskDesc += "(";
                         for (int j = 1; j < csplit.Length - 1; j++)
@@ -58,11 +61,20 @@ namespace GetSystemStatus {
                         cDiskDesc += csplit[csplit.Length - 1];
                         cDiskDesc += ")";
                     }
-                    Console.Write(cDiskDesc);
-                    Console.Write(" Load: " + (int)Math.Round(sysInfo.DiskLoad(i)) + "%");
-                    Console.Write("\tRead: " + fDiskRead + speed_units[rscale]);
-                    Console.Write("\tWrite: " + fDiskWrite + speed_units[wscale]);
-                    Console.WriteLine();
+                    string cdisk_display = string.Empty;
+                    //Console.Write(cDiskDesc);
+                    cdisk_display += cDiskDesc;
+                    //Console.Write(" Load: " + (int)Math.Round(sysInfo.DiskLoad(i)) + "%");
+                    cdisk_display += " Load: " + (int)Math.Round(sysInfo.DiskLoad(i)) + "%";
+                    //Console.Write("\tRead: " + fDiskRead + speed_units[rscale]);
+                    cdisk_display += "\tRead: " + fDiskRead + speed_units[rscale];
+                    //Console.Write("\tWrite: " + fDiskWrite + speed_units[wscale]);
+                    cdisk_display += "\tWrite: " + fDiskWrite + speed_units[wscale];
+                    //disk_load_display.Add(cdisk_display);
+                    disk_load_display[cid] = cdisk_display;
+                }
+                foreach (string cdiskload in disk_load_display) {
+                    Console.WriteLine(cdiskload);
                 }
                 //网卡信息与速率
                 foreach (NetworkInterface adapter in sysInfo.adapters) {
