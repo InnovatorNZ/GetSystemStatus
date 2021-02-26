@@ -1,4 +1,7 @@
-﻿using System;
+﻿#if DEBUG
+#define UtiGPU
+#endif
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -16,9 +19,16 @@ using Microsoft.Win32;
 
 namespace GetSystemStatus {
     class Program {
+        private static SystemInfo sysInfo = new SystemInfo();
+        private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
+        private static string cGPUPCOutput = "Getting GPU Information...";
+        private static int t = 0;
         static void Main(string[] args) {
-            SystemInfo sysInfo = new SystemInfo();
-            for (int _ = 0; _ < 3000; _++) {
+#if UtiGPU
+            Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
+            gpuThread.Start();
+#endif
+            for (t = 0; t < 10000; t++) {
                 Console.Clear();
                 Console.WriteLine("Task Manager Console Edition");
                 //CPU利用率
@@ -31,13 +41,11 @@ namespace GetSystemStatus {
                 Console.WriteLine();
                 //RAM占用
                 int rusage = (int)Math.Round((1.0 - (double)sysInfo.MemoryAvailable / (double)sysInfo.PhysicalMemory) * 100.0);
-                string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
                 int ramScale = (int)Math.Floor(Math.Log((double)sysInfo.MemoryAvailable, 1024));
                 double memAvail = Math.Round((double)sysInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
                 double memTotal = Math.Round((double)sysInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
                 Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
                 //磁盘占用与速率
-                //List<string> disk_load_display = new List<string>();
                 string[] disk_load_display = new string[sysInfo.m_DiskNum];
                 for (int i = 0; i < sysInfo.m_DiskNum; i++) {
                     //float fDiskRead = systemInfo.DiskReadTotal;
@@ -62,15 +70,10 @@ namespace GetSystemStatus {
                         cDiskDesc += ")";
                     }
                     string cdisk_display = string.Empty;
-                    //Console.Write(cDiskDesc);
                     cdisk_display += cDiskDesc;
-                    //Console.Write(" Load: " + (int)Math.Round(sysInfo.DiskLoad(i)) + "%");
                     cdisk_display += " Load: " + (int)Math.Round(sysInfo.DiskLoad(i)) + "%";
-                    //Console.Write("\tRead: " + fDiskRead + speed_units[rscale]);
                     cdisk_display += "\tRead: " + fDiskRead + speed_units[rscale];
-                    //Console.Write("\tWrite: " + fDiskWrite + speed_units[wscale]);
                     cdisk_display += "\tWrite: " + fDiskWrite + speed_units[wscale];
-                    //disk_load_display.Add(cdisk_display);
                     disk_load_display[cid] = cdisk_display;
                 }
                 foreach (string cdiskload in disk_load_display) {
@@ -121,18 +124,92 @@ namespace GetSystemStatus {
                         }
                     }
                 }
-                //专用GPU显存
-                List<long> dediGPUMem = sysInfo.GPUDedicatedMemory;
-                for (int i = 0; i < dediGPUMem.Count; i++) {
-                    int gscale = (int)Math.Max(Math.Floor(Math.Log(dediGPUMem[i], 1024)), 0);
-                    double memGPU = Math.Round((double)dediGPUMem[i] / Math.Pow(1024, gscale), 1);
-                    string strscale = scale_unit[gscale];
-                    string name = sysInfo.gpu_name[i];
-                    Console.WriteLine("GPU {0} {3}: Dedicated Memory Usage: {1}{2}", i, memGPU, strscale, name);
+#if UtiGPU
+                //GPU利用率与专用显存
+                lock (cGPUPCOutput) {
+                    Console.Write(cGPUPCOutput);
                 }
                 Thread.Sleep(1500);
+#else
+                Dictionary<string, long> dediGPUMem = sysInfo.GetGPUDedicatedMemory();
+                int c = 0;
+                bool skiped = false;
+                foreach (var dediGPU in dediGPUMem) {
+                    string output = string.Empty;
+                    if (dediGPU.Value == 0 && !skiped) {
+                        skiped = true;
+                        continue;
+                    }
+                    int gscale = (int)Math.Max(Math.Floor(Math.Log(dediGPU.Value, 1024)), 0);
+                    double memGPU = Math.Round((double)dediGPU.Value / Math.Pow(1024, gscale), 1);
+                    string strscale = scale_unit[gscale];
+                    string name = sysInfo.gpu_name[c];
+                    output += "GPU " + c + " " + name + ": ";
+                    output += "Dedicated Memory Usage: " + memGPU + strscale;
+                    Console.WriteLine(output);
+                    c++;
+                }
+                Thread.Sleep(1500);
+#endif
             }
         }
+
+        private static void GPUPCThread() {
+            //专用GPU显存
+            //List<long> dediGPUMem = sysInfo.GPUDedicatedMemory;
+            //List<int> gpuUti = sysInfo.GPUUtilization;
+            while (true) {
+                if (t % 100 == 0 && t != 0) sysInfo.RefreshGPUEnginePerformanceCounter();
+                Dictionary<string, long> dediGPUMem = sysInfo.GetGPUDedicatedMemory();
+                int c = 0;
+                string output = string.Empty;
+                foreach (var dediGPU in dediGPUMem) {
+                    int gscale = (int)Math.Max(Math.Floor(Math.Log(dediGPU.Value, 1024)), 0);
+                    double memGPU = Math.Round((double)dediGPU.Value / Math.Pow(1024, gscale), 1);
+                    string strscale = scale_unit[gscale];
+                    if (c >= sysInfo.gpu_name.Count) break;
+                    string name = sysInfo.gpu_name[c];
+                    string toutput = string.Empty;
+                    toutput += "GPU " + c + " " + name + ": ";
+                    toutput += "Dedicated Memory Usage: " + memGPU + strscale + "\n";
+                    Dictionary<string, Dictionary<string, float>> dicGpuUti;
+                    try {
+                        dicGpuUti = sysInfo.GetGPUUtilization();
+                    }
+                    catch {
+                        //output = "Refreshing GPU Information...";
+                        output = string.Empty;
+                        sysInfo.RefreshGPUEnginePerformanceCounter();
+                        break;
+                    }
+                    toutput += "Utilizations: ";
+                    bool skip = false;
+                    foreach (var utiGPU in dicGpuUti) {
+                        var cId = utiGPU.Key;
+                        if (cId == dediGPU.Key && dediGPU.Value > 0) {
+                            var gpuUti = utiGPU.Value;
+                            foreach (var uti in gpuUti) {
+                                toutput += uti.Key + ": " + Math.Round(uti.Value, 1) + "%\t";
+                            }
+                        } else if (cId == dediGPU.Key && dediGPU.Value == 0) {
+                            skip = true;
+                            toutput = string.Empty;
+                            break;
+                        }
+                    }
+                    if (skip) continue;
+                    //Console.WriteLine(output);
+                    output += toutput + "\n";
+                    c++;
+                }
+                if (output != string.Empty) {
+                    lock (cGPUPCOutput) {
+                        cGPUPCOutput = output;
+                    }
+                }
+            }
+        }
+
     }
     ///  
     /// 系统信息类 - 获取CPU、内存、磁盘、网络信息
@@ -157,6 +234,7 @@ namespace GetSystemStatus {
         private List<PerformanceCounter> pcDedicateGPUMemory;   //专用GPU显存占用率
         public List<int> gpu_memory { get; }    //GPU显存
         public List<string> gpu_name { get; }   //GPU名称
+        private List<PerformanceCounter> pcGPUEngine;
 
         // 构造函数，初始化计数器
         public SystemInfo() {
@@ -191,6 +269,7 @@ namespace GetSystemStatus {
             pcCpuLoad.NextValue();
             pcDiskRead.NextValue();
             pcDiskWrite.NextValue();
+
             for (int i = 0; i < m_ProcessorCount; i++) pcCpuCoreLoads[i].NextValue();
             for (int i = 0; i < m_DiskNum; i++) { pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue(); }
 
@@ -230,6 +309,23 @@ namespace GetSystemStatus {
                 pcDedicateGPUMemory.Add(new PerformanceCounter("GPU Adapter Memory", "Dedicated Usage", gpu));
             }
 
+            //GPU利用率计数器
+            PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
+            pidGpuPfc.MachineName = ".";
+            string[] pidGpuInstanceNames = pidGpuPfc.GetInstanceNames();
+            pcGPUEngine = new List<PerformanceCounter>();
+            foreach (var gpu in pcDedicateGPUMemory) {
+                string c_device_id = gpu.InstanceName.Split('_')[2];
+                gpu.NextValue();
+                //if (gpu.NextValue() < 0.5) continue;
+                foreach (string pidInstanceName in pidGpuInstanceNames) {
+                    string c_pid_deviceId = pidInstanceName.Split('_')[4];
+                    if (c_pid_deviceId == c_device_id) {
+                        pcGPUEngine.Add(new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName));
+                    }
+                }
+            }
+
             //GPU名称
             var gpumem = new ManagementObjectSearcher("Select * from Win32_VideoController");
             gpu_name = new List<string>();
@@ -240,11 +336,11 @@ namespace GetSystemStatus {
                     string mem = mo["AdapterRAM"].ToString();
                     gpu_name.Add(c_gpu_name);
                 }
-                catch (Exception) { }
+                catch { }
             }
         }
 
-        // CPU
+        // CPU利用率、核心数
         public int ProcessorCount {
             get {
                 return m_ProcessorCount;
@@ -259,7 +355,7 @@ namespace GetSystemStatus {
             return pcCpuCoreLoads[core_num].NextValue();
         }
 
-        // 磁盘占用
+        // 磁盘占用、读写速率
         public float DiskReadTotal {
             get { return pcDiskRead.NextValue(); }
         }
@@ -292,23 +388,9 @@ namespace GetSystemStatus {
         public long MemoryAvailable {
             get {
                 return (long)Math.Round(pcAvailMemory.NextValue());
-                /*
-                 * WMI版获取可用内存
-                long availablebytes = 0;
-                //ManagementObjectSearcher mos = new ManagementObjectSearcher("SELECT * FROM Win32_PerfRawData_PerfOS_Memory"); 
-                //foreach (ManagementObject mo in mos.Get()) 
-                //{ 
-                //    availablebytes = long.Parse(mo["Availablebytes"].ToString()); 
-                //} 
-                ManagementClass mos = new ManagementClass("Win32_OperatingSystem");
-                foreach (ManagementObject mo in mos.GetInstances()) {
-                    if (mo["FreePhysicalMemory"] != null) {
-                        availablebytes = 1024 * long.Parse(mo["FreePhysicalMemory"].ToString());
-                    }
-                }
-                return availablebytes;*/
             }
         }
+        // 物理内存
         public long PhysicalMemory {
             get {
                 return m_PhysicalMemory;
@@ -327,6 +409,91 @@ namespace GetSystemStatus {
             }
         }
 
+        public Dictionary<string, long> GetGPUDedicatedMemory() {
+            Dictionary<string, long> ret = new Dictionary<string, long>();
+            foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
+                string cDeviceId = pc.InstanceName.Split('_')[2];
+                ret.Add(cDeviceId, (long)Math.Round(pc.NextValue()));
+            }
+            bool RemoveZero = false;
+            if (RemoveZero) {
+                foreach (var kp in ret) {
+                    if (kp.Value == 0) {
+                        ret.Remove(kp.Key);
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        //GPU利用率
+        public List<int> GPUUtilization {
+            get {
+                List<int> uti = new List<int>();
+                string l_deviceId = pcGPUEngine[0].InstanceName.Split('_')[4];
+                float value = 0;
+                foreach (PerformanceCounter pc in pcGPUEngine) {
+                    string c_deviceId = pc.InstanceName.Split('_')[4];
+                    if (c_deviceId != l_deviceId) {
+                        uti.Add((int)Math.Round(value));
+                        value = 0;
+                    }
+                    value += pc.NextValue();
+                    l_deviceId = c_deviceId;
+                }
+                uti.Add((int)Math.Round(value));
+                return uti;
+            }
+        }
+
+        public Dictionary<string, Dictionary<string, float>> GetGPUUtilization() {
+            Dictionary<string, Dictionary<string, float>> ret = new Dictionary<string, Dictionary<string, float>>();
+            foreach (PerformanceCounter pc in pcGPUEngine) {
+                string[] csplit = pc.InstanceName.Split('_');
+                string cDeviceId = csplit[4];
+                string cEngine = string.Empty;
+                for (int i = 10; i < csplit.Length; i++) cEngine += csplit[i];
+                Dictionary<string, float> cdic;
+                if (ret.TryGetValue(cDeviceId, out cdic)) {
+                    ret.Remove(cDeviceId);
+                    float cvalue;
+                    if (cdic.TryGetValue(cEngine, out cvalue)) {
+                        cdic.Remove(cEngine);
+                        cvalue += pc.NextValue();
+                        cdic.Add(cEngine, cvalue);
+                    } else {
+                        cdic.Add(cEngine, pc.NextValue());
+                    }
+                    ret.Add(cDeviceId, cdic);
+                } else {
+                    cdic = new Dictionary<string, float>();
+                    cdic.Add(cEngine, pc.NextValue());
+                    ret.Add(cDeviceId, cdic);
+                }
+            }
+            return ret;
+        }
+
+        public void RefreshGPUEnginePerformanceCounter() {
+            //刷新GPU利用率计数器
+            PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
+            pidGpuPfc.MachineName = ".";
+            string[] pidGpuInstanceNames = pidGpuPfc.GetInstanceNames();
+            pcGPUEngine.Clear();
+            foreach (var gpu in pcDedicateGPUMemory) {
+                string c_device_id = gpu.InstanceName.Split('_')[2];
+                gpu.NextValue();
+                //if (gpu.NextValue() < 0.5) continue;
+                foreach (string pidInstanceName in pidGpuInstanceNames) {
+                    string c_pid_deviceId = pidInstanceName.Split('_')[4];
+                    if (c_pid_deviceId == c_device_id) {
+                        pcGPUEngine.Add(new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName));
+                    }
+                }
+            }
+        }
+
         private string R(string str) {
             return str.Replace('#', '_').Replace('(', '[').Replace(')', ']');
         }
@@ -341,6 +508,59 @@ namespace GetSystemStatus {
             }
             float temp = (float.Parse(str) - 2732) / 10;
             return temp;
+        }
+        
+        // WMI版获取可用内存
+        public long MemoryAvailable {
+            get {
+                long availablebytes = 0;
+                //ManagementObjectSearcher mos = new ManagementObjectSearcher("SELECT * FROM Win32_PerfRawData_PerfOS_Memory"); 
+                //foreach (ManagementObject mo in mos.Get()) 
+                //{ 
+                //    availablebytes = long.Parse(mo["Availablebytes"].ToString()); 
+                //} 
+                ManagementClass mos = new ManagementClass("Win32_OperatingSystem");
+                foreach (ManagementObject mo in mos.GetInstances()) {
+                    if (mo["FreePhysicalMemory"] != null) {
+                        availablebytes = 1024 * long.Parse(mo["FreePhysicalMemory"].ToString());
+                    }
+                }
+                return availablebytes;
+            }
+        }
+
+        public List<Dictionary<string, int>> GetGPUUtilization() {
+            List<Dictionary<string, int>> ret = new List<Dictionary<string, int>>();
+            Dictionary<string, int> dic = new Dictionary<string, int>();
+            string[] fsplit = pcGPUEngine[0].InstanceName.Split('_');
+            string l_deviceId = fsplit[4];
+            //string lEngine = pcGPUEngine[0].InstanceName.Split('_')[10];
+            string lEngine = string.Empty;
+            for (int i = 10; i < fsplit.Length; i++) {
+                lEngine += fsplit[i];
+            }
+            float value = 0;
+            foreach (PerformanceCounter pc in pcGPUEngine) {
+                string[] csplit = pc.InstanceName.Split('_');
+                string c_deviceId = csplit[4];
+                //string cEngine = pc.InstanceName.Split('_')[10];
+                string cEngine = string.Empty;
+                for (int i = 10; i < csplit.Length; i++) {
+                    cEngine += csplit[i];
+                }
+                if (l_deviceId != c_deviceId) {
+                    ret.Add(dic);
+                    dic.Clear();
+                    value = 0;
+                } else if (cEngine != lEngine) {
+                    dic.Add(lEngine, (int)Math.Round(value));
+                    value = 0;
+                }
+                value += pc.NextValue();
+                l_deviceId = c_deviceId;
+                lEngine = cEngine;
+            }
+            return ret;
         }
 
         private void ShowAdapterInfo() {
@@ -371,7 +591,7 @@ namespace GetSystemStatus {
                 }
             }
         }
-        #region 获得分区信息 
+#region 获得分区信息 
         /// 获取分区信息 
         public List GetLogicalDrives() {
             List drives = new List();
@@ -398,9 +618,9 @@ namespace GetSystemStatus {
             }
             return drives;
         }
-        #endregion
+#endregion
 
-        #region 获得进程列表 
+#region 获得进程列表 
         /// 获得进程列表 
         public List GetProcessInfo() {
             List pInfo = new List();
@@ -434,9 +654,9 @@ namespace GetSystemStatus {
             }
             return pInfo;
         }
-        #endregion
+#endregion
 
-        #region 结束指定进程 
+#region 结束指定进程 
         /// 结束指定进程 
         /// 进程的 Process ID 
         public static void EndProcess(int pid) {
@@ -446,10 +666,10 @@ namespace GetSystemStatus {
             }
             catch { }
         }
-        #endregion
+#endregion
 
 
-        #region 查找所有应用程序标题 
+#region 查找所有应用程序标题 
         /// 查找所有应用程序标题 
         /// 应用程序标题范型 
         public static List FindAllApps(int Handle) {
@@ -476,7 +696,7 @@ namespace GetSystemStatus {
 
             return Apps;
         }
-        #endregion
+#endregion
         */
     }
 }
