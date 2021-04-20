@@ -45,7 +45,8 @@ namespace GetSystemStatusGUI
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            //Application.Exit();
+            this.Close();
         }
     }
 }
