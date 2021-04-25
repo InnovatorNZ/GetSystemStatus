@@ -48,5 +48,10 @@ namespace GetSystemStatusGUI
             //Application.Exit();
             this.Close();
         }
-    }
+
+		private void Form1_Load(object sender, EventArgs e) {
+            showCPU.Checked = true;
+		}
+
+	}
 }

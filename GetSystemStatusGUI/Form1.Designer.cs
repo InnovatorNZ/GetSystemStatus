@@ -40,11 +40,11 @@ namespace GetSystemStatusGUI
 			// showCPU
 			// 
 			this.showCPU.AutoSize = true;
-			this.showCPU.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showCPU.Location = new System.Drawing.Point(132, 121);
-			this.showCPU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.showCPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.showCPU.Location = new System.Drawing.Point(131, 127);
+			this.showCPU.Margin = new System.Windows.Forms.Padding(4);
 			this.showCPU.Name = "showCPU";
-			this.showCPU.Size = new System.Drawing.Size(211, 28);
+			this.showCPU.Size = new System.Drawing.Size(236, 29);
 			this.showCPU.TabIndex = 0;
 			this.showCPU.Text = "Show CPU Utilizations";
 			this.showCPU.UseVisualStyleBackColor = true;
@@ -53,11 +53,11 @@ namespace GetSystemStatusGUI
 			// showRAM
 			// 
 			this.showRAM.AutoSize = true;
-			this.showRAM.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showRAM.Location = new System.Drawing.Point(132, 159);
-			this.showRAM.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.showRAM.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.showRAM.Location = new System.Drawing.Point(131, 165);
+			this.showRAM.Margin = new System.Windows.Forms.Padding(4);
 			this.showRAM.Name = "showRAM";
-			this.showRAM.Size = new System.Drawing.Size(177, 28);
+			this.showRAM.Size = new System.Drawing.Size(197, 29);
 			this.showRAM.TabIndex = 1;
 			this.showRAM.Text = "Show RAM Usage";
 			this.showRAM.UseVisualStyleBackColor = true;
@@ -65,11 +65,11 @@ namespace GetSystemStatusGUI
 			// showDisk
 			// 
 			this.showDisk.AutoSize = true;
-			this.showDisk.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showDisk.Location = new System.Drawing.Point(132, 196);
-			this.showDisk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.showDisk.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.showDisk.Location = new System.Drawing.Point(131, 202);
+			this.showDisk.Margin = new System.Windows.Forms.Padding(4);
 			this.showDisk.Name = "showDisk";
-			this.showDisk.Size = new System.Drawing.Size(372, 28);
+			this.showDisk.Size = new System.Drawing.Size(420, 29);
 			this.showDisk.TabIndex = 2;
 			this.showDisk.Text = "Show Disk Utilizations and Transfer Speed";
 			this.showDisk.UseVisualStyleBackColor = true;
@@ -77,11 +77,11 @@ namespace GetSystemStatusGUI
 			// showNetwork
 			// 
 			this.showNetwork.AutoSize = true;
-			this.showNetwork.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showNetwork.Location = new System.Drawing.Point(132, 234);
-			this.showNetwork.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.showNetwork.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.showNetwork.Location = new System.Drawing.Point(131, 240);
+			this.showNetwork.Margin = new System.Windows.Forms.Padding(4);
 			this.showNetwork.Name = "showNetwork";
-			this.showNetwork.Size = new System.Drawing.Size(402, 28);
+			this.showNetwork.Size = new System.Drawing.Size(449, 29);
 			this.showNetwork.TabIndex = 3;
 			this.showNetwork.Text = "Show Network Speed and Adapter Properties";
 			this.showNetwork.UseVisualStyleBackColor = true;
@@ -89,11 +89,11 @@ namespace GetSystemStatusGUI
 			// showGPU
 			// 
 			this.showGPU.AutoSize = true;
-			this.showGPU.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showGPU.Location = new System.Drawing.Point(132, 271);
-			this.showGPU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.showGPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.showGPU.Location = new System.Drawing.Point(131, 277);
+			this.showGPU.Margin = new System.Windows.Forms.Padding(4);
 			this.showGPU.Name = "showGPU";
-			this.showGPU.Size = new System.Drawing.Size(216, 28);
+			this.showGPU.Size = new System.Drawing.Size(245, 29);
 			this.showGPU.TabIndex = 4;
 			this.showGPU.Text = "Show GPU Information";
 			this.showGPU.UseVisualStyleBackColor = true;
@@ -101,7 +101,7 @@ namespace GetSystemStatusGUI
 			// buttonExit
 			// 
 			this.buttonExit.Location = new System.Drawing.Point(564, 405);
-			this.buttonExit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.buttonExit.Margin = new System.Windows.Forms.Padding(4);
 			this.buttonExit.Name = "buttonExit";
 			this.buttonExit.Size = new System.Drawing.Size(100, 29);
 			this.buttonExit.TabIndex = 5;
@@ -122,11 +122,12 @@ namespace GetSystemStatusGUI
 			this.Controls.Add(this.showRAM);
 			this.Controls.Add(this.showCPU);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.MaximizeBox = false;
 			this.Name = "Form1";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Control Console";
+			this.Load += new System.EventHandler(this.Form1_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
