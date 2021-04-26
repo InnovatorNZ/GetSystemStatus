@@ -53,7 +53,6 @@ namespace GetSystemStatusGUI {
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
                     chart.Series.Add(cid.ToString());
-                    //chart.Series[0].IsVisibleInLegend = false;
                     chart.Series[0].Points.DataBindY(y);
                     chart.Series[0].ChartType = SeriesChartType.SplineArea;
                     chart.ChartAreas.Add(cid.ToString());
@@ -161,7 +160,7 @@ namespace GetSystemStatusGUI {
             fixHeight = Math.Max(40, marginHorizontal * 3);
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
             int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
-            if (chartHeight <= 0 || chartWidth <= 0) return;
+            if (chartHeight <= 0 || chartWidth <= 0 || subCharts is null) return;
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
