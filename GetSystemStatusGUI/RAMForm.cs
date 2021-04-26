@@ -13,5 +13,9 @@ namespace GetSystemStatusGUI {
 		public RAMForm() {
 			InitializeComponent();
 		}
+
+		private void RAMForm_Load(object sender, EventArgs e) {
+
+		}
 	}
 }
