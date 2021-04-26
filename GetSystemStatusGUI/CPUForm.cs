@@ -18,6 +18,8 @@ namespace GetSystemStatusGUI {
         const int historyLength = 60;
         const int beginTop = 311;
         const int ratioChartMargin = 10;
+        Color chartColor = Color.FromArgb(160, 30, 144, 255);
+        int fixHeight = 40;   //修正高度
         Form1 mainForm;
         CPUInfo cpuInfo;
         private Chart[] subCharts;
@@ -30,18 +32,6 @@ namespace GetSystemStatusGUI {
         }
 
         private void CPUForm_Load(object sender, EventArgs e) {
-            /*List<int> x = new List<int>() { 0, 1, 2, 3, 4 };
-            List<int> y = new List<int>() { 5, 7, 25, 94, 3 };
-            //chart1.Series.Add("_Total");
-            //chart1.Series["Series1"].Points.DataBindXY(x, y);
-            chart1.Series["Series1"].Points.DataBindY(y);
-            chart1.Series["Series1"].IsVisibleInLegend = false;
-            cpuName.Text = sysInfo.CpuName;
-            List<int> x = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            List<int> y = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };*/
-            //TODO：单独开个线程更新CPU负载值
-            //Thread cpuThread = new Thread(new ThreadStart(cpu_load_thread));
-            //cpuThread.Start();
             cpuName.Text = cpuInfo.CpuName;
             List<int> x = new List<int>();
             List<float> y = new List<float>();
@@ -51,30 +41,33 @@ namespace GetSystemStatusGUI {
             }
             chart1.Series["Series1"].Points.DataBindY(y);
             chart1.Series["Series1"].IsVisibleInLegend = false;
+            chart1.PaletteCustomColors[0] = chartColor;
 
             FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
-
-            int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop) / (double)(rows + (rows + 1) / (double)ratioChartMargin));
-            int chartWidth = (int)Math.Round((double)this.Size.Width / (double)(columns + (columns + 1) / (double)ratioChartMargin));
-            int marginVertical = (int)Math.Round((double)chartHeight / (double)ratioChartMargin);
-            int marginHorizontal = (int)Math.Round((double)chartWidth / (double)ratioChartMargin);
 
             subCharts = new Chart[cpuInfo.ProcessorCount];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
                     Chart chart = new Chart();
+                    chart.Palette = ChartColorPalette.None;
+                    chart.PaletteCustomColors = new Color[] { chartColor };
                     chart.Series.Add(cid.ToString());
-                    chart.Series[0].IsVisibleInLegend = false;
+                    //chart.Series[0].IsVisibleInLegend = false;
                     chart.Series[0].Points.DataBindY(y);
                     chart.Series[0].ChartType = SeriesChartType.SplineArea;
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
-                    chart.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+                    chart.ChartAreas[0].AxisY.MajorGrid.Enabled = true;
                     chart.ChartAreas[0].AxisY.MajorTickMark.Enabled = false;
-                    chart.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                    chart.ChartAreas[0].AxisY.MajorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
+                    chart.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
+                    chart.ChartAreas[0].AxisX.MajorGrid.Enabled = true;
+                    chart.ChartAreas[0].AxisX.MajorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
                     chart.ChartAreas[0].AxisX.MajorTickMark.Enabled = false;
+                    chart.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
+                    chart.ChartAreas[0].AxisX.MinorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
                     chart.ChartAreas[0].AxisX.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisY.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisX.LineWidth = 2;
@@ -93,21 +86,22 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisY2.LineWidth = 2;
-                    int startX = (j + 1) * marginHorizontal + j * chartWidth;
-                    int startY = beginTop + (i + 1) * marginVertical + i * chartHeight;
-                    chart.Location = new Point(startX, startY);
-                    chart.Size = new Size(chartWidth, chartHeight);
+                    chart.Titles.Add(cid.ToString());
+                    chart.Titles[0].Text = "CPU " + cid.ToString();
+                    chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
+                    chart.Titles[0].DockedToChartArea = cid.ToString();
+                    chart.Titles[0].IsDockedInsideChartArea = false;
+                    chart.Titles[0].ForeColor = SystemColors.GrayText;
                     subCharts[cid] = chart;
                     this.Controls.Add(subCharts[cid]);
                 }
             }
+            CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);
         }
 
-        private void CPUForm_FormClosed(object sender, FormClosedEventArgs e) {
-
-        }
+        private void CPUForm_FormClosed(object sender, FormClosedEventArgs e) { }
 
         private void CPUForm_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
@@ -132,8 +126,6 @@ namespace GetSystemStatusGUI {
                     ys[i].RemoveAt(0);
                     ys[i].Add(cpuInfo.CpuCoreLoad(i));
                 }
-                //chart1.Update();
-                //Action updateChart = new Action(delegate () { chart1.Update(); });
                 Action updateChart = new Action(
                     delegate () {
                         chart1.Series["Series1"].Points.DataBindY(y);
@@ -159,10 +151,17 @@ namespace GetSystemStatusGUI {
         }
 
         private void CPUForm_Resize(object sender, EventArgs e) {
-            int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop) / (double)(rows + (rows + 1) / (double)ratioChartMargin));
-            int chartWidth = (int)Math.Round((double)this.Size.Width / (double)(columns + (columns + 1) / (double)ratioChartMargin));
-            int marginVertical = (int)Math.Round((double)chartHeight / (double)ratioChartMargin);
-            int marginHorizontal = (int)Math.Round((double)chartWidth / (double)ratioChartMargin);
+            //int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight) / (double)(rows + (rows + 1) / (double)ratioChartMargin));
+            //int chartWidth = (int)Math.Round((double)this.Size.Width / (double)(columns + (columns + 1) / (double)ratioChartMargin));
+            //int marginVertical = (int)Math.Round((double)chartHeight / (double)ratioChartMargin);
+            //int marginHorizontal = (int)Math.Round((double)chartWidth / (double)ratioChartMargin);
+            int marginVertical = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / 50.0);
+            int marginHorizontal = marginVertical;
+            int endRight = (int)Math.Round((double)marginHorizontal * 1.1);
+            fixHeight = Math.Max(40, marginHorizontal * 3);
+            int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
+            int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
+            if (chartHeight <= 0 || chartWidth <= 0) return;
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
@@ -172,8 +171,8 @@ namespace GetSystemStatusGUI {
                     subCharts[cid].Location = new Point(startX, startY);
                 }
             }
-            chart1.Width = this.Size.Width - 2 * marginHorizontal;
-            chart1.Left = marginHorizontal;
+            chart1.Width = this.Size.Width - marginHorizontal - endRight;
+            chart1.Left = (int)Math.Round((double)marginHorizontal / 2.5);
         }
     }
 
@@ -182,10 +181,8 @@ namespace GetSystemStatusGUI {
         private PerformanceCounter pcCpuLoad;   //CPU计数器
         private PerformanceCounter[] pcCpuCoreLoads;   //每CPU核心的利用率
 
-        // 构造函数，初始化计数器
         public CPUInfo() {
             ProcessorCount = Environment.ProcessorCount;
-            //初始化计数器
             pcCpuLoad = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             pcCpuCoreLoads = new PerformanceCounter[ProcessorCount];
             for (int i = 0; i < ProcessorCount; i++) {
@@ -216,7 +213,5 @@ namespace GetSystemStatusGUI {
         public float CpuCoreLoad(int core_num) {
             return pcCpuCoreLoads[core_num].NextValue();
         }
-
     }
-
 }

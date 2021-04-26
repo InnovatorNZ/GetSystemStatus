@@ -32,6 +32,7 @@ namespace GetSystemStatusGUI
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
 			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
 			this.label1 = new System.Windows.Forms.Label();
 			this.cpuName = new System.Windows.Forms.Label();
 			this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -67,8 +68,10 @@ namespace GetSystemStatusGUI
 			chartArea1.AxisX.LabelStyle.Enabled = false;
 			chartArea1.AxisX.LineColor = System.Drawing.Color.DodgerBlue;
 			chartArea1.AxisX.LineWidth = 2;
-			chartArea1.AxisX.MajorGrid.Enabled = false;
+			chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(255)))));
 			chartArea1.AxisX.MajorTickMark.Enabled = false;
+			chartArea1.AxisX.MinorGrid.Enabled = true;
+			chartArea1.AxisX.MinorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(255)))));
 			chartArea1.AxisX2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
 			chartArea1.AxisX2.LabelStyle.Enabled = false;
 			chartArea1.AxisX2.LineColor = System.Drawing.Color.DodgerBlue;
@@ -79,7 +82,7 @@ namespace GetSystemStatusGUI
 			chartArea1.AxisY.LabelStyle.Enabled = false;
 			chartArea1.AxisY.LineColor = System.Drawing.Color.DodgerBlue;
 			chartArea1.AxisY.LineWidth = 2;
-			chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+			chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(255)))));
 			chartArea1.AxisY.MajorTickMark.LineColor = System.Drawing.Color.Transparent;
 			chartArea1.AxisY.Maximum = 100D;
 			chartArea1.AxisY.Minimum = 0D;
@@ -90,14 +93,19 @@ namespace GetSystemStatusGUI
 			chartArea1.AxisY2.LineWidth = 2;
 			chartArea1.AxisY2.MajorGrid.Enabled = false;
 			chartArea1.AxisY2.MajorTickMark.Enabled = false;
+			chartArea1.BackColor = System.Drawing.Color.Transparent;
 			chartArea1.BorderColor = System.Drawing.Color.Transparent;
 			chartArea1.Name = "ChartArea1";
 			this.chart1.ChartAreas.Add(chartArea1);
+			legend1.Enabled = false;
 			legend1.Name = "Legend1";
 			this.chart1.Legends.Add(legend1);
 			this.chart1.Location = new System.Drawing.Point(12, 150);
 			this.chart1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
 			this.chart1.Name = "chart1";
+			this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
+			this.chart1.PaletteCustomColors = new System.Drawing.Color[] {
+        System.Drawing.Color.DodgerBlue};
 			series1.ChartArea = "ChartArea1";
 			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
 			series1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
@@ -109,6 +117,13 @@ namespace GetSystemStatusGUI
 			this.chart1.Series.Add(series1);
 			this.chart1.Size = new System.Drawing.Size(1059, 161);
 			this.chart1.TabIndex = 2;
+			title1.Alignment = System.Drawing.ContentAlignment.MiddleLeft;
+			title1.DockedToChartArea = "ChartArea1";
+			title1.ForeColor = System.Drawing.SystemColors.GrayText;
+			title1.IsDockedInsideChartArea = false;
+			title1.Name = "Title1";
+			title1.Text = "Total Utilizations in 60 secs %";
+			this.chart1.Titles.Add(title1);
 			// 
 			// CPUForm
 			// 
