@@ -16,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace GetSystemStatusGUI {
     public partial class CPUForm : Form {
         const int historyLength = 60;
-        const int beginTop = 311;
+        int beginTop = 311;
         const int ratioChartMargin = 10;
         Color chartColor = Color.FromArgb(160, 30, 144, 255);
         int fixHeight = 40;   //修正高度
@@ -33,6 +33,7 @@ namespace GetSystemStatusGUI {
 
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
+            this.beginTop = chart1.Location.Y + chart1.Size.Height + 5;
             List<int> x = new List<int>();
             List<float> y = new List<float>();
             for (int i = 0; i < historyLength; i++) {

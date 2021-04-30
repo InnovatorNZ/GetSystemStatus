@@ -43,21 +43,19 @@ namespace GetSystemStatusGUI
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("微软雅黑", 32.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.label1.Location = new System.Drawing.Point(50, 50);
-			this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.label1.Location = new System.Drawing.Point(40, 40);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(139, 70);
+			this.label1.Size = new System.Drawing.Size(112, 57);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "CPU";
 			// 
 			// cpuName
 			// 
 			this.cpuName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.cpuName.Font = new System.Drawing.Font("微软雅黑 Light", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.cpuName.Location = new System.Drawing.Point(320, 71);
-			this.cpuName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.cpuName.Font = new System.Drawing.Font("微软雅黑 Light", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.cpuName.Location = new System.Drawing.Point(256, 57);
 			this.cpuName.Name = "cpuName";
-			this.cpuName.Size = new System.Drawing.Size(732, 49);
+			this.cpuName.Size = new System.Drawing.Size(586, 39);
 			this.cpuName.TabIndex = 1;
 			this.cpuName.Text = "cpuName";
 			this.cpuName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -100,8 +98,8 @@ namespace GetSystemStatusGUI
 			legend1.Enabled = false;
 			legend1.Name = "Legend1";
 			this.chart1.Legends.Add(legend1);
-			this.chart1.Location = new System.Drawing.Point(12, 150);
-			this.chart1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+			this.chart1.Location = new System.Drawing.Point(10, 120);
+			this.chart1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.chart1.Name = "chart1";
 			this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart1.PaletteCustomColors = new System.Drawing.Color[] {
@@ -115,7 +113,7 @@ namespace GetSystemStatusGUI
 			series1.Name = "Series1";
 			series1.YValuesPerPoint = 6;
 			this.chart1.Series.Add(series1);
-			this.chart1.Size = new System.Drawing.Size(1059, 161);
+			this.chart1.Size = new System.Drawing.Size(847, 129);
 			this.chart1.TabIndex = 2;
 			title1.Alignment = System.Drawing.ContentAlignment.MiddleLeft;
 			title1.DockedToChartArea = "ChartArea1";
@@ -127,14 +125,13 @@ namespace GetSystemStatusGUI
 			// 
 			// CPUForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-			this.ClientSize = new System.Drawing.Size(1083, 801);
+			this.ClientSize = new System.Drawing.Size(866, 641);
 			this.Controls.Add(this.chart1);
 			this.Controls.Add(this.cpuName);
 			this.Controls.Add(this.label1);
-			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "CPUForm";
 			this.Text = "CPU";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CPUForm_FormClosing);
