@@ -57,6 +57,12 @@
     <Compile Include="CPUForm.Designer.cs">
       <DependentUpon>CPUForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiskForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DiskForm.Designer.cs">
+      <DependentUpon>DiskForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,8 +78,12 @@
       <DependentUpon>RAMForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SystemInfo.cs" />
+    <Compile Include="Utility.cs" />
     <EmbeddedResource Include="CPUForm.resx">
       <DependentUpon>CPUForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiskForm.resx">
+      <DependentUpon>DiskForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

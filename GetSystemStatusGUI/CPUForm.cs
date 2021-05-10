@@ -15,15 +15,14 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace GetSystemStatusGUI {
     public partial class CPUForm : Form {
-        const int historyLength = 60;
-        int beginTop = 311;
-        const int ratioChartMargin = 10;
-        Color chartColor = Color.FromArgb(160, 30, 144, 255);
-        int fixHeight = 40;   //修正高度
-        Form1 mainForm;
-        CPUInfo cpuInfo;
+        private const int historyLength = 60;
+        private int beginTop = 311;
+        private Color chartColor = Color.FromArgb(160, 30, 144, 255);
+        private int fixHeight = 40;   //修正高度
+        private Form1 mainForm;
+        private CPUInfo cpuInfo;
         private Chart[] subCharts;
-        int rows = 1, columns = 1;
+        private int rows = 1, columns = 1;
 
         public CPUForm(Form1 mainForm) {
             InitializeComponent();
@@ -44,7 +43,7 @@ namespace GetSystemStatusGUI {
             chart1.Series["Series1"].IsVisibleInLegend = false;
             chart1.PaletteCustomColors[0] = chartColor;
 
-            FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
+            Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
 
             subCharts = new Chart[cpuInfo.ProcessorCount];
             for (int i = 0; i < rows; i++) {
@@ -139,18 +138,8 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void FactorDecompose(int original, ref int bigger, ref int smaller) {
-            double sqrt = Math.Sqrt(original);
-            int a = (int)Math.Ceiling(sqrt), b = (int)Math.Floor(sqrt);
-            while (a * b != original) {
-                if (a * b > original) b--;
-                else a++;
-            }
-            bigger = a;
-            smaller = b;
-        }
-
         private void CPUForm_Resize(object sender, EventArgs e) {
+            //const int ratioChartMargin = 10;
             //int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight) / (double)(rows + (rows + 1) / (double)ratioChartMargin));
             //int chartWidth = (int)Math.Round((double)this.Size.Width / (double)(columns + (columns + 1) / (double)ratioChartMargin));
             //int marginVertical = (int)Math.Round((double)chartHeight / (double)ratioChartMargin);

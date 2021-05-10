@@ -12,6 +12,8 @@ namespace GetSystemStatusGUI {
     public partial class Form1 : Form {
         protected CPUForm cpuForm;
         protected RAMForm ramForm;
+        protected DiskForm diskForm;
+
         public Form1() {
             InitializeComponent();
         }
@@ -53,5 +55,15 @@ namespace GetSystemStatusGUI {
                 ramForm.Hide();
             }
         }
-    }
+
+		private void showDisk_CheckedChanged(object sender, EventArgs e) {
+            CheckBox self = (CheckBox)sender;
+			if (self.Checked) {
+                if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm();
+                diskForm.Show();
+			} else {
+                diskForm.Hide();
+			}
+		}
+	}
 }

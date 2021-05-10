@@ -12,28 +12,29 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GetSystemStatusGUI {
-	public partial class RAMForm : Form {
-        const int historyLength = 60;
+    public partial class RAMForm : Form {
+        private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
         private Color chartColor = Color.FromArgb(160, 139, 0, 139);
+
         public RAMForm() {
             ramInfo = new RAMInfo();
-			InitializeComponent();
-		}
+            InitializeComponent();
+        }
 
-		private void RAMForm_Load(object sender, EventArgs e) {
+        private void RAMForm_Load(object sender, EventArgs e) {
             List<int> list = new List<int>();
             for (int i = 0; i < historyLength; i++) list.Add(0);
             chart1.Series[0].Points.DataBindY(list);
             chart1.PaletteCustomColors[0] = chartColor;
             new Action(ram_update_thread).BeginInvoke(null, null);
-		}
+        }
 
         private void ram_update_thread() {
             List<int> usageList = new List<int>();
             for (int i = 0; i < historyLength; i++) usageList.Add(0);
-			while (!lblRAM.IsDisposed) {
+            while (!chart1.IsDisposed && !lblRAM.IsDisposed) {
                 int rusage = (int)Math.Round((1.0 - (double)ramInfo.MemoryAvailable / (double)ramInfo.PhysicalMemory) * 100.0);
                 int ramScale = (int)Math.Floor(Math.Log((double)ramInfo.MemoryAvailable, 1024));
                 double memAvail = Math.Round((double)ramInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
@@ -49,19 +50,18 @@ namespace GetSystemStatusGUI {
                 Invoke(updateChart);
                 Thread.Sleep(1000);
             }
-		}
-
-	}
+        }
+    }
 
     public class RAMInfo {
         private long m_PhysicalMemory = 0;   //物理内存
         private PerformanceCounter pcAvailMemory;   //可用内存（性能计数器版）
-        
+
         // 构造函数，初始化计数器
         public RAMInfo() {
             //初始化计数器
             pcAvailMemory = new PerformanceCounter("Memory", "Available Bytes");
-            
+
             //获得物理内存
             ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
             ManagementObjectCollection moc = mc.GetInstances();
