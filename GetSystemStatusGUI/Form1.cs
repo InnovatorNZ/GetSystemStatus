@@ -34,6 +34,12 @@ namespace GetSystemStatusGUI {
                 case "CPU":
                     showCPU.Checked = false;
                     break;
+                case "RAM":
+                    showRAM.Checked = false;
+                    break;
+                case "Disk":
+                    showDisk.Checked = false;
+                    break;
             }
         }
 
@@ -44,12 +50,14 @@ namespace GetSystemStatusGUI {
 
         private void Form1_Load(object sender, EventArgs e) {
             showCPU.Checked = true;
+            showRAM.Checked = true;
+            showDisk.Checked = true;
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
-                if (ramForm == null || ramForm.IsDisposed) ramForm = new RAMForm();
+                if (ramForm == null || ramForm.IsDisposed) ramForm = new RAMForm(this);
                 ramForm.Show();
             } else {
                 ramForm.Hide();
@@ -59,7 +67,7 @@ namespace GetSystemStatusGUI {
 		private void showDisk_CheckedChanged(object sender, EventArgs e) {
             CheckBox self = (CheckBox)sender;
 			if (self.Checked) {
-                if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm();
+                if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm(this);
                 diskForm.Show();
 			} else {
                 diskForm.Hide();

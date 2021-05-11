@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,11 +19,14 @@ namespace GetSystemStatusGUI {
         private Color chartColor = Color.FromArgb(160, Color.LimeGreen);
         private int beginTop;
         private int rows = 1, columns = 1;
+        private const double margin_ratio = 35;
         private const int history_length = 60;
+        private Form1 mainform;
 
-        public DiskForm() {
+        public DiskForm(Form1 mainform) {
             InitializeComponent();
             diskInfo = new DiskInfo();
+            this.mainform = mainform;
         }
 
         private void DiskForm_Load(object sender, EventArgs e) {
@@ -77,22 +81,32 @@ namespace GetSystemStatusGUI {
                     chart.Titles[0].IsDockedInsideChartArea = false;
                     chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 14);
                     chart.Titles.Add(cid.ToString() + "_1");
-                    chart.Titles[1].Text = "Load rate in 60 secs";
+                    //chart.Titles[1].Text = "Load rate in 60 secs";
+                    chart.Titles[1].Text = diskInfo.DiskModel(cid);
                     chart.Titles[1].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[1].DockedToChartArea = cid.ToString();
                     chart.Titles[1].IsDockedInsideChartArea = false;
                     chart.Titles[1].ForeColor = SystemColors.GrayText;
+                    chart.Titles.Add(cid.ToString() + "_2");
+                    chart.Titles[2].Text = "Read 0KB/s\tWrite 0KB/s";
+                    chart.Titles[2].Alignment = ContentAlignment.MiddleLeft;
+                    chart.Titles[2].DockedToChartArea = cid.ToString();
+                    chart.Titles[2].Docking = Docking.Bottom;
+                    chart.Titles[2].IsDockedInsideChartArea = false;
+                    chart.Titles[2].Font = new Font(FontFamily.GenericSansSerif, 11);
+                    chart.Titles[2].ForeColor = ColorTranslator.FromHtml("#494949");
                     subCharts[cid] = chart;
                     this.Controls.Add(subCharts[cid]);
                 }
             }
+            InitialSize();
             DiskForm_Resize(null, null);
             new Action(disk_load_thread).BeginInvoke(null, null);
         }
 
         private void DiskForm_Resize(object sender, EventArgs e) {
-            int marginVertical = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / 25.0);
-            int marginHorizontal = marginVertical;
+            int marginHorizontal = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / (double)margin_ratio);
+            int marginVertical = marginHorizontal / 3;
             int endRight = (int)Math.Round((double)marginHorizontal * 1.1);
             int fixHeight = Math.Max(40, marginHorizontal * 2);
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
@@ -107,6 +121,19 @@ namespace GetSystemStatusGUI {
                     subCharts[cid].Location = new Point(startX, startY);
                 }
             }
+        }
+
+        private void InitialSize() {
+            int iHeight = beginTop + rows * 200 + (rows + 1) * 5;
+            int iWidth = columns * 180 + (columns + 1) * 10;
+            iHeight = Math.Max(iHeight, this.Size.Height);
+            iWidth = Math.Max(iWidth, this.Size.Width);
+            this.Size = new Size(iWidth, iHeight);
+        }
+
+        private void DiskForm_FormClosing(object sender, FormClosingEventArgs e) {
+            e.Cancel = true;
+            mainform.DisableChecked("Disk");
         }
 
         private void disk_load_thread() {
@@ -124,6 +151,8 @@ namespace GetSystemStatusGUI {
                     delegate () {
                         for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                             subCharts[i].Series[0].Points.DataBindY(ys[i]);
+                            string rw_speed = Utility.FormatDuplexString("Read", diskInfo.DiskRead(i), "Write", diskInfo.DiskWrite(i), 1024);
+                            subCharts[i].Titles[2].Text = rw_speed;
                         }
                     }
                 );
@@ -141,15 +170,24 @@ namespace GetSystemStatusGUI {
         private PerformanceCounter pcDiskWrite; //总磁盘写速率
         public int m_DiskNum = 0;    //磁盘个数
         public List<string> DiskInstanceNames = new List<string>();
+        private string[] diskModelCaption;   //磁盘型号名称
 
         // 构造函数，初始化计数器
         public DiskInfo() {
-            //初始化计数器
             pcDiskRead = new PerformanceCounter("PhysicalDisk", "Disk Read Bytes/sec", "_Total");
             pcDiskWrite = new PerformanceCounter("PhysicalDisk", "Disk Write Bytes/sec", "_Total");
             PerformanceCounterCategory diskPfc = new PerformanceCounterCategory("PhysicalDisk");
-            string[] diskInstanceNames = diskPfc.GetInstanceNames();
-            m_DiskNum = diskInstanceNames.Length - 1;
+            string[] _diskInstanceNames = diskPfc.GetInstanceNames();
+            m_DiskNum = _diskInstanceNames.Length - 1;
+            string[] diskInstanceNames = new string[m_DiskNum];
+            foreach (string disk in _diskInstanceNames) {
+                string[] split = disk.Split(' ');
+                try {
+                    int cid = int.Parse(split[0]);
+                    diskInstanceNames[cid] = disk;
+                }
+                catch { }
+            }
             pcDisksRead = new PerformanceCounter[m_DiskNum];
             pcDisksWrite = new PerformanceCounter[m_DiskNum];
             pcDisksLoad = new PerformanceCounter[m_DiskNum];
@@ -168,6 +206,24 @@ namespace GetSystemStatusGUI {
             pcDiskWrite.NextValue();
 
             for (int i = 0; i < m_DiskNum; i++) { pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue(); }
+
+            diskModelCaption = new string[m_DiskNum];
+            var wmi_disk = new ManagementObjectSearcher("select * from Win32_DiskDrive");
+            foreach (var o in wmi_disk.Get()) {
+                var mo = (ManagementObject)o;
+                string cDeviceID = mo["DeviceID"].ToString();
+                string cModel = mo["Model"].ToString();
+                const string s_phydrv = @"\\.\PHYSICALDRIVE";
+                int si = cDeviceID.IndexOf(s_phydrv) + s_phydrv.Length;
+                string scid = cDeviceID.Substring(si);
+                int cid = int.Parse(scid);
+                diskModelCaption[cid] = cModel;
+            }
+        }
+
+        // 磁盘型号
+        public string DiskModel(int id) {
+            return diskModelCaption[id];
         }
 
         // 磁盘占用、读写速率

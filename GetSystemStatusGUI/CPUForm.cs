@@ -95,6 +95,7 @@ namespace GetSystemStatusGUI {
                     this.Controls.Add(subCharts[cid]);
                 }
             }
+            InitialSize();
             CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);
@@ -163,10 +164,19 @@ namespace GetSystemStatusGUI {
             chart1.Width = this.Size.Width - marginHorizontal - endRight;
             chart1.Left = (int)Math.Round((double)marginHorizontal / 2.5);
         }
+
+        private void InitialSize() {
+            const int iSize = 145;
+            int iHeight = beginTop + rows * iSize + (rows + 1) * 3;
+            int iWidth = columns * iSize + (columns + 1) * 7;
+            iHeight = Math.Max(iHeight, this.Size.Height);
+            iWidth = Math.Max(iWidth, this.Size.Width);
+            this.Size = new Size(iWidth, iHeight);
+        }
     }
 
     public class CPUInfo {
-        public string CpuName { get; }     //CPU名称
+        private string cpuName;                 //CPU名称
         private PerformanceCounter pcCpuLoad;   //CPU计数器
         private PerformanceCounter[] pcCpuCoreLoads;   //每CPU核心的利用率
 
@@ -189,9 +199,13 @@ namespace GetSystemStatusGUI {
                 var mo = (ManagementObject)o;
                 st = mo["Name"].ToString();
             }
-            CpuName = st;
+            cpuName = st;
         }
 
+        // CPU名称
+        public string CpuName {
+            get { return cpuName.Trim(); }
+        }
         // CPU利用率、核心数
         public int ProcessorCount { get; } = 0;
         public float CpuLoad {

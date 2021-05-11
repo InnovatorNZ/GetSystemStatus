@@ -17,10 +17,12 @@ namespace GetSystemStatusGUI {
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
         private Color chartColor = Color.FromArgb(160, 139, 0, 139);
+        private Form1 mainform;
 
-        public RAMForm() {
+        public RAMForm(Form1 mainform) {
             ramInfo = new RAMInfo();
             InitializeComponent();
+            this.mainform = mainform;
         }
 
         private void RAMForm_Load(object sender, EventArgs e) {
@@ -51,9 +53,14 @@ namespace GetSystemStatusGUI {
                 Thread.Sleep(1000);
             }
         }
-    }
 
-    public class RAMInfo {
+		private void RAMForm_FormClosing(object sender, FormClosingEventArgs e) {
+            e.Cancel = true;
+            mainform.DisableChecked("RAM");
+		}
+	}
+
+	public class RAMInfo {
         private long m_PhysicalMemory = 0;   //物理内存
         private PerformanceCounter pcAvailMemory;   //可用内存（性能计数器版）
 
