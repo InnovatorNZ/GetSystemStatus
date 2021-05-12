@@ -64,14 +64,50 @@ namespace GetSystemStatusGUI {
             }
         }
 
-		private void showDisk_CheckedChanged(object sender, EventArgs e) {
+        private void showDisk_CheckedChanged(object sender, EventArgs e) {
             CheckBox self = (CheckBox)sender;
-			if (self.Checked) {
+            if (self.Checked) {
                 if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm(this);
                 diskForm.Show();
-			} else {
+            } else {
                 diskForm.Hide();
-			}
-		}
-	}
+            }
+        }
+
+        private void cbUpdateInterval_SelectedIndexChanged(object sender, EventArgs e) {
+            ComboBox comboBox = (ComboBox)sender;
+            string cselect = comboBox.Text;
+            switch (cselect) {
+                case "1 sec":
+                    Global.interval_ms = 1000;
+                    break;
+                case "2 sec":
+                    Global.interval_ms = 2000;
+                    break;
+                case "0.5 sec":
+                    Global.interval_ms = 500;
+                    break;
+                case "0.25 sec":
+                    Global.interval_ms = 250;
+                    break;
+                default:
+                    cbUpdateInterval_TextChanged(sender, e);
+                    break;
+            }
+        }
+
+        private void cbUpdateInterval_TextChanged(object sender, EventArgs e) {
+            ComboBox comboBox = (ComboBox)sender;
+            string cselect = comboBox.Text;
+            try {
+                string[] csplit = cselect.Split(' ');
+                float ims = float.Parse(csplit[0]);
+                if (ims == 0) return;
+                string unit = csplit[1];
+                if (unit == "ms") Global.interval_ms = (int)Math.Round(ims);
+                else if (unit == "s" || unit == "sec" || unit == "secs") Global.interval_ms = (int)Math.Round(ims * 1000);
+            }
+            catch { }
+        }
+    }
 }

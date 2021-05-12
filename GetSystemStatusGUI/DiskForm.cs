@@ -16,7 +16,8 @@ namespace GetSystemStatusGUI {
     public partial class DiskForm : Form {
         private DiskInfo diskInfo;
         private Chart[] subCharts;
-        private Color chartColor = Color.FromArgb(160, Color.LimeGreen);
+        private Color chartColor = Color.FromArgb(120, Color.LimeGreen);
+        private Color borderColor = Color.FromArgb(180, Color.LimeGreen);
         private int beginTop;
         private int rows = 1, columns = 1;
         private const double margin_ratio = 35;
@@ -44,6 +45,7 @@ namespace GetSystemStatusGUI {
                     chart.Series.Add(cid.ToString());
                     chart.Series[0].Points.DataBindY(y);
                     chart.Series[0].ChartType = SeriesChartType.SplineArea;
+                    chart.Series[0].BorderColor = borderColor;
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
@@ -156,8 +158,9 @@ namespace GetSystemStatusGUI {
                         }
                     }
                 );
-                Invoke(updateChart);
-                Thread.Sleep(1000);
+                try { Invoke(updateChart); }
+				catch { break; }
+                Thread.Sleep(Global.interval_ms);
             }
         }
     }

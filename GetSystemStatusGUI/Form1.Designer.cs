@@ -35,15 +35,18 @@ namespace GetSystemStatusGUI
 			this.showNetwork = new System.Windows.Forms.CheckBox();
 			this.showGPU = new System.Windows.Forms.CheckBox();
 			this.buttonExit = new System.Windows.Forms.Button();
+			this.cbUpdateInterval = new System.Windows.Forms.ComboBox();
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// showCPU
 			// 
 			this.showCPU.AutoSize = true;
 			this.showCPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showCPU.Location = new System.Drawing.Point(105, 102);
+			this.showCPU.Location = new System.Drawing.Point(131, 117);
+			this.showCPU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.showCPU.Name = "showCPU";
-			this.showCPU.Size = new System.Drawing.Size(186, 24);
+			this.showCPU.Size = new System.Drawing.Size(236, 29);
 			this.showCPU.TabIndex = 0;
 			this.showCPU.Text = "Show CPU Utilizations";
 			this.showCPU.UseVisualStyleBackColor = true;
@@ -53,9 +56,10 @@ namespace GetSystemStatusGUI
 			// 
 			this.showRAM.AutoSize = true;
 			this.showRAM.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showRAM.Location = new System.Drawing.Point(105, 132);
+			this.showRAM.Location = new System.Drawing.Point(131, 154);
+			this.showRAM.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.showRAM.Name = "showRAM";
-			this.showRAM.Size = new System.Drawing.Size(157, 24);
+			this.showRAM.Size = new System.Drawing.Size(197, 29);
 			this.showRAM.TabIndex = 1;
 			this.showRAM.Text = "Show RAM Usage";
 			this.showRAM.UseVisualStyleBackColor = true;
@@ -65,9 +69,10 @@ namespace GetSystemStatusGUI
 			// 
 			this.showDisk.AutoSize = true;
 			this.showDisk.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showDisk.Location = new System.Drawing.Point(105, 162);
+			this.showDisk.Location = new System.Drawing.Point(131, 191);
+			this.showDisk.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.showDisk.Name = "showDisk";
-			this.showDisk.Size = new System.Drawing.Size(230, 19);
+			this.showDisk.Size = new System.Drawing.Size(364, 29);
 			this.showDisk.TabIndex = 2;
 			this.showDisk.Text = "Show Disk Load and Transfer Speed";
 			this.showDisk.UseVisualStyleBackColor = true;
@@ -77,9 +82,10 @@ namespace GetSystemStatusGUI
 			// 
 			this.showNetwork.AutoSize = true;
 			this.showNetwork.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showNetwork.Location = new System.Drawing.Point(105, 192);
+			this.showNetwork.Location = new System.Drawing.Point(131, 229);
+			this.showNetwork.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.showNetwork.Name = "showNetwork";
-			this.showNetwork.Size = new System.Drawing.Size(361, 24);
+			this.showNetwork.Size = new System.Drawing.Size(449, 29);
 			this.showNetwork.TabIndex = 3;
 			this.showNetwork.Text = "Show Network Speed and Adapter Properties";
 			this.showNetwork.UseVisualStyleBackColor = true;
@@ -88,29 +94,61 @@ namespace GetSystemStatusGUI
 			// 
 			this.showGPU.AutoSize = true;
 			this.showGPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showGPU.Location = new System.Drawing.Point(105, 222);
+			this.showGPU.Location = new System.Drawing.Point(131, 267);
+			this.showGPU.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.showGPU.Name = "showGPU";
-			this.showGPU.Size = new System.Drawing.Size(192, 24);
+			this.showGPU.Size = new System.Drawing.Size(245, 29);
 			this.showGPU.TabIndex = 4;
 			this.showGPU.Text = "Show GPU Information";
 			this.showGPU.UseVisualStyleBackColor = true;
 			// 
 			// buttonExit
 			// 
-			this.buttonExit.Location = new System.Drawing.Point(451, 324);
+			this.buttonExit.Location = new System.Drawing.Point(564, 405);
+			this.buttonExit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.buttonExit.Name = "buttonExit";
-			this.buttonExit.Size = new System.Drawing.Size(80, 23);
+			this.buttonExit.Size = new System.Drawing.Size(100, 29);
 			this.buttonExit.TabIndex = 5;
 			this.buttonExit.Text = "Exit";
 			this.buttonExit.UseVisualStyleBackColor = true;
 			this.buttonExit.Click += new System.EventHandler(this.buttonExit_Click);
 			// 
+			// cbUpdateInterval
+			// 
+			this.cbUpdateInterval.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.cbUpdateInterval.FormattingEnabled = true;
+			this.cbUpdateInterval.ImeMode = System.Windows.Forms.ImeMode.Disable;
+			this.cbUpdateInterval.Items.AddRange(new object[] {
+            "1 sec",
+            "2 sec",
+            "0.5 sec",
+            "0.25 sec"});
+			this.cbUpdateInterval.Location = new System.Drawing.Point(310, 317);
+			this.cbUpdateInterval.Name = "cbUpdateInterval";
+			this.cbUpdateInterval.Size = new System.Drawing.Size(121, 28);
+			this.cbUpdateInterval.TabIndex = 6;
+			this.cbUpdateInterval.Text = "1 sec";
+			this.cbUpdateInterval.SelectedIndexChanged += new System.EventHandler(this.cbUpdateInterval_SelectedIndexChanged);
+			this.cbUpdateInterval.TextChanged += new System.EventHandler(this.cbUpdateInterval_TextChanged);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.label1.Location = new System.Drawing.Point(151, 317);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(153, 25);
+			this.label1.TabIndex = 7;
+			this.label1.Text = "Update interval";
+			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(544, 359);
+			this.ClientSize = new System.Drawing.Size(680, 449);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.cbUpdateInterval);
 			this.Controls.Add(this.buttonExit);
 			this.Controls.Add(this.showGPU);
 			this.Controls.Add(this.showNetwork);
@@ -118,6 +156,7 @@ namespace GetSystemStatusGUI
 			this.Controls.Add(this.showRAM);
 			this.Controls.Add(this.showCPU);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.MaximizeBox = false;
 			this.Name = "Form1";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -136,6 +175,8 @@ namespace GetSystemStatusGUI
         private System.Windows.Forms.CheckBox showNetwork;
         private System.Windows.Forms.CheckBox showGPU;
         private System.Windows.Forms.Button buttonExit;
-    }
+		private System.Windows.Forms.ComboBox cbUpdateInterval;
+		private System.Windows.Forms.Label label1;
+	}
 }
 

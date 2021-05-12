@@ -16,7 +16,8 @@ namespace GetSystemStatusGUI {
         private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
-        private Color chartColor = Color.FromArgb(160, 139, 0, 139);
+        private Color chartColor = Color.FromArgb(120, 139, 0, 139);
+        private Color borderColor = Color.FromArgb(180, 139, 0, 139);
         private Form1 mainform;
 
         public RAMForm(Form1 mainform) {
@@ -30,6 +31,7 @@ namespace GetSystemStatusGUI {
             for (int i = 0; i < historyLength; i++) list.Add(0);
             chart1.Series[0].Points.DataBindY(list);
             chart1.PaletteCustomColors[0] = chartColor;
+            chart1.Series[0].BorderColor = borderColor;
             new Action(ram_update_thread).BeginInvoke(null, null);
         }
 
@@ -49,8 +51,9 @@ namespace GetSystemStatusGUI {
                         chart1.Series[0].Points.DataBindY(usageList);
                     }
                 );
-                Invoke(updateChart);
-                Thread.Sleep(1000);
+                try { Invoke(updateChart); }
+                catch { break; }
+                Thread.Sleep(Global.interval_ms);
             }
         }
 

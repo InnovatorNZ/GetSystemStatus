@@ -37,20 +37,18 @@
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("微软雅黑", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.label1.Location = new System.Drawing.Point(38, 38);
-			this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label1.Location = new System.Drawing.Point(51, 48);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(93, 41);
+			this.label1.Size = new System.Drawing.Size(116, 52);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "RAM";
 			// 
 			// lblRAM
 			// 
 			this.lblRAM.Font = new System.Drawing.Font("微软雅黑 Light", 13.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.lblRAM.Location = new System.Drawing.Point(254, 54);
-			this.lblRAM.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.lblRAM.Location = new System.Drawing.Point(339, 68);
 			this.lblRAM.Name = "lblRAM";
-			this.lblRAM.Size = new System.Drawing.Size(319, 22);
+			this.lblRAM.Size = new System.Drawing.Size(425, 28);
 			this.lblRAM.TabIndex = 1;
 			this.lblRAM.Text = "label2";
 			this.lblRAM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -89,8 +87,8 @@
 			legend1.Enabled = false;
 			legend1.Name = "Legend1";
 			this.chart1.Legends.Add(legend1);
-			this.chart1.Location = new System.Drawing.Point(45, 82);
-			this.chart1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.chart1.Location = new System.Drawing.Point(60, 102);
+			this.chart1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
 			this.chart1.Name = "chart1";
 			this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart1.PaletteCustomColors = new System.Drawing.Color[] {
@@ -100,7 +98,7 @@
 			series1.Legend = "Legend1";
 			series1.Name = "Series1";
 			this.chart1.Series.Add(series1);
-			this.chart1.Size = new System.Drawing.Size(528, 317);
+			this.chart1.Size = new System.Drawing.Size(704, 396);
 			this.chart1.TabIndex = 2;
 			this.chart1.Text = "chart1";
 			title1.Alignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -109,20 +107,20 @@
 			title1.ForeColor = System.Drawing.SystemColors.GrayText;
 			title1.IsDockedInsideChartArea = false;
 			title1.Name = "Title1";
-			title1.Text = "Usage in 60 secs";
+			title1.Text = "Total Usage %";
 			this.chart1.Titles.Add(title1);
 			// 
 			// RAMForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-			this.ClientSize = new System.Drawing.Size(616, 437);
+			this.ClientSize = new System.Drawing.Size(821, 546);
 			this.Controls.Add(this.lblRAM);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.chart1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
 			this.MaximizeBox = false;
 			this.Name = "RAMForm";
 			this.Text = "RAM";

@@ -17,7 +17,9 @@ namespace GetSystemStatusGUI {
     public partial class CPUForm : Form {
         private const int historyLength = 60;
         private int beginTop = 311;
-        private Color chartColor = Color.FromArgb(160, 30, 144, 255);
+        private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
+        private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
+        private Color gridColor = ColorTranslator.FromHtml("#905baeff");
         private int fixHeight = 40;   //修正高度
         private Form1 mainForm;
         private CPUInfo cpuInfo;
@@ -33,15 +35,15 @@ namespace GetSystemStatusGUI {
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
             this.beginTop = chart1.Location.Y + chart1.Size.Height + 5;
-            List<int> x = new List<int>();
             List<float> y = new List<float>();
-            for (int i = 0; i < historyLength; i++) {
-                x.Add(i);
-                y.Add(0);
-            }
-            chart1.Series["Series1"].Points.DataBindY(y);
-            chart1.Series["Series1"].IsVisibleInLegend = false;
+            for (int i = 0; i < historyLength; i++) y.Add(0);
+            chart1.Series[0].Points.DataBindY(y);
+            chart1.Series[0].IsVisibleInLegend = false;
             chart1.PaletteCustomColors[0] = chartColor;
+            chart1.Series[0].BorderColor = borderColor;
+            chart1.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
+            chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = gridColor;
+            chart1.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
 
             Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
 
@@ -55,18 +57,19 @@ namespace GetSystemStatusGUI {
                     chart.Series.Add(cid.ToString());
                     chart.Series[0].Points.DataBindY(y);
                     chart.Series[0].ChartType = SeriesChartType.SplineArea;
+                    chart.Series[0].BorderColor = borderColor;
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
                     chart.ChartAreas[0].AxisY.MajorGrid.Enabled = true;
                     chart.ChartAreas[0].AxisY.MajorTickMark.Enabled = false;
-                    chart.ChartAreas[0].AxisY.MajorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
+                    chart.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
                     chart.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisX.MajorGrid.Enabled = true;
-                    chart.ChartAreas[0].AxisX.MajorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
+                    chart.ChartAreas[0].AxisX.MajorGrid.LineColor = gridColor;
                     chart.ChartAreas[0].AxisX.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
-                    chart.ChartAreas[0].AxisX.MinorGrid.LineColor = ColorTranslator.FromHtml("#5baeff");
+                    chart.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
                     chart.ChartAreas[0].AxisX.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisY.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisX.LineWidth = 2;
@@ -112,7 +115,7 @@ namespace GetSystemStatusGUI {
         private void cpu_load_thread() {
             List<float> y = new List<float>();
             List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
-            for (int i = 0; i < historyLength; i++) y.Add(0);
+            for (int i = 0; i < historyLength * columns; i++) y.Add(0);
             for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
                 ys[i] = new List<float>();
                 for (int j = 0; j < historyLength; j++) {
@@ -134,8 +137,13 @@ namespace GetSystemStatusGUI {
                     }
                 );
                 if (chart1.IsDisposed) break;
-                Invoke(updateChart);
-                Thread.Sleep(1000);
+                try {
+                    Invoke(updateChart);
+                }
+                catch {
+                    break;
+                }
+                Thread.Sleep(Global.interval_ms);
             }
         }
 
