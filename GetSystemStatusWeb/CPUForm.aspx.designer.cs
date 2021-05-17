@@ -10,15 +10,24 @@
 namespace GetSystemStatusWeb {
 
 
-	public partial class SiteMaster {
+	public partial class CPUForm {
 
 		/// <summary>
-		/// MainContent 控件。
+		/// cpuName 控件。
 		/// </summary>
 		/// <remarks>
 		/// 自动生成的字段。
 		/// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
 		/// </remarks>
-		protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+		protected global::System.Web.UI.WebControls.Label cpuName;
+
+		/// <summary>
+		/// chart_panel 控件。
+		/// </summary>
+		/// <remarks>
+		/// 自动生成的字段。
+		/// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+		/// </remarks>
+		protected global::System.Web.UI.HtmlControls.HtmlGenericControl chart_panel;
 	}
 }
