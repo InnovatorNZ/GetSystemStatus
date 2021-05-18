@@ -10,6 +10,7 @@ using System.Diagnostics;
 namespace GetSystemStatusWeb {
 	public partial class _Default : Page {
 		protected void Page_Load(object sender, EventArgs e) {
+			/*
 			Chart1.Series[0].ChartType = SeriesChartType.SplineArea;
 			List<int> y = new List<int> { 0, 1, 2, 3, 2 };
 			Chart1.Series[0].Points.DataBindY(y);
@@ -24,7 +25,7 @@ namespace GetSystemStatusWeb {
 				//this.Controls.Add(chart);
 				chartrow.Controls.Add(chart);
 			}
-
+			
 			for (int i = 0; i < 3; i++) {
 				Panel pnl = new Panel() { ID = "div" + i, CssClass = "input-group" }; //div
 				pnl.Style["margin"] = "10px";
@@ -36,7 +37,7 @@ namespace GetSystemStatusWeb {
 				pnl.Controls.Add(chart1);
 				morechartrow.Controls.Add(pnl);
 			}
-
+			*/
 		}
 	}
 }

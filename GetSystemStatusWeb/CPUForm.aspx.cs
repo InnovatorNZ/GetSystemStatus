@@ -12,39 +12,36 @@ using System.Web.UI.WebControls;
 
 namespace GetSystemStatusWeb {
     public partial class CPUForm : System.Web.UI.Page {
-        private const int historyLength = 60;
+        private const int historyLength = 30;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
         private Color gridColor = ColorTranslator.FromHtml("#905baeff");
         private CPUInfo cpuInfo = new CPUInfo();
-        //private Chart[] subCharts;
-        private int rows = 1, columns = 1;
 
         protected void Page_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
-            //List<float> y = new List<float>();
-            //List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
-            //List<float> y;
+            Thread.Sleep(200);
+            float[] cCpuLoads = new float[cpuInfo.ProcessorCount];
+            for(int i = 0; i < cpuInfo.ProcessorCount; i++) {
+                cCpuLoads[i] = cpuInfo.CpuCoreLoad(i);
+			}
             List<float>[] ys;
             try {
-                //y = Session["y"] as List<float>;
                 ys = Session["ys"] as List<float>[];
                 if (ys == null) throw new Exception();
             }
             catch {
-                //y = new List<float>();
                 ys = new List<float>[cpuInfo.ProcessorCount];
-                //for (int i = 0; i < historyLength * columns; i++) y.Add(0);
                 for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
                     ys[i] = new List<float>();
                     for (int j = 0; j < historyLength; j++) {
                         ys[i].Add(0);
                     }
                 }
-                //Session["y"] = y;
                 Session["ys"] = ys;
             }
 
+            int rows = 1, columns = 1;
             Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
 
             for (int i = 0; i < rows; i++) {
@@ -54,10 +51,11 @@ namespace GetSystemStatusWeb {
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
                     chart.Series.Add(cid.ToString());
-                    ys[i].RemoveAt(0);
-                    ys[i].Add(cpuInfo.CpuCoreLoad(i));
-                    chart.Series[0].Points.DataBindY(ys[i]);
-                    chart.Series[0].ChartType = SeriesChartType.SplineArea;
+                    ys[cid].RemoveAt(0);
+                    float cload = cCpuLoads[cid];
+                    ys[cid].Add(cload);
+                    chart.Series[0].Points.DataBindY(ys[cid]);
+                    chart.Series[0].ChartType = SeriesChartType.Area;
                     chart.Series[0].BorderColor = borderColor;
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
@@ -95,65 +93,14 @@ namespace GetSystemStatusWeb {
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
                     chart.Titles[0].ForeColor = SystemColors.GrayText;
-                    
-                    //Session[cid.ToString()] = chart;
                     chart_panel.Controls.Add(chart);
                 }
             }
-			//y.RemoveAt(0);
-			//y.Add(cpuInfo.CpuLoad);
-			//Action updateChart = new Action(
-			//    delegate () {
-			//chart1.Series["Series1"].Points.DataBindY(y);
-			//for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-			//	Chart[] subCharts = (Chart[])Session["subCharts"];
-			//	Chart cChart = Session[i.ToString()] as Chart;
-			//	cChart.Series[0].Points.DataBindY(ys[i]);
-			//	subCharts[i].Series[0].Points.DataBindY(ys[i]);
-			//}
-			//InitialSize();
-			//CPUForm_Resize(null, null);
-
-			//new Action(cpu_load_thread).BeginInvoke(null, null);
 		}
-
-        private void cpu_load_thread() {
-            List<float> y = new List<float>();
-            List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
-            for (int i = 0; i < historyLength * columns; i++) y.Add(0);
-            for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                ys[i] = new List<float>();
-                for (int j = 0; j < historyLength; j++) {
-                    ys[i].Add(0);
-                }
-            }
-            while (true) {
-                Thread.Sleep(5000);
-                y.RemoveAt(0);
-                y.Add(cpuInfo.CpuLoad);
-                for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                    ys[i].RemoveAt(0);
-                    ys[i].Add(cpuInfo.CpuCoreLoad(i));
-                }
-                //Action updateChart = new Action(
-                //    delegate () {
-                //chart1.Series["Series1"].Points.DataBindY(y);
-                for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                    //Chart[] subCharts = (Chart[])Session["subCharts"];
-                    Chart cChart = Session[i.ToString()] as Chart;
-                    cChart.Series[0].Points.DataBindY(ys[i]);
-                    //subCharts[i].Series[0].Points.DataBindY(ys[i]);
-                }
-                //    }
-                //);
-                //try { Invoke(updateChart); }
-                //catch { break; }
-            }
-        }
     }
 
     public class CPUInfo {
-        private string cpuName;                 //CPU名称
+        private string cpuName = string.Empty;  //CPU名称
         private PerformanceCounter pcCpuLoad;   //CPU计数器
         private PerformanceCounter[] pcCpuCoreLoads;   //每CPU核心的利用率
 
@@ -169,15 +116,15 @@ namespace GetSystemStatusWeb {
 
             for (int i = 0; i < ProcessorCount; i++) pcCpuCoreLoads[i].NextValue();
 
-            //CPU名称
-            var st = string.Empty;
-            var driveId = new ManagementObjectSearcher("Select Name from Win32_Processor");
-            foreach (var o in driveId.Get()) {
-                var mo = (ManagementObject)o;
-                st = mo["Name"].ToString();
-            }
-            cpuName = st;
-        }
+			//CPU名称
+			var st = string.Empty;
+			var driveId = new ManagementObjectSearcher("Select Name from Win32_Processor");
+			foreach (var o in driveId.Get()) {
+				var mo = (ManagementObject)o;
+				st = mo["Name"].ToString();
+			}
+			cpuName = st;
+		}
 
         // CPU名称
         public string CpuName {
