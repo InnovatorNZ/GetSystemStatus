@@ -13,6 +13,7 @@ namespace GetSystemStatusGUI {
         protected CPUForm cpuForm;
         protected RAMForm ramForm;
         protected DiskForm diskForm;
+        protected NetworkForm networkForm;
 
         public Form1() {
             InitializeComponent();
@@ -52,6 +53,7 @@ namespace GetSystemStatusGUI {
             showCPU.Checked = true;
             showRAM.Checked = true;
             showDisk.Checked = true;
+            showNetwork.Checked = true;
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
@@ -71,6 +73,16 @@ namespace GetSystemStatusGUI {
                 diskForm.Show();
             } else {
                 diskForm.Hide();
+            }
+        }
+
+        private void showNetwork_CheckedChanged(object sender, EventArgs e) {
+            CheckBox self = (CheckBox)sender;
+            if (self.Checked) {
+                if (networkForm == null || networkForm.IsDisposed) networkForm = new NetworkForm();
+                networkForm.Show();
+            } else {
+                networkForm.Hide();
             }
         }
 

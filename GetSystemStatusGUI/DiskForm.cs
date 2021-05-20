@@ -32,7 +32,7 @@ namespace GetSystemStatusGUI {
 
         private void DiskForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
-            for (int i = 0; i < 60; i++) y.Add(0);
+            for (int i = 0; i < history_length; i++) y.Add(0);
             beginTop = label1.Location.Y + label1.Size.Height;
             Utility.FactorDecompose(diskInfo.m_DiskNum, ref columns, ref rows);
             subCharts = new Chart[diskInfo.m_DiskNum];
