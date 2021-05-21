@@ -28,8 +28,8 @@ namespace GetSystemStatusGUI {
         private const double margin_ratio = 35;
 
         public NetworkForm() {
-            networkInfo = new NetworkInfo();
             InitializeComponent();
+            networkInfo = new NetworkInfo();
         }
 
         private void NetworkForm_Load(object sender, EventArgs e) {
@@ -171,8 +171,16 @@ namespace GetSystemStatusGUI {
             pcNetworkReceive = new Dictionary<string, PerformanceCounter>();
             pcNetworkSend = new Dictionary<string, PerformanceCounter>();
             foreach (NetworkInterface adapter in allAdapters) {
-                pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Received/sec", R(adapter.Description), "."));
-                pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Sent/sec", R(adapter.Description), "."));
+                if (Environment.OSVersion.Version.Major == 10)
+                {
+                    pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Received/sec", R(adapter.Description), "."));
+                    pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Sent/sec", R(adapter.Description), "."));
+                }
+                else if (Environment.OSVersion.Version.Major == 6)
+                {
+                    pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Received/sec", R(adapter.Description), "."));
+                    pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Sent/sec", R(adapter.Description), "."));
+                }
             }
             ScreenValidAdapters();
         }
@@ -286,7 +294,7 @@ namespace GetSystemStatusGUI {
         }
 
         private string R(string str) {
-            return str.Replace('#', '_').Replace('(', '[').Replace(')', ']');
+            return str.Replace('#', '_').Replace('(', '[').Replace(')', ']').Replace('/', '_');
         }
     }
 }
