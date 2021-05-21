@@ -179,6 +179,7 @@ namespace GetSystemStatusGUI {
             int iWidth = columns * iSize + (columns + 1) * 7;
             iHeight = Math.Max(iHeight, this.Size.Height);
             iWidth = Math.Max(iWidth, this.Size.Width);
+            if (columns == 2) iWidth = Math.Min(iWidth, columns * 302 + (columns + 1) * 18);    // 专为四核、双核优化
             this.Size = new Size(iWidth, iHeight);
         }
     }

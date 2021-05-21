@@ -16,7 +16,7 @@ namespace GetSystemStatusGUI {
         private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
-        private Color chartColor = Color.FromArgb(120, 139, 0, 139);
+        private Color chartColor = Color.FromArgb(105, 139, 0, 139);
         private Color borderColor = Color.FromArgb(180, 139, 0, 139);
         private Form1 mainform;
 
@@ -40,14 +40,19 @@ namespace GetSystemStatusGUI {
             for (int i = 0; i < historyLength; i++) usageList.Add(0);
             while (!chart1.IsDisposed && !lblRAM.IsDisposed) {
                 int rusage = (int)Math.Round((1.0 - (double)ramInfo.MemoryAvailable / (double)ramInfo.PhysicalMemory) * 100.0);
-                int ramScale = (int)Math.Floor(Math.Log((double)ramInfo.MemoryAvailable, 1024));
+                int ramScale = (int)Math.Floor(Math.Log(ramInfo.PhysicalMemory - ramInfo.MemoryAvailable, 1024));
                 double memAvail = Math.Round((double)ramInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
                 double memTotal = Math.Round((double)ramInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
                 usageList.RemoveAt(0);
                 usageList.Add(rusage);
                 Action updateChart = new Action(
                     delegate () {
-                        lblRAM.Text = string.Format("{0} / {1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                        if (ramScale == 2)
+                            lblRAM.Text = string.Format("{0:f0} / {1:f0}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                        else if (ramScale == 3)
+                            lblRAM.Text = string.Format("{0:f1} / {1:f1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                        else if (ramScale == 4)
+                            lblRAM.Text = string.Format("{0:f2} / {1:f2}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
                         chart1.Series[0].Points.DataBindY(usageList);
                     }
                 );
@@ -57,13 +62,13 @@ namespace GetSystemStatusGUI {
             }
         }
 
-		private void RAMForm_FormClosing(object sender, FormClosingEventArgs e) {
+        private void RAMForm_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
             mainform.DisableChecked("RAM");
-		}
-	}
+        }
+    }
 
-	public class RAMInfo {
+    public class RAMInfo {
         private long m_PhysicalMemory = 0;   //物理内存
         private PerformanceCounter pcAvailMemory;   //可用内存（性能计数器版）
 

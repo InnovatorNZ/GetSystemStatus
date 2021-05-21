@@ -79,14 +79,14 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.LineColor = baseColor;
                     chart.ChartAreas[0].AxisY2.LineWidth = 2;
                     chart.Titles.Add(cid.ToString() + "_0");
-                    chart.Titles[0].Text = networkInfo.getNetworkInterfaceType(cid);
+                    chart.Titles[0].Text = networkInfo.getAdapterName(cid);
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
-                    chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 14);
+                    chart.Titles[0].Font = new Font("微软雅黑", 13);
                     chart.Titles.Add(cid.ToString() + "_1");
                     //chart.Titles[1].Text = "Load rate in 60 secs";
-                    chart.Titles[1].Text = networkInfo.getAdapterName(cid);
+                    chart.Titles[1].Text = networkInfo.getAdapterModel(cid);
                     chart.Titles[1].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[1].DockedToChartArea = cid.ToString();
                     chart.Titles[1].IsDockedInsideChartArea = false;
@@ -97,7 +97,7 @@ namespace GetSystemStatusGUI {
                     chart.Titles[2].DockedToChartArea = cid.ToString();
                     chart.Titles[2].Docking = Docking.Bottom;
                     chart.Titles[2].IsDockedInsideChartArea = false;
-                    chart.Titles[2].Font = new Font(FontFamily.GenericSansSerif, 12);
+                    chart.Titles[2].Font = new Font("微软雅黑", 11);
                     //chart.Titles[2].ForeColor = ColorTranslator.FromHtml("#494949");
                     subCharts[cid] = chart;
                     this.Controls.Add(subCharts[cid]);
@@ -133,19 +133,25 @@ namespace GetSystemStatusGUI {
                 for (int j = 0; j < history_length; j++) ys[i].Add(0);
             }
             while (!subCharts[0].IsDisposed) {
+                float[] send_speed = new float[networkInfo.adapterNum];
+                float[] receive_speed = new float[networkInfo.adapterNum];
                 for (int i = 0; i < networkInfo.adapterNum; i++) {
+                    float cLoad, cSendSpeed, cReceiveSpeed;
+                    networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
                     ys[i].RemoveAt(0);
-                    ys[i].Add(networkInfo.AdapterLoad(i));
+                    ys[i].Add(cLoad);
+                    send_speed[i] = cSendSpeed;
+                    receive_speed[i] = cReceiveSpeed;
                 }
                 Action updateChart = new Action(
                     delegate () {
                         for (int i = 0; i < networkInfo.adapterNum; i++) {
                             subCharts[i].Series[0].Points.DataBindY(ys[i]);
                             string titleStr = string.Empty;
-                            string ud_spd = Utility.FormatDuplexString("Send", networkInfo.SendSpeed(i), "Receive", networkInfo.ReceiveSpeed(i), 1000);
-                            string link_spd = "Link Speed  " + networkInfo.getLinkSpeedString(i);
-                            string ipv4_addr = "IPv4 Address  " + networkInfo.getIPv4Address(i);
-                            string ipv6_addr = "IPv6 Address  " + networkInfo.getIPv6Address(i);
+                            string ud_spd = Utility.FormatDuplexString("Send", send_speed[i], "Receive", receive_speed[i], 1000);
+                            string link_spd = "Link Speed " + networkInfo.getLinkSpeedString(i);
+                            string ipv4_addr = "IPv4 Address " + networkInfo.getIPv4Address(i);
+                            string ipv6_addr = "IPv6 Address " + networkInfo.getIPv6Address(i);
                             titleStr = ud_spd + "\n" + link_spd + "\n" + ipv4_addr + "\n" + ipv6_addr;
                             subCharts[i].Titles[2].Text = titleStr;
                         }
@@ -171,13 +177,10 @@ namespace GetSystemStatusGUI {
             pcNetworkReceive = new Dictionary<string, PerformanceCounter>();
             pcNetworkSend = new Dictionary<string, PerformanceCounter>();
             foreach (NetworkInterface adapter in allAdapters) {
-                if (Environment.OSVersion.Version.Major == 10)
-                {
+                if (Environment.OSVersion.Version.Major == 10) {
                     pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Received/sec", R(adapter.Description), "."));
                     pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Sent/sec", R(adapter.Description), "."));
-                }
-                else if (Environment.OSVersion.Version.Major == 6)
-                {
+                } else {
                     pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Received/sec", R(adapter.Description), "."));
                     pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Sent/sec", R(adapter.Description), "."));
                 }
@@ -215,9 +218,14 @@ namespace GetSystemStatusGUI {
             return this.validAdapters[id].NetworkInterfaceType.ToString();
         }
 
-        // 网卡名称
+        // 网络名称
         public string getAdapterName(int id) {
             return this.validAdapters[id].Name;
+        }
+
+        // 网卡型号
+        public string getAdapterModel(int id) {
+            return validAdapters[id].Description;
         }
 
         // 网卡链接速度
@@ -291,6 +299,16 @@ namespace GetSystemStatusGUI {
             long linkSpeed = this.getLinkSpeed(id);
             float load = (upspd + dwnspd) * 100 / linkSpeed;
             return load;
+        }
+
+        public void SpeedAndLoad(int id, out float sendSpeed, out float receiveSpeed, out float adapterLoad) {
+            float upspd = this.SendSpeed(id);
+            float dwnspd = this.ReceiveSpeed(id);
+            long linkSpeed = this.getLinkSpeed(id);
+            float load = (upspd + dwnspd) * 100 / linkSpeed;
+            sendSpeed = upspd;
+            receiveSpeed = dwnspd;
+            adapterLoad = load;
         }
 
         private string R(string str) {
