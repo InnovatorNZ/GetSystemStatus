@@ -22,10 +22,13 @@ namespace GetSystemStatus {
         private static int t = 0;
         static void Main(string[] args) {
 #if UtiGPU
-            Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
-            gpuThread.Start();
+            if (Environment.OSVersion.Version.Major == 10) {
+                Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
+                gpuThread.Start();
+            }
 #endif
             for (t = 0; t < 10000; t++) {
+                Thread.Sleep(1500);
                 Console.Clear();
                 Console.WriteLine("Task Manager Console Edition");
                 //CPU利用率
@@ -122,13 +125,12 @@ namespace GetSystemStatus {
                     }
                 }
 
-                if (Environment.OSVersion.Version.Major <= 6) return;
-#if UtiGPU
+                if (Environment.OSVersion.Version.Major <= 6) continue;
                 //GPU利用率与专用显存
+#if UtiGPU
                 lock (cGPUPCOutput) {
                     Console.Write(cGPUPCOutput);
                 }
-                Thread.Sleep(1500);
 #else
                 Dictionary<string, long> dediGPUMem = sysInfo.GetGPUDedicatedMemory();
                 int c = 0;
@@ -148,7 +150,6 @@ namespace GetSystemStatus {
                     Console.WriteLine(output);
                     c++;
                 }
-                Thread.Sleep(1500);
 #endif
             }
         }
@@ -495,7 +496,7 @@ namespace GetSystemStatus {
         }
 
         private string R(string str) {
-            return str.Replace('#', '_').Replace('(', '[').Replace(')', ']');
+            return str.Replace('#', '_').Replace('(', '[').Replace(')', ']').Replace('/', '_');
         }
     }
 }
