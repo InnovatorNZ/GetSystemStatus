@@ -1,6 +1,4 @@
-﻿#if DEBUG
-#define UtiGPU
-#endif
+﻿#define UtiGPU
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +8,6 @@ using System.Text;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Web;
-//using Amazon.EC2.Model;
 using System.Runtime.CompilerServices;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -124,6 +121,8 @@ namespace GetSystemStatus {
                         }
                     }
                 }
+
+                if (Environment.OSVersion.Version.Major <= 6) return;
 #if UtiGPU
                 //GPU利用率与专用显存
                 lock (cGPUPCOutput) {
@@ -209,7 +208,6 @@ namespace GetSystemStatus {
                 }
             }
         }
-
     }
     ///  
     /// 系统信息类 - 获取CPU、内存、磁盘、网络信息
@@ -296,9 +294,11 @@ namespace GetSystemStatus {
             pcNetworkReceive = new Dictionary<string, PerformanceCounter>();
             pcNetworkSend = new Dictionary<string, PerformanceCounter>();
             foreach (NetworkInterface adapter in adapters) {
-                pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Received/sec", R(adapter.Description), "."));
-                pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Adapter", "Bytes Sent/sec", R(adapter.Description), "."));
+                pcNetworkReceive.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Received/sec", R(adapter.Description), "."));
+                pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Sent/sec", R(adapter.Description), "."));
             }
+
+            if (Environment.OSVersion.Version.Major <= 6) return;
 
             //专用GPU显存计数器
             PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Adapter Memory", "Dedicated Usage");
@@ -497,206 +497,5 @@ namespace GetSystemStatus {
         private string R(string str) {
             return str.Replace('#', '_').Replace('(', '[').Replace(')', ']');
         }
-
-        /*
-        // CPU温度
-        public float GetCPUTemperature() {
-            string str = "";
-            ManagementObjectSearcher vManagementObjectSearcher = new ManagementObjectSearcher(@"root\WMI", @"select * from MSAcpi_ThermalZoneTemperature");
-            foreach (ManagementObject managementObject in vManagementObjectSearcher.Get()) {
-                str += managementObject.Properties["CurrentTemperature"].Value.ToString();
-            }
-            float temp = (float.Parse(str) - 2732) / 10;
-            return temp;
-        }
-        
-        // WMI版获取可用内存
-        public long MemoryAvailable {
-            get {
-                long availablebytes = 0;
-                //ManagementObjectSearcher mos = new ManagementObjectSearcher("SELECT * FROM Win32_PerfRawData_PerfOS_Memory"); 
-                //foreach (ManagementObject mo in mos.Get()) 
-                //{ 
-                //    availablebytes = long.Parse(mo["Availablebytes"].ToString()); 
-                //} 
-                ManagementClass mos = new ManagementClass("Win32_OperatingSystem");
-                foreach (ManagementObject mo in mos.GetInstances()) {
-                    if (mo["FreePhysicalMemory"] != null) {
-                        availablebytes = 1024 * long.Parse(mo["FreePhysicalMemory"].ToString());
-                    }
-                }
-                return availablebytes;
-            }
-        }
-
-        public List<Dictionary<string, int>> GetGPUUtilization() {
-            List<Dictionary<string, int>> ret = new List<Dictionary<string, int>>();
-            Dictionary<string, int> dic = new Dictionary<string, int>();
-            string[] fsplit = pcGPUEngine[0].InstanceName.Split('_');
-            string l_deviceId = fsplit[4];
-            //string lEngine = pcGPUEngine[0].InstanceName.Split('_')[10];
-            string lEngine = string.Empty;
-            for (int i = 10; i < fsplit.Length; i++) {
-                lEngine += fsplit[i];
-            }
-            float value = 0;
-            foreach (PerformanceCounter pc in pcGPUEngine) {
-                string[] csplit = pc.InstanceName.Split('_');
-                string c_deviceId = csplit[4];
-                //string cEngine = pc.InstanceName.Split('_')[10];
-                string cEngine = string.Empty;
-                for (int i = 10; i < csplit.Length; i++) {
-                    cEngine += csplit[i];
-                }
-                if (l_deviceId != c_deviceId) {
-                    ret.Add(dic);
-                    dic.Clear();
-                    value = 0;
-                } else if (cEngine != lEngine) {
-                    dic.Add(lEngine, (int)Math.Round(value));
-                    value = 0;
-                }
-                value += pc.NextValue();
-                l_deviceId = c_deviceId;
-                lEngine = cEngine;
-            }
-            return ret;
-        }
-
-        private void ShowAdapterInfo() {
-            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-            lst_NetworkAdapter.Items.Add("适配器个数：" + adapters.Length);
-            int index = 0;
-
-            foreach (NetworkInterface adapter in adapters) {
-                index++;
-                //显示网络适配器描述信息、名称、类型、速度、MAC 地址  
-                lst_NetworkAdapter.Items.Add("---------------------第" + index + "个适配器信息---------------------");
-                lst_NetworkAdapter.Items.Add("描述信息：" + adapter.Name);
-                lst_NetworkAdapter.Items.Add("类型：" + adapter.NetworkInterfaceType);
-                lst_NetworkAdapter.Items.Add("速度：" + adapter.Speed / 1000 / 1000 + "MB");
-                lst_NetworkAdapter.Items.Add("MAC 地址：" + adapter.GetPhysicalAddress());
-
-                //获取IPInterfaceProperties实例  
-                IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
-
-                //获取并显示DNS服务器IP地址信息  
-                IPAddressCollection dnsServers = adapterProperties.DnsAddresses;
-                if (dnsServers.Count > 0) {
-                    foreach (IPAddress dns in dnsServers) {
-                        lst_NetworkAdapter.Items.Add("DNS 服务器IP地址：" + dns + "\n");
-                    }
-                } else {
-                    lst_NetworkAdapter.Items.Add("DNS 服务器IP地址：" + "\n");
-                }
-            }
-        }
-#region 获得分区信息 
-        /// 获取分区信息 
-        public List GetLogicalDrives() {
-            List drives = new List();
-            ManagementClass diskClass = new ManagementClass("Win32_LogicalDisk");
-            ManagementObjectCollection disks = diskClass.GetInstances();
-            foreach (ManagementObject disk in disks) {
-                // DriveType.Fixed 为固定磁盘(硬盘) 
-                if (int.Parse(disk["DriveType"].ToString()) == (int)DriveType.Fixed) {
-                    drives.Add(new DiskInfo(disk["Name"].ToString(), long.Parse(disk["Size"].ToString()), long.Parse(disk["FreeSpace"].ToString())));
-                }
-            }
-            return drives;
-        }
-        /// 获取特定分区信息 
-        /// 盘符 
-        public List GetLogicalDrives(char DriverID) {
-            List drives = new List();
-            WqlObjectQuery wmiquery = new WqlObjectQuery("SELECT * FROM Win32_LogicalDisk WHERE DeviceID = ’" + DriverID + ":’");
-            ManagementObjectSearcher wmifind = new ManagementObjectSearcher(wmiquery);
-            foreach (ManagementObject disk in wmifind.Get()) {
-                if (int.Parse(disk["DriveType"].ToString()) == (int)DriveType.Fixed) {
-                    drives.Add(new DiskInfo(disk["Name"].ToString(), long.Parse(disk["Size"].ToString()), long.Parse(disk["FreeSpace"].ToString())));
-                }
-            }
-            return drives;
-        }
-#endregion
-
-#region 获得进程列表 
-        /// 获得进程列表 
-        public List GetProcessInfo() {
-            List pInfo = new List();
-            Process[] processes = Process.GetProcesses();
-            foreach (Process instance in processes) {
-                try {
-                    pInfo.Add(new ProcessInfo(instance.Id,
-                        instance.ProcessName,
-                        instance.TotalProcessorTime.TotalMilliseconds,
-                        instance.WorkingSet64,
-                        instance.MainModule.FileName));
-                }
-                catch { }
-            }
-            return pInfo;
-        }
-        /// 获得特定进程信息 
-        /// 进程名称 
-        public List GetProcessInfo(string ProcessName) {
-            List pInfo = new List();
-            Process[] processes = Process.GetProcessesByName(ProcessName);
-            foreach (Process instance in processes) {
-                try {
-                    pInfo.Add(new ProcessInfo(instance.Id,
-                        instance.ProcessName,
-                        instance.TotalProcessorTime.TotalMilliseconds,
-                        instance.WorkingSet64,
-                        instance.MainModule.FileName));
-                }
-                catch { }
-            }
-            return pInfo;
-        }
-#endregion
-
-#region 结束指定进程 
-        /// 结束指定进程 
-        /// 进程的 Process ID 
-        public static void EndProcess(int pid) {
-            try {
-                Process process = Process.GetProcessById(pid);
-                process.Kill();
-            }
-            catch { }
-        }
-#endregion
-
-
-#region 查找所有应用程序标题 
-        /// 查找所有应用程序标题 
-        /// 应用程序标题范型 
-        public static List FindAllApps(int Handle) {
-            List Apps = new List();
-
-            int hwCurr;
-            hwCurr = GetWindow(Handle, GW_HWNDFIRST);
-
-            while (hwCurr > 0) {
-                int IsTask = (WS_VISIBLE | WS_BORDER);
-                int lngStyle = GetWindowLongA(hwCurr, GWL_STYLE);
-                bool TaskWindow = ((lngStyle & IsTask) == IsTask);
-                if (TaskWindow) {
-                    int length = GetWindowTextLength(new IntPtr(hwCurr));
-                    StringBuilder sb = new StringBuilder(2 * length + 1);
-                    GetWindowText(hwCurr, sb, sb.Capacity);
-                    string strTitle = sb.ToString();
-                    if (!string.IsNullOrEmpty(strTitle)) {
-                        Apps.Add(strTitle);
-                    }
-                }
-                hwCurr = GetWindow(hwCurr, GW_HWNDNEXT);
-            }
-
-            return Apps;
-        }
-#endregion
-        */
     }
 }
