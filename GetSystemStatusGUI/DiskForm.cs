@@ -147,7 +147,19 @@ namespace GetSystemStatusGUI {
             while (!subCharts[0].IsDisposed) {
                 for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                     ys[i].RemoveAt(0);
-                    ys[i].Add(diskInfo.DiskLoad(i));
+                    try {
+                        ys[i].Add(diskInfo.DiskLoad(i));
+                    }
+                    catch {
+                        Action reload = new Action(
+                            delegate () {
+                                Thread.Sleep(100);
+                                mainform.btnDiskRefresh_Click(null, null);
+                            }
+                        );
+                        Invoke(reload);
+                        break;
+                    }
                 }
                 Action updateChart = new Action(
                     delegate () {
@@ -159,7 +171,7 @@ namespace GetSystemStatusGUI {
                     }
                 );
                 try { Invoke(updateChart); }
-				catch { break; }
+                catch { break; }
                 Thread.Sleep(Global.interval_ms);
             }
         }

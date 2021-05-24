@@ -121,5 +121,11 @@ namespace GetSystemStatusGUI {
             }
             catch { }
         }
-    }
+
+		public void btnDiskRefresh_Click(object sender, EventArgs e) {
+            diskForm.Hide();
+            diskForm = new DiskForm(this);
+            diskForm.Show();
+		}
+	}
 }
