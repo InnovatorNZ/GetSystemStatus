@@ -26,10 +26,12 @@ namespace GetSystemStatusGUI {
         private int rows = 1, columns = 1;
         private const int history_length = 60;
         private const double margin_ratio = 35;
+        private Form1 mainForm;
 
-        public NetworkForm() {
+        public NetworkForm(Form1 mainForm) {
             InitializeComponent();
             networkInfo = new NetworkInfo();
+            this.mainForm = mainForm;
         }
 
         private void NetworkForm_Load(object sender, EventArgs e) {
@@ -124,6 +126,11 @@ namespace GetSystemStatusGUI {
                     subCharts[cid].Location = new Point(startX, startY);
                 }
             }
+        }
+
+        private void NetworkForm_FormClosing(object sender, FormClosingEventArgs e) {
+            e.Cancel = true;
+            mainForm.DisableChecked("Network");
         }
 
         private void network_load_thread() {

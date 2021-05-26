@@ -25,7 +25,8 @@ namespace GetSystemStatusGUI {
                 if (cpuForm == null || cpuForm.IsDisposed)
                     cpuForm = new CPUForm(this);
                 cpuForm.Show();
-            } else {
+            }
+            else {
                 cpuForm.Hide();
             }
         }
@@ -40,6 +41,9 @@ namespace GetSystemStatusGUI {
                     break;
                 case "Disk":
                     showDisk.Checked = false;
+                    break;
+                case "Network":
+                    showNetwork.Checked = false;
                     break;
             }
         }
@@ -61,7 +65,8 @@ namespace GetSystemStatusGUI {
             if (self.Checked) {
                 if (ramForm == null || ramForm.IsDisposed) ramForm = new RAMForm(this);
                 ramForm.Show();
-            } else {
+            }
+            else {
                 ramForm.Hide();
             }
         }
@@ -71,7 +76,8 @@ namespace GetSystemStatusGUI {
             if (self.Checked) {
                 if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm(this);
                 diskForm.Show();
-            } else {
+            }
+            else {
                 diskForm.Hide();
             }
         }
@@ -79,9 +85,10 @@ namespace GetSystemStatusGUI {
         private void showNetwork_CheckedChanged(object sender, EventArgs e) {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
-                if (networkForm == null || networkForm.IsDisposed) networkForm = new NetworkForm();
+                if (networkForm == null || networkForm.IsDisposed) networkForm = new NetworkForm(this);
                 networkForm.Show();
-            } else {
+            }
+            else {
                 networkForm.Hide();
             }
         }
@@ -122,10 +129,16 @@ namespace GetSystemStatusGUI {
             catch { }
         }
 
-		public void btnDiskRefresh_Click(object sender, EventArgs e) {
-            diskForm.Hide();
+        public void btnDiskRefresh_Click(object sender, EventArgs e) {
+            this.showDisk.Checked = false;
             diskForm = new DiskForm(this);
-            diskForm.Show();
-		}
-	}
+            this.showDisk.Checked = true;
+        }
+
+        private void btnNetworkRefresh_Click(object sender, EventArgs e) {
+            this.showNetwork.Checked = false;
+            networkForm = new NetworkForm(this);
+            this.showNetwork.Checked = true;
+        }
+    }
 }
