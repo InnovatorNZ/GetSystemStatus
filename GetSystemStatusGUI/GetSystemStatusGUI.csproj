@@ -71,6 +71,12 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
+    <Compile Include="GPUForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GPUForm.Designer.cs">
+      <DependentUpon>GPUForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="NetworkForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +101,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GPUForm.resx">
+      <DependentUpon>GPUForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NetworkForm.resx">
       <DependentUpon>NetworkForm.cs</DependentUpon>

@@ -37,5 +37,13 @@ namespace GetSystemStatusGUI {
             ret += secondByte.ToString() + " " + scale_unit[secondScale];
             return ret;
         }
+        public static string FormatSingleString(string desc, long bytes, int baseSystem = 1024) {
+            string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
+            int scale = (int)Math.Max(Math.Floor(Math.Log(bytes, baseSystem)), 0);
+            double finalValue = Math.Round((double)bytes / Math.Pow(baseSystem, scale), 1);
+            string strscale = scale_unit[scale];
+            string ret = desc + ": " + finalValue.ToString() + " " + strscale + "\n";
+            return ret;
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace GetSystemStatusGUI {
         protected RAMForm ramForm;
         protected DiskForm diskForm;
         protected NetworkForm networkForm;
+        protected GPUForm gpuForm;
 
         public Form1() {
             InitializeComponent();
@@ -58,6 +59,7 @@ namespace GetSystemStatusGUI {
             showRAM.Checked = true;
             showDisk.Checked = true;
             showNetwork.Checked = true;
+            showGPU.Checked = true;
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
@@ -92,6 +94,16 @@ namespace GetSystemStatusGUI {
                 networkForm.Hide();
             }
         }
+
+		private void showGPU_CheckedChanged(object sender, EventArgs e) {
+            CheckBox self = (CheckBox)sender;
+			if (self.Checked) {
+                if (gpuForm == null || gpuForm.IsDisposed) gpuForm = new GPUForm();
+                gpuForm.Show();
+			} else {
+                gpuForm.Hide();
+			}
+		}
 
         private void cbUpdateInterval_SelectedIndexChanged(object sender, EventArgs e) {
             ComboBox comboBox = (ComboBox)sender;
@@ -140,5 +152,5 @@ namespace GetSystemStatusGUI {
             networkForm = new NetworkForm(this);
             this.showNetwork.Checked = true;
         }
-    }
+	}
 }

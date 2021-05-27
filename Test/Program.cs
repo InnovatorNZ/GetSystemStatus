@@ -20,9 +20,10 @@ namespace Test
                 foreach (var name in instanceNames)
                 {
                     pf = new PerformanceCounter("PhysicalDisk", "Disk Read Bytes/sec", "_Total");
-                    pf.NextValue();
-                    pf.NextValue();
-                    Console.WriteLine(name + " " + pf.NextValue().ToString());
+                    pf.MachineName = ".";
+                    //pf.NextValue();
+                    //pf.NextValue();
+                    Console.WriteLine(name + " " + pf.NextValue());
                 }
                 Thread.Sleep(1000);
             }
