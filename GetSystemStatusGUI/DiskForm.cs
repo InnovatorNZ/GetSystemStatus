@@ -165,7 +165,7 @@ namespace GetSystemStatusGUI {
                     delegate () {
                         for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                             subCharts[i].Series[0].Points.DataBindY(ys[i]);
-                            string rw_speed = Utility.FormatDuplexString("Read", diskInfo.DiskRead(i), "Write", diskInfo.DiskWrite(i), 1024);
+                            string rw_speed = Utility.FormatSpeedString("Read", diskInfo.DiskRead(i), "Write", diskInfo.DiskWrite(i), false);
                             subCharts[i].Titles[2].Text = rw_speed;
                         }
                     }

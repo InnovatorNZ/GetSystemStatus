@@ -20,12 +20,12 @@ namespace GetSystemStatusGUI {
         private Color baseColor = Color.DeepSkyBlue;
         private Color chartColor = Color.FromArgb(120, Color.DeepSkyBlue);
         private Color borderColor = Color.FromArgb(180, Color.DeepSkyBlue);
-        private Color lineColor = Color.DeepSkyBlue;
+        private Color lineColor = Color.FromArgb(180, Color.DeepSkyBlue);
 
         public GPUForm(int id = 0) {
             InitializeComponent();
             moreGPUForms = new List<GPUForm>();
-            gpuInfo = new GPUInfo();
+            gpuInfo = new GPUInfo(id);
             this.id = id;
             if (id == 0 && gpuInfo.Count > 1) {
                 for (int nid = 1; nid < gpuInfo.Count; nid++) {
@@ -37,6 +37,8 @@ namespace GetSystemStatusGUI {
 
         private void GPUForm_Load(object sender, EventArgs e) {
             chartGPU.PaletteCustomColors = new Color[] { chartColor };
+            lblGPUName.Text = gpuInfo.gpu_name[id];
+            label1.Text += " " + id.ToString();
             List<string> cGpuEngines = gpuInfo.GetGPUEngines(id);
             foreach (string engine in cGpuEngines) {
                 chartGPU.Series.Add(engine);
@@ -44,6 +46,7 @@ namespace GetSystemStatusGUI {
                 chartGPU.Titles.Add(new Title { Name = engine });
                 chartGPU.Series[engine].ChartType = SeriesChartType.SplineArea;
                 chartGPU.Series[engine].BorderColor = borderColor;
+                chartGPU.Series[engine].ChartArea = engine;
                 chartGPU.ChartAreas[engine].AxisY.Enabled = AxisEnabled.True;
                 chartGPU.ChartAreas[engine].AxisX.Enabled = AxisEnabled.True;
                 chartGPU.ChartAreas[engine].AxisY.Minimum = 0;
@@ -80,6 +83,7 @@ namespace GetSystemStatusGUI {
                 chartGPU.Titles[engine].DockedToChartArea = engine;
                 chartGPU.Titles[engine].IsDockedInsideChartArea = false;
                 chartGPU.Titles[engine].ForeColor = SystemColors.GrayText;
+                chartGPU.Titles[engine].Font = new Font(FontFamily.GenericSansSerif, 10);
             }
             GPUForm_Resize(null, null);
             Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
@@ -124,9 +128,10 @@ namespace GetSystemStatusGUI {
         }
 
         private void GPUForm_Resize(object sender, EventArgs e) {
-            int width = this.Width - chartGPU.Location.X - 68;
-            int height = this.Height - chartGPU.Location.Y - 113;
-            this.chartGPU.Size = new Size(width, height);
+            int width = this.Width - (int)(chartGPU.Location.X * 2.5);
+            int height = this.Height - chartGPU.Location.Y - chartGPU.Location.X * 6;
+            if (width > 0 && height > 0)
+                this.chartGPU.Size = new Size(width, height);
         }
     }
 
@@ -136,9 +141,10 @@ namespace GetSystemStatusGUI {
         public List<string> gpu_name { get; }   //GPU名称
         public int Count { get; private set; }  //GPU个数
         private List<string> GpuPcId;
+        private int id;
 
         // 构造函数，初始化计数器
-        public GPUInfo() {
+        public GPUInfo(int id = -1) {
             //专用GPU显存计数器
             PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Adapter Memory", "Dedicated Usage");
             gpuPfc.MachineName = ".";
@@ -177,8 +183,10 @@ namespace GetSystemStatusGUI {
                 }
                 catch { }
             }
+            this.id = id;
             this.Count = gpu_name.Count;
             this.FilterValidGPU();
+            this.RemoveUnnecessaryPC(id);
         }
 
         private void FilterValidGPU() {
@@ -190,8 +198,22 @@ namespace GetSystemStatusGUI {
                     this.GpuPcId.Add(cDeviceId);
                 }
             }
-            //Debug.Assert(this.GpuPcId.Count == this.Count);
+            //Debug.Assert(this.GpuPcId.Count == this.Count);   //在有Intel核显的机器上会触发此断言
             this.Count = Math.Min(this.GpuPcId.Count, this.Count);
+        }
+
+        private void RemoveUnnecessaryPC(int id) {
+            if (id < 0) return;
+            string cDeviceId = this.GpuPcId[id];
+            //for (int i = 0; i < pcGPUEngine.Count; i++) {
+            for (int i = pcGPUEngine.Count - 1; i >= 0; i--) {
+                PerformanceCounter epc = pcGPUEngine[i];
+                string[] esplit = epc.InstanceName.Split('_');
+                string eDeviceId = esplit[4];
+                if (eDeviceId != cDeviceId) {
+                    pcGPUEngine.Remove(epc);
+                }
+            }
         }
 
         // 专用GPU显存
@@ -313,6 +335,7 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
+            this.RemoveUnnecessaryPC(id);
         }
     }
 }

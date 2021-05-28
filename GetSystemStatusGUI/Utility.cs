@@ -12,18 +12,13 @@ namespace GetSystemStatusGUI {
             bigger = a;
             smaller = b;
         }
-        public static string FormatDuplexString(string firstDesc, float firstByte, string secondDesc, float secondByte, int baseSystem = 1024) {
+        public static string FormatSpeedString(string firstDesc, float firstByte, string secondDesc, float secondByte, bool bps = false) {
             string[] scale_unit;
-            switch (baseSystem) {
-                case 1024:
-                    scale_unit = new string[] { "B/s", "KB/s", "MB/s", "GB/s", "TB/s" };
-                    break;
-                case 1000:
-                    scale_unit = new string[] { "bps", "Kbps", "Mbps", "Gbps" };
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
+            const int baseSystem = 1000;
+            if (!bps)
+                scale_unit = new string[] { "B/s", "KB/s", "MB/s", "GB/s", "TB/s" };
+            else
+                scale_unit = new string[] { "bps", "Kbps", "Mbps", "Gbps" };
             string ret = string.Empty;
             ret += firstDesc + " ";
             int firstScale = (int)Math.Max(Math.Floor(Math.Log(firstByte, baseSystem)), 0);
@@ -37,8 +32,9 @@ namespace GetSystemStatusGUI {
             ret += secondByte.ToString() + " " + scale_unit[secondScale];
             return ret;
         }
-        public static string FormatSingleString(string desc, long bytes, int baseSystem = 1024) {
+        public static string FormatSizeString(string desc, long bytes) {
             string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
+            const int baseSystem = 1024;
             int scale = (int)Math.Max(Math.Floor(Math.Log(bytes, baseSystem)), 0);
             double finalValue = Math.Round((double)bytes / Math.Pow(baseSystem, scale), 1);
             string strscale = scale_unit[scale];

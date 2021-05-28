@@ -105,6 +105,7 @@ namespace GetSystemStatusGUI {
                     this.Controls.Add(subCharts[cid]);
                 }
             }
+            InitialSize();
             NetworkForm_Resize(null, null);
             new Action(network_load_thread).BeginInvoke(null, null);
         }
@@ -133,6 +134,11 @@ namespace GetSystemStatusGUI {
             mainForm.DisableChecked("Network");
         }
 
+        private void InitialSize() {
+            if (this.columns != 2)
+                this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
+        }
+
         private void network_load_thread() {
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
@@ -155,7 +161,7 @@ namespace GetSystemStatusGUI {
                         for (int i = 0; i < networkInfo.adapterNum; i++) {
                             subCharts[i].Series[0].Points.DataBindY(ys[i]);
                             string titleStr = string.Empty;
-                            string ud_spd = Utility.FormatDuplexString("Send", send_speed[i], "Receive", receive_speed[i], 1000);
+                            string ud_spd = Utility.FormatSpeedString("Send", send_speed[i], "Receive", receive_speed[i], true);
                             string link_spd = "Link Speed " + networkInfo.getLinkSpeedString(i);
                             string ipv4_addr = "IPv4 Address " + networkInfo.getIPv4Address(i);
                             string ipv6_addr = "IPv6 Address " + networkInfo.getIPv6Address(i);
