@@ -59,7 +59,12 @@ namespace GetSystemStatusGUI {
             showRAM.Checked = true;
             showDisk.Checked = true;
             showNetwork.Checked = true;
-            showGPU.Checked = true;
+            if (Environment.OSVersion.Version.Major < 10) {
+                showGPU.Enabled = false;
+                showGPU.Text += " (Only available in Windows 10)";
+            } else {
+                showGPU.Checked = true;
+            }
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {

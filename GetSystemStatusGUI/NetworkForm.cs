@@ -135,7 +135,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void InitialSize() {
-            if (this.columns != 2)
+            if (this.columns > 2)
                 this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
         }
 
