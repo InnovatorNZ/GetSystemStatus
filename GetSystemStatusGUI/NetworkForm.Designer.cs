@@ -46,7 +46,7 @@
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NetworkForm";
-            this.Text = "NetworkForm";
+            this.Text = "Network";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NetworkForm_FormClosing);
             this.Load += new System.EventHandler(this.NetworkForm_Load);
             this.Resize += new System.EventHandler(this.NetworkForm_Resize);
