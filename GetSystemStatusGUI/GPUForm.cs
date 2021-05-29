@@ -16,20 +16,22 @@ namespace GetSystemStatusGUI {
     public partial class GPUForm : Form {
         private GPUInfo gpuInfo;
         private List<GPUForm> moreGPUForms;
+        private Form1 mainForm;
         private readonly int id;
         private Color baseColor = Color.DeepSkyBlue;
         private Color chartColor = Color.FromArgb(120, Color.DeepSkyBlue);
         private Color borderColor = Color.FromArgb(180, Color.DeepSkyBlue);
         private Color lineColor = Color.FromArgb(180, Color.DeepSkyBlue);
 
-        public GPUForm(int id = 0) {
+        public GPUForm(Form1 mainForm, int id = 0) {
             InitializeComponent();
             moreGPUForms = new List<GPUForm>();
             gpuInfo = new GPUInfo(id);
             this.id = id;
+            this.mainForm = mainForm;
             if (id == 0 && gpuInfo.Count > 1) {
                 for (int nid = 1; nid < gpuInfo.Count; nid++) {
-                    moreGPUForms.Add(new GPUForm(nid));
+                    moreGPUForms.Add(new GPUForm(mainForm, nid));
                     moreGPUForms[nid - 1].Show();
                 }
             }
@@ -39,6 +41,7 @@ namespace GetSystemStatusGUI {
             chartGPU.PaletteCustomColors = new Color[] { chartColor };
             lblGPUName.Text = gpuInfo.gpu_name[id];
             label1.Text += " " + id.ToString();
+            this.Text += " " + id.ToString();
             List<string> cGpuEngines = gpuInfo.GetGPUEngines(id);
             foreach (string engine in cGpuEngines) {
                 chartGPU.Series.Add(engine);
@@ -99,7 +102,7 @@ namespace GetSystemStatusGUI {
                 ys.Add(engine, cy);
             }
             int t = 0;
-            while (!chartGPU.IsDisposed) {
+            while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % 100 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
                 Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilization(id);
                 Action update = new Action(
@@ -127,11 +130,24 @@ namespace GetSystemStatusGUI {
             }
         }
 
+        public new void Dispose() {
+            if (id == 0) {
+                foreach (var subform in moreGPUForms) {
+                    subform.Dispose();
+                }
+            }
+            base.Dispose();
+        }
+
         private void GPUForm_Resize(object sender, EventArgs e) {
             int width = this.Width - (int)(chartGPU.Location.X * 2.5);
             int height = this.Height - chartGPU.Location.Y - chartGPU.Location.X * 6;
             if (width > 0 && height > 0)
                 this.chartGPU.Size = new Size(width, height);
+        }
+
+        private void GPUForm_FormClosing(object sender, FormClosingEventArgs e) {
+            mainForm.DisableChecked("GPU");
         }
     }
 

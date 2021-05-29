@@ -75,7 +75,8 @@ namespace GetSystemStatusGUI {
 			this.Controls.Add(this.lblGPUName);
 			this.Margin = new System.Windows.Forms.Padding(2);
 			this.Name = "GPUForm";
-			this.Text = "GPUForm";
+			this.Text = "GPU";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GPUForm_FormClosing);
 			this.Load += new System.EventHandler(this.GPUForm_Load);
 			this.Resize += new System.EventHandler(this.GPUForm_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.chartGPU)).EndInit();

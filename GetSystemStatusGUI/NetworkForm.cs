@@ -145,7 +145,7 @@ namespace GetSystemStatusGUI {
                 ys[i] = new List<float>();
                 for (int j = 0; j < history_length; j++) ys[i].Add(0);
             }
-            while (!subCharts[0].IsDisposed) {
+            while (!subCharts[0].IsDisposed && !mainForm.IsDisposed) {
                 float[] send_speed = new float[networkInfo.adapterNum];
                 float[] receive_speed = new float[networkInfo.adapterNum];
                 for (int i = 0; i < networkInfo.adapterNum; i++) {
