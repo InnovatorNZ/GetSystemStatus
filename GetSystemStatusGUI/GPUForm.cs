@@ -100,7 +100,7 @@ namespace GetSystemStatusGUI {
             }
             int t = 0;
             while (!chartGPU.IsDisposed) {
-                if (t % 100 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerformanceCounter();
+                if (t % 100 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
                 Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilization(id);
                 Action update = new Action(
                     delegate () {
@@ -141,7 +141,6 @@ namespace GetSystemStatusGUI {
         public List<string> gpu_name { get; }   //GPU名称
         public int Count { get; private set; }  //GPU个数
         private List<string> GpuPcId;
-        private int id;
 
         // 构造函数，初始化计数器
         public GPUInfo(int id = -1) {
@@ -183,7 +182,6 @@ namespace GetSystemStatusGUI {
                 }
                 catch { }
             }
-            this.id = id;
             this.Count = gpu_name.Count;
             this.FilterValidGPU();
             this.RemoveUnnecessaryPC(id);
@@ -199,6 +197,7 @@ namespace GetSystemStatusGUI {
                 }
             }
             //Debug.Assert(this.GpuPcId.Count == this.Count);   //在有Intel核显的机器上会触发此断言
+            this.GpuPcId.Sort();
             this.Count = Math.Min(this.GpuPcId.Count, this.Count);
         }
 
@@ -269,7 +268,7 @@ namespace GetSystemStatusGUI {
                 return result;
             }
             catch {
-                this.RefreshGPUEnginePerformanceCounter();
+                this.RefreshGPUEnginePerfCnt(id);
                 return this.GetGPUUtilization(id);
             }
         }
@@ -318,7 +317,7 @@ namespace GetSystemStatusGUI {
             return result;
         }
 
-        public void RefreshGPUEnginePerformanceCounter() {
+        public void RefreshGPUEnginePerfCnt() {
             //刷新GPU利用率计数器
             PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
             pidGpuPfc.MachineName = ".";
@@ -335,7 +334,20 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
-            this.RemoveUnnecessaryPC(id);
+            //this.RemoveUnnecessaryPC(id);
+        }
+        public void RefreshGPUEnginePerfCnt(int id) {
+            PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
+            pidGpuPfc.MachineName = ".";
+            string[] pidGpuInstanceNames = pidGpuPfc.GetInstanceNames();
+            pcGPUEngine.Clear();
+            string c_device_id = this.GpuPcId[id];
+            foreach (string pidInstanceName in pidGpuInstanceNames) {
+                string c_pid_deviceId = pidInstanceName.Split('_')[4];
+                if (c_pid_deviceId == c_device_id) {
+                    pcGPUEngine.Add(new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName));
+                }
+            }
         }
     }
 }
