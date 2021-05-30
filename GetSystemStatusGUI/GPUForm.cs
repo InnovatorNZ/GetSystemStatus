@@ -108,7 +108,7 @@ namespace GetSystemStatusGUI {
             }
             int t = 0;
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
-                if (t % 100 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
+                if (t % 15 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
                 Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilization(id);
                 Action update = new Action(
                     delegate () {
@@ -365,7 +365,12 @@ namespace GetSystemStatusGUI {
             foreach (string pidInstanceName in pidGpuInstanceNames) {
                 string c_pid_deviceId = pidInstanceName.Split('_')[4];
                 if (c_pid_deviceId == c_device_id) {
-                    pcGPUEngine.Add(new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName));
+                    PerformanceCounter pc = new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName);
+                    try {
+                        pc.NextValue();
+                        pcGPUEngine.Add(pc);
+                    }
+                    catch { }
                 }
             }
         }
