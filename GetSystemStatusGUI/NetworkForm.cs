@@ -31,6 +31,11 @@ namespace GetSystemStatusGUI {
         public NetworkForm(Form1 mainForm) {
             InitializeComponent();
             networkInfo = new NetworkInfo();
+            if (networkInfo.adapterNum == 0) {
+                mainForm.DisableChecked("noNetwork");
+                this.Dispose();
+                return;
+            }
             this.mainForm = mainForm;
         }
 

@@ -49,6 +49,16 @@ namespace GetSystemStatusGUI {
                 case "GPU":
                     showGPU.Checked = false;
                     break;
+                case "noGPU":
+                    showGPU.Checked = false;
+                    showGPU.Enabled = false;
+                    showGPU.Text += " (No discrete graphics detected)";
+                    break;
+                case "noNetwork":
+                    showNetwork.Checked = false;
+                    showNetwork.Enabled = false;
+                    showNetwork.Text = "Show Network (No connections)";
+                    break;
             }
         }
 
@@ -94,9 +104,9 @@ namespace GetSystemStatusGUI {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
                 if (networkForm == null || networkForm.IsDisposed) networkForm = new NetworkForm(this);
-                networkForm.Show();
+                if (!networkForm.IsDisposed) networkForm.Show();
             } else {
-                networkForm.Hide();
+                if (networkForm != null) networkForm.Hide();
             }
         }
 
@@ -104,9 +114,9 @@ namespace GetSystemStatusGUI {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
                 if (gpuForm == null || gpuForm.IsDisposed) gpuForm = new GPUForm(this);
-                gpuForm.Show();
+                if (!gpuForm.IsDisposed) gpuForm.Show();
             } else {
-                gpuForm.Dispose();
+                if (gpuForm != null) gpuForm.Dispose();
             }
         }
 
@@ -148,14 +158,16 @@ namespace GetSystemStatusGUI {
 
         public void btnDiskRefresh_Click(object sender, EventArgs e) {
             this.showDisk.Checked = false;
-            diskForm.Dispose();
+            if (!diskForm.IsDisposed) diskForm.Dispose();
             diskForm = new DiskForm(this);
             this.showDisk.Checked = true;
         }
 
         private void btnNetworkRefresh_Click(object sender, EventArgs e) {
+            this.showNetwork.Enabled = true;
+            this.showNetwork.Text = "Show Network and Adapter Speed";
             this.showNetwork.Checked = false;
-            networkForm.Dispose();
+            if (!networkForm.IsDisposed) networkForm.Dispose();
             networkForm = new NetworkForm(this);
             this.showNetwork.Checked = true;
         }

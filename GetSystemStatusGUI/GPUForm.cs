@@ -27,6 +27,11 @@ namespace GetSystemStatusGUI {
             InitializeComponent();
             moreGPUForms = new List<GPUForm>();
             gpuInfo = new GPUInfo(id);
+            if (gpuInfo.Count == 0) {
+                mainForm.DisableChecked("noGPU");
+                this.Dispose();
+                return;
+            }
             this.id = id;
             this.mainForm = mainForm;
             if (id == 0 && gpuInfo.Count > 1) {
@@ -218,9 +223,8 @@ namespace GetSystemStatusGUI {
         }
 
         private void RemoveUnnecessaryPC(int id) {
-            if (id < 0) return;
+            if (id < 0 || this.Count == 0) return;
             string cDeviceId = this.GpuPcId[id];
-            //for (int i = 0; i < pcGPUEngine.Count; i++) {
             for (int i = pcGPUEngine.Count - 1; i >= 0; i--) {
                 PerformanceCounter epc = pcGPUEngine[i];
                 string[] esplit = epc.InstanceName.Split('_');
