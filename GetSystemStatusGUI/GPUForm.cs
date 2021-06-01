@@ -21,7 +21,7 @@ namespace GetSystemStatusGUI {
         private Color baseColor = Color.DeepSkyBlue;
         private Color chartColor = Color.FromArgb(120, Color.DeepSkyBlue);
         private Color borderColor = Color.FromArgb(180, Color.DeepSkyBlue);
-        private Color lineColor = Color.FromArgb(180, Color.DeepSkyBlue);
+        private Color lineColor = Color.FromArgb(150, Color.DeepSkyBlue);
 
         public GPUForm(Form1 mainForm, int id = 0) {
             InitializeComponent();
@@ -216,8 +216,25 @@ namespace GetSystemStatusGUI {
                 if (cVRAM != 0) {
                     this.GpuPcId.Add(cDeviceId);
                 }
+                else {
+                    PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Local Adapter Memory", "Local Usage");
+                    gpuPfc.MachineName = ".";
+                    string[] instanceNames = gpuPfc.GetInstanceNames();
+                    foreach (string instanceName in instanceNames) {
+                        string tDeviceId = instanceName.Split('_')[2];
+                        if (cDeviceId == tDeviceId) {
+                            PerformanceCounter lpc = new PerformanceCounter("GPU Local Adapter Memory", "Local Usage", instanceName);
+                            lpc.MachineName = ".";
+                            float nvalue = lpc.NextValue();
+                            Debug.Assert(nvalue != 0);
+                            if (nvalue > 0 && nvalue != 8192) {
+                                this.GpuPcId.Add(cDeviceId);
+                            }
+                        }
+                    }
+                }
             }
-            //Debug.Assert(this.GpuPcId.Count == this.Count);   //在有Intel核显的机器上会触发此断言
+            Debug.Assert(this.GpuPcId.Count == this.Count);
             this.GpuPcId.Sort();
             this.Count = Math.Min(this.GpuPcId.Count, this.Count);
         }
@@ -274,8 +291,7 @@ namespace GetSystemStatusGUI {
                     string[] csplit = pc.InstanceName.Split('_');
                     string cDeviceId = csplit[4];
                     if (cDeviceId == deviceId) {
-                        string cEngine = string.Empty;
-                        for (int i = 10; i < csplit.Length; i++) cEngine += csplit[i];
+                        string cEngine = getEngineString(csplit);
                         float cvalue;
                         if (result.TryGetValue(cEngine, out cvalue)) {
                             cvalue += pc.NextValue();
@@ -297,8 +313,7 @@ namespace GetSystemStatusGUI {
             foreach (PerformanceCounter pc in pcGPUEngine) {
                 string[] csplit = pc.InstanceName.Split('_');
                 string cDeviceId = csplit[4];
-                string cEngine = string.Empty;
-                for (int i = 10; i < csplit.Length; i++) cEngine += csplit[i];
+                string cEngine = getEngineString(csplit);
                 Dictionary<string, float> cdic;
                 if (ret.TryGetValue(cDeviceId, out cdic)) {
                     ret.Remove(cDeviceId);
@@ -326,8 +341,7 @@ namespace GetSystemStatusGUI {
                 string[] csplit = pc.InstanceName.Split('_');
                 string cDeviceId = csplit[4];
                 if (cDeviceId == deviceId) {
-                    string cEngine = string.Empty;
-                    for (int i = 10; i < csplit.Length; i++) cEngine += csplit[i];
+                    string cEngine = getEngineString(csplit);
                     if (!result.Contains(cEngine)) {
                         result.Add(cEngine);
                     }
@@ -335,6 +349,18 @@ namespace GetSystemStatusGUI {
             }
             result.Sort();
             return result;
+        }
+
+        private string getEngineString(string[] splitInstanceName) {
+            string cEngine = string.Empty;
+            for (int i = 10; i < splitInstanceName.Length; i++) {
+                cEngine += splitInstanceName[i];
+                if (i != splitInstanceName.Length - 1) cEngine += " ";
+            }
+            if (cEngine == string.Empty) {
+                cEngine = "Engine " + splitInstanceName[8];
+            }
+            return cEngine;
         }
 
         public void RefreshGPUEnginePerfCnt() {
