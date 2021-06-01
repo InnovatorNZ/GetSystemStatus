@@ -235,7 +235,7 @@ namespace GetSystemStatusGUI {
                 }
             }
             Debug.Assert(this.GpuPcId.Count == this.Count);
-            this.GpuPcId.Sort();
+            //this.GpuPcId.Sort();
             this.Count = Math.Min(this.GpuPcId.Count, this.Count);
         }
 
