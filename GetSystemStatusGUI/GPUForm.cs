@@ -44,7 +44,7 @@ namespace GetSystemStatusGUI {
 
         private void GPUForm_Load(object sender, EventArgs e) {
             chartGPU.PaletteCustomColors = new Color[] { chartColor };
-            lblGPUName.Text = gpuInfo.gpu_name[id];
+            lblGPUName.Text = gpuInfo.getGpuName(id);
             label1.Text += " " + id.ToString();
             this.Text += " " + id.ToString();
             List<string> cGpuEngines = gpuInfo.GetGPUEngines(id);
@@ -159,9 +159,30 @@ namespace GetSystemStatusGUI {
     public class GPUInfo {
         private List<PerformanceCounter> pcDedicateGPUMemory;
         private List<PerformanceCounter> pcGPUEngine;
-        public List<string> gpu_name { get; }   //GPU名称
-        public int Count { get; private set; }  //GPU个数
-        private List<string> GpuPcId;
+        private List<string> gpu_name;
+        public int Count { get; private set; }
+        private List<PairedNamePcId> pairedNamePcIds;
+
+        struct PairedNamePcId : IComparable {
+            public string name { get; }
+            public string pcid { get; }
+            public PairedNamePcId(string name, string pcid) {
+                this.name = name;
+                this.pcid = pcid;
+            }
+            public int CompareTo(object obj) {
+                PairedNamePcId target = (PairedNamePcId)obj;
+                return this.pcid.CompareTo(target.pcid);
+            }
+        }
+
+        private string getGpuPcId(int id) {
+            return this.pairedNamePcIds[id].pcid;
+        }
+
+        public string getGpuName(int id) {      //GPU型号名称
+            return this.pairedNamePcIds[id].name;
+        }
 
         // 构造函数，初始化计数器
         public GPUInfo(int id = -1) {
@@ -209,14 +230,13 @@ namespace GetSystemStatusGUI {
         }
 
         private void FilterValidGPU() {
-            this.GpuPcId = new List<string>();
+            List<string> GpuPcId = new List<string>();
             foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
                 string cDeviceId = pc.InstanceName.Split('_')[2];
                 float cVRAM = pc.NextValue();
                 if (cVRAM != 0) {
-                    this.GpuPcId.Add(cDeviceId);
-                }
-                else {
+                    GpuPcId.Add(cDeviceId);
+                } else {
                     PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Local Adapter Memory", "Local Usage");
                     gpuPfc.MachineName = ".";
                     string[] instanceNames = gpuPfc.GetInstanceNames();
@@ -228,20 +248,24 @@ namespace GetSystemStatusGUI {
                             float nvalue = lpc.NextValue();
                             Debug.Assert(nvalue != 0);
                             if (nvalue > 0 && nvalue != 8192) {
-                                this.GpuPcId.Add(cDeviceId);
+                                GpuPcId.Add(cDeviceId);
                             }
                         }
                     }
                 }
             }
-            Debug.Assert(this.GpuPcId.Count == this.Count);
-            //this.GpuPcId.Sort();
-            this.Count = Math.Min(this.GpuPcId.Count, this.Count);
+            Debug.Assert(GpuPcId.Count == this.Count);
+            this.Count = Math.Min(GpuPcId.Count, this.Count);
+            this.pairedNamePcIds = new List<PairedNamePcId>();
+            for (int i = 0; i < this.Count; i++) {
+                this.pairedNamePcIds.Add(new PairedNamePcId(gpu_name[i], GpuPcId[i]));
+            }
+            this.pairedNamePcIds.Sort();
         }
 
         private void RemoveUnnecessaryPC(int id) {
             if (id < 0 || this.Count == 0) return;
-            string cDeviceId = this.GpuPcId[id];
+            string cDeviceId = this.getGpuPcId(id);
             for (int i = pcGPUEngine.Count - 1; i >= 0; i--) {
                 PerformanceCounter epc = pcGPUEngine[i];
                 string[] esplit = epc.InstanceName.Split('_');
@@ -254,7 +278,7 @@ namespace GetSystemStatusGUI {
 
         // 专用GPU显存
         public long GetGPUDedicatedMemory(int id) {
-            string deviceId = this.GpuPcId[id];
+            string deviceId = this.getGpuPcId(id);
             foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
                 string cDeviceId = pc.InstanceName.Split('_')[2];
                 if (cDeviceId == deviceId) {
@@ -284,7 +308,7 @@ namespace GetSystemStatusGUI {
 
         // GPU各引擎利用率
         public Dictionary<string, float> GetGPUUtilization(int id) {
-            string deviceId = this.GpuPcId[id];
+            string deviceId = this.getGpuPcId(id);
             try {
                 Dictionary<string, float> result = new Dictionary<string, float>();
                 foreach (PerformanceCounter pc in pcGPUEngine) {
@@ -335,7 +359,7 @@ namespace GetSystemStatusGUI {
             return ret;
         }
         public List<string> GetGPUEngines(int id) {
-            string deviceId = this.GpuPcId[id];
+            string deviceId = this.getGpuPcId(id);
             List<string> result = new List<string>();
             foreach (PerformanceCounter pc in pcGPUEngine) {
                 string[] csplit = pc.InstanceName.Split('_');
@@ -380,14 +404,13 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
-            //this.RemoveUnnecessaryPC(id);
         }
         public void RefreshGPUEnginePerfCnt(int id) {
             PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
             pidGpuPfc.MachineName = ".";
             string[] pidGpuInstanceNames = pidGpuPfc.GetInstanceNames();
             pcGPUEngine.Clear();
-            string c_device_id = this.GpuPcId[id];
+            string c_device_id = this.getGpuPcId(id);
             foreach (string pidInstanceName in pidGpuInstanceNames) {
                 string c_pid_deviceId = pidInstanceName.Split('_')[4];
                 if (c_pid_deviceId == c_device_id) {
