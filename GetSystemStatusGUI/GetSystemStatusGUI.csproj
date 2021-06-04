@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
     <Compile Include="CPUForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +83,7 @@
     <Compile Include="GPUForm.Designer.cs">
       <DependentUpon>GPUForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="INIHelper.cs" />
     <Compile Include="NetworkForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +100,9 @@
     </Compile>
     <Compile Include="SystemInfo.cs" />
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CPUForm.resx">
       <DependentUpon>CPUForm.cs</DependentUpon>
     </EmbeddedResource>

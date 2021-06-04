@@ -16,6 +16,7 @@ namespace GetSystemStatusGUI {
         protected DiskForm diskForm;
         protected NetworkForm networkForm;
         protected GPUForm gpuForm;
+        private string iniFile = ".\\config.ini";
 
         public Form1() {
             InitializeComponent();
@@ -72,12 +73,15 @@ namespace GetSystemStatusGUI {
             showRAM.Checked = true;
             showDisk.Checked = true;
             showNetwork.Checked = true;
+            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "true", iniFile));
+            doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
             if (Environment.OSVersion.Version.Major < 10) {
                 showGPU.Enabled = false;
                 showGPU.Text += " (Only available in Windows 10)";
             } else {
-                showGPU.Checked = true;
+                showGPU.Checked = ifShowGPU;
             }
+            LoadSavedLocation();
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
@@ -114,7 +118,10 @@ namespace GetSystemStatusGUI {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
                 if (gpuForm == null || gpuForm.IsDisposed) gpuForm = new GPUForm(this);
-                if (!gpuForm.IsDisposed) gpuForm.Show();
+                if (!gpuForm.IsDisposed) {
+                    gpuForm.Show();
+                    loadGPUFormLocation();
+                }
             } else {
                 if (gpuForm != null) gpuForm.Dispose();
             }
@@ -192,5 +199,101 @@ namespace GetSystemStatusGUI {
         private void btnDiskRefresh_MouseLeave(object sender, EventArgs e) {
             this.toolTip1.Hide((Button)sender);
         }
-    }
+
+        private void saveOpenedWindowLocationsToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (cpuForm != null && !cpuForm.IsDisposed) {
+                INIHelper.Write("CPUForm", "X", cpuForm.Location.X.ToString(), iniFile);
+                INIHelper.Write("CPUForm", "Y", cpuForm.Location.Y.ToString(), iniFile);
+            }
+            if (ramForm != null && !ramForm.IsDisposed) {
+                INIHelper.Write("RAMForm", "X", ramForm.Location.X.ToString(), iniFile);
+                INIHelper.Write("RAMForm", "Y", ramForm.Location.Y.ToString(), iniFile);
+            }
+            if (diskForm != null && !diskForm.IsDisposed) {
+                INIHelper.Write("DiskForm", "X", diskForm.Location.X.ToString(), iniFile);
+                INIHelper.Write("DiskForm", "Y", diskForm.Location.Y.ToString(), iniFile);
+            }
+            if (networkForm != null && !networkForm.IsDisposed) {
+                INIHelper.Write("NetworkForm", "X", networkForm.Location.X.ToString(), iniFile);
+                INIHelper.Write("NetworkForm", "Y", networkForm.Location.Y.ToString(), iniFile);
+            }
+            if (gpuForm != null && !gpuForm.IsDisposed) {
+                INIHelper.Write("GPUForm0", "X", gpuForm.Location.X.ToString(), iniFile);
+                INIHelper.Write("GPUForm0", "Y", gpuForm.Location.Y.ToString(), iniFile);
+                int i = 1;
+                foreach (var subGpuForm in gpuForm.moreGPUForms) {
+                    INIHelper.Write("GPUForm" + i.ToString(), "X", subGpuForm.Location.X.ToString(), iniFile);
+                    INIHelper.Write("GPUForm" + i.ToString(), "Y", subGpuForm.Location.Y.ToString(), iniFile);
+                    i++;
+                }
+            }
+        }
+
+        private void loadSavedLocationsToolStripMenuItem_Click(object sender, EventArgs e) {
+            LoadSavedLocation();
+        }
+
+        private void LoadSavedLocation() {
+            if (cpuForm != null && !cpuForm.IsDisposed) {
+                string sX = INIHelper.Read("CPUForm", "X", cpuForm.Location.X.ToString(), iniFile);
+                string sY = INIHelper.Read("CPUForm", "Y", cpuForm.Location.Y.ToString(), iniFile);
+                int x = int.Parse(sX), y = int.Parse(sY);
+                cpuForm.Location = new Point(x, y);
+            }
+            if (ramForm != null && !ramForm.IsDisposed) {
+                string sX = INIHelper.Read("RAMForm", "X", ramForm.Location.X.ToString(), iniFile);
+                string sY = INIHelper.Read("RAMForm", "Y", ramForm.Location.Y.ToString(), iniFile);
+                int x = int.Parse(sX), y = int.Parse(sY);
+                ramForm.Location = new Point(x, y);
+            }
+            if (diskForm != null && !diskForm.IsDisposed) {
+                string sX = INIHelper.Read("DiskForm", "X", diskForm.Location.X.ToString(), iniFile);
+                string sY = INIHelper.Read("DiskForm", "Y", diskForm.Location.Y.ToString(), iniFile);
+                int x = int.Parse(sX), y = int.Parse(sY);
+                diskForm.Location = new Point(x, y);
+            }
+            if (networkForm != null && !networkForm.IsDisposed) {
+                string sX = INIHelper.Read("NetworkForm", "X", networkForm.Location.X.ToString(), iniFile);
+                string sY = INIHelper.Read("NetworkForm", "Y", networkForm.Location.Y.ToString(), iniFile);
+                int x = int.Parse(sX), y = int.Parse(sY);
+                networkForm.Location = new Point(x, y);
+            }
+            loadGPUFormLocation();
+        }
+
+        private void loadGPUFormLocation() {
+            if (gpuForm != null && !gpuForm.IsDisposed) {
+                string sX = INIHelper.Read("GPUForm0", "X", gpuForm.Location.X.ToString(), iniFile);
+                string sY = INIHelper.Read("GPUForm0", "Y", gpuForm.Location.Y.ToString(), iniFile);
+                int x = int.Parse(sX), y = int.Parse(sY);
+                gpuForm.Location = new Point(x, y);
+                int i = 1;
+                foreach (var subGpuForm in gpuForm.moreGPUForms) {
+                    sX = INIHelper.Read("GPUForm" + i.ToString(), "X", subGpuForm.Location.X.ToString(), iniFile);
+                    sY = INIHelper.Read("GPUForm" + i.ToString(), "Y", subGpuForm.Location.Y.ToString(), iniFile);
+                    x = int.Parse(sX);
+                    y = int.Parse(sY);
+                    subGpuForm.Location = new Point(x, y);
+                }
+            }
+        }
+
+        private void doNotShowGPUAtStartToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("DoNotShow", "GPU", "true", iniFile);
+            } else {
+                INIHelper.Write("DoNotShow", "GPU", "false", iniFile);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.Close();
+        }
+
+		private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            AboutBox1 aboutBox = new AboutBox1();
+            aboutBox.Show();
+		}
+	}
 }

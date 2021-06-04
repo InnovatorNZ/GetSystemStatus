@@ -15,7 +15,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace GetSystemStatusGUI {
     public partial class GPUForm : Form {
         private GPUInfo gpuInfo;
-        private List<GPUForm> moreGPUForms;
+        public List<GPUForm> moreGPUForms { get; private set; }
         private Form1 mainForm;
         private readonly int id;
         private Color baseColor = Color.DeepSkyBlue;
