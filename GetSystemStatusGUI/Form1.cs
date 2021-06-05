@@ -16,6 +16,7 @@ namespace GetSystemStatusGUI {
         protected DiskForm diskForm;
         protected NetworkForm networkForm;
         protected GPUForm gpuForm;
+        private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
 
         public Form1() {
@@ -180,6 +181,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
+            if (aboutBox != null) aboutBox.Dispose();
             if (cpuForm != null) cpuForm.Dispose();
             if (ramForm != null) ramForm.Dispose();
             if (diskForm != null) diskForm.Dispose();
@@ -291,9 +293,11 @@ namespace GetSystemStatusGUI {
             this.Close();
         }
 
-		private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
-            AboutBox1 aboutBox = new AboutBox1();
-            aboutBox.Show();
-		}
-	}
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (this.aboutBox == null || this.aboutBox.IsDisposed)
+                this.aboutBox = new AboutBox1();
+            this.aboutBox.Show();
+            this.aboutBox.Focus();
+        }
+    }
 }
