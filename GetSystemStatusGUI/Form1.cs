@@ -74,7 +74,7 @@ namespace GetSystemStatusGUI {
             showRAM.Checked = true;
             showDisk.Checked = true;
             showNetwork.Checked = true;
-            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "true", iniFile));
+            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
             doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
             if (Environment.OSVersion.Version.Major < 10) {
                 showGPU.Enabled = false;
