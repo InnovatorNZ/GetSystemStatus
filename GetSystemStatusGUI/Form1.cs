@@ -54,7 +54,7 @@ namespace GetSystemStatusGUI {
                 case "noGPU":
                     showGPU.Checked = false;
                     showGPU.Enabled = false;
-                    showGPU.Text += " (No discrete graphics detected)";
+                    showGPU.Text += " (No graphics detected)";
                     break;
                 case "noNetwork":
                     showNetwork.Checked = false;
