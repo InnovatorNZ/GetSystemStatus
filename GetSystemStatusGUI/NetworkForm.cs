@@ -144,7 +144,14 @@ namespace GetSystemStatusGUI {
                 this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
         }
 
-        private void network_load_thread() {
+		private void NetworkForm_Deactivate(object sender, EventArgs e) {
+			if (this.WindowState == FormWindowState.Minimized) {
+                this.WindowState = FormWindowState.Normal;
+                mainForm.DisableChecked("Network");
+			}
+		}
+
+		private void network_load_thread() {
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
                 ys[i] = new List<float>();

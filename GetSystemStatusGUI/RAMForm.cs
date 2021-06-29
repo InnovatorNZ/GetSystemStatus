@@ -66,9 +66,16 @@ namespace GetSystemStatusGUI {
             e.Cancel = true;
             mainform.DisableChecked("RAM");
         }
-    }
 
-    public class RAMInfo {
+		private void RAMForm_Deactivate(object sender, EventArgs e) {
+			if (this.WindowState == FormWindowState.Minimized) {
+                this.WindowState = FormWindowState.Normal;
+                mainform.DisableChecked("RAM");
+			}
+		}
+	}
+
+	public class RAMInfo {
         private long m_PhysicalMemory = 0;   //物理内存
         private PerformanceCounter pcAvailMemory;   //可用内存（性能计数器版）
 

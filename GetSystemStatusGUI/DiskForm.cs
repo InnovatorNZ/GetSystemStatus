@@ -138,7 +138,14 @@ namespace GetSystemStatusGUI {
             mainform.DisableChecked("Disk");
         }
 
-        private void disk_load_thread() {
+		private void DiskForm_Deactivate(object sender, EventArgs e) {
+			if (this.WindowState == FormWindowState.Minimized) {
+                this.WindowState = FormWindowState.Normal;
+                mainform.DisableChecked("Disk");
+			}
+		}
+
+		private void disk_load_thread() {
             List<float>[] ys = new List<float>[diskInfo.m_DiskNum];
             for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                 ys[i] = new List<float>();

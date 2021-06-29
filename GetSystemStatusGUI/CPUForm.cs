@@ -173,7 +173,14 @@ namespace GetSystemStatusGUI {
             chart1.Left = (int)Math.Round((double)marginHorizontal / 2.5);
         }
 
-        private void InitialSize() {
+		private void CPUForm_Deactivate(object sender, EventArgs e) {
+			if (this.WindowState == FormWindowState.Minimized) {
+                this.WindowState = FormWindowState.Normal;
+                mainForm.DisableChecked("CPU");
+			}
+		}
+
+		private void InitialSize() {
             const int iSize = 145;
             int iHeight = beginTop + rows * iSize + (rows + 1) * 3;
             int iWidth = columns * iSize + (columns + 1) * 7;
