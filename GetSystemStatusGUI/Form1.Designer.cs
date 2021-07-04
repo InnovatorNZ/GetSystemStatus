@@ -45,10 +45,12 @@ namespace GetSystemStatusGUI
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveOpenedWindowLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.loadSavedLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.loadAtStartup = new System.Windows.Forms.ToolStripMenuItem();
+			this.loadSizeAtStartup = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.doNotShowGPUAtStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
@@ -202,6 +204,8 @@ namespace GetSystemStatusGUI
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveOpenedWindowLocationsToolStripMenuItem,
             this.loadSavedLocationsToolStripMenuItem,
+            this.loadAtStartup,
+            this.loadSizeAtStartup,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -212,16 +216,42 @@ namespace GetSystemStatusGUI
 			// 
 			this.saveOpenedWindowLocationsToolStripMenuItem.Name = "saveOpenedWindowLocationsToolStripMenuItem";
 			this.saveOpenedWindowLocationsToolStripMenuItem.ShowShortcutKeys = false;
-			this.saveOpenedWindowLocationsToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
-			this.saveOpenedWindowLocationsToolStripMenuItem.Text = "Save opened window locations";
+			this.saveOpenedWindowLocationsToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
+			this.saveOpenedWindowLocationsToolStripMenuItem.Text = "Save opened window locations and sizes";
 			this.saveOpenedWindowLocationsToolStripMenuItem.Click += new System.EventHandler(this.saveOpenedWindowLocationsToolStripMenuItem_Click);
 			// 
 			// loadSavedLocationsToolStripMenuItem
 			// 
 			this.loadSavedLocationsToolStripMenuItem.Name = "loadSavedLocationsToolStripMenuItem";
-			this.loadSavedLocationsToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
-			this.loadSavedLocationsToolStripMenuItem.Text = "Load saved locations";
+			this.loadSavedLocationsToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
+			this.loadSavedLocationsToolStripMenuItem.Text = "Load saved locations and sizes manually";
 			this.loadSavedLocationsToolStripMenuItem.Click += new System.EventHandler(this.loadSavedLocationsToolStripMenuItem_Click);
+			// 
+			// loadAtStartup
+			// 
+			this.loadAtStartup.Checked = true;
+			this.loadAtStartup.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.loadAtStartup.Name = "loadAtStartup";
+			this.loadAtStartup.Size = new System.Drawing.Size(312, 22);
+			this.loadAtStartup.Text = "Load saved locations at startup";
+			// 
+			// loadSizeAtStartup
+			// 
+			this.loadSizeAtStartup.Name = "loadSizeAtStartup";
+			this.loadSizeAtStartup.Size = new System.Drawing.Size(312, 22);
+			this.loadSizeAtStartup.Text = "Load saved sizes at startup";
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(309, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
+			this.exitToolStripMenuItem.Text = "Exit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
 			// optionToolStripMenuItem
 			// 
@@ -239,18 +269,6 @@ namespace GetSystemStatusGUI
 			this.doNotShowGPUAtStartToolStripMenuItem.Text = "Do not show GPU at start";
 			this.doNotShowGPUAtStartToolStripMenuItem.Click += new System.EventHandler(this.doNotShowGPUAtStartToolStripMenuItem_Click);
 			// 
-			// exitToolStripMenuItem
-			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
-			this.exitToolStripMenuItem.Text = "Exit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(245, 6);
-			// 
 			// helpToolStripMenuItem
 			// 
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -262,7 +280,7 @@ namespace GetSystemStatusGUI
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.aboutToolStripMenuItem.Text = "About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -287,7 +305,7 @@ namespace GetSystemStatusGUI
 			this.MainMenuStrip = this.menuStrip1;
 			this.MaximizeBox = false;
 			this.Name = "Form1";
-			this.Text = "Control Console";
+			this.Text = "GetSystemStatus";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.menuStrip1.ResumeLayout(false);
@@ -320,6 +338,8 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem loadAtStartup;
+		private System.Windows.Forms.ToolStripMenuItem loadSizeAtStartup;
 	}
 }
 

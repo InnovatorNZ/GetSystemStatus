@@ -206,26 +206,38 @@ namespace GetSystemStatusGUI {
             if (cpuForm != null && !cpuForm.IsDisposed) {
                 INIHelper.Write("CPUForm", "X", cpuForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("CPUForm", "Y", cpuForm.Location.Y.ToString(), iniFile);
+                INIHelper.Write("CPUForm", "Width", cpuForm.Width.ToString(), iniFile);
+                INIHelper.Write("CPUForm", "Height", cpuForm.Height.ToString(), iniFile);
             }
             if (ramForm != null && !ramForm.IsDisposed) {
                 INIHelper.Write("RAMForm", "X", ramForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("RAMForm", "Y", ramForm.Location.Y.ToString(), iniFile);
+                //INIHelper.Write("RAMForm", "Width", ramForm.Width.ToString(), iniFile);
+                //INIHelper.Write("RAMForm", "Height", ramForm.Height.ToString(), iniFile);
             }
             if (diskForm != null && !diskForm.IsDisposed) {
                 INIHelper.Write("DiskForm", "X", diskForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("DiskForm", "Y", diskForm.Location.Y.ToString(), iniFile);
+                INIHelper.Write("DiskForm", "Width", diskForm.Width.ToString(), iniFile);
+                INIHelper.Write("DiskForm", "Height", diskForm.Height.ToString(), iniFile);
             }
             if (networkForm != null && !networkForm.IsDisposed) {
                 INIHelper.Write("NetworkForm", "X", networkForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("NetworkForm", "Y", networkForm.Location.Y.ToString(), iniFile);
+                INIHelper.Write("NetworkForm", "Width", networkForm.Width.ToString(), iniFile);
+                INIHelper.Write("NetworkForm", "Height", networkForm.Height.ToString(), iniFile);
             }
             if (gpuForm != null && !gpuForm.IsDisposed) {
                 INIHelper.Write("GPUForm0", "X", gpuForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("GPUForm0", "Y", gpuForm.Location.Y.ToString(), iniFile);
+                //INIHelper.Write("GPUForm0", "Width", gpuForm.Width.ToString(), iniFile);
+                //INIHelper.Write("GPUForm0", "Height", gpuForm.Height.ToString(), iniFile);
                 int i = 1;
                 foreach (var subGpuForm in gpuForm.moreGPUForms) {
                     INIHelper.Write("GPUForm" + i.ToString(), "X", subGpuForm.Location.X.ToString(), iniFile);
                     INIHelper.Write("GPUForm" + i.ToString(), "Y", subGpuForm.Location.Y.ToString(), iniFile);
+                    //INIHelper.Write("GPUForm" + i.ToString(), "Width", subGpuForm.Width.ToString(), iniFile);
+                    //INIHelper.Write("GPUForm" + i.ToString(), "Height", subGpuForm.Height.ToString(), iniFile);
                     i++;
                 }
             }
@@ -233,6 +245,7 @@ namespace GetSystemStatusGUI {
 
         private void loadSavedLocationsToolStripMenuItem_Click(object sender, EventArgs e) {
             LoadSavedLocation();
+            LoadSavedSize();
         }
 
         private void LoadSavedLocation() {
@@ -277,6 +290,27 @@ namespace GetSystemStatusGUI {
                     y = int.Parse(sY);
                     subGpuForm.Location = new Point(x, y);
                 }
+            }
+        }
+
+        private void LoadSavedSize() {
+            if (cpuForm != null && !cpuForm.IsDisposed) {
+                string sWidth = INIHelper.Read("CPUForm", "Width", cpuForm.Width.ToString(), iniFile);
+                string sHeight = INIHelper.Read("CPUForm", "Height", cpuForm.Height.ToString(), iniFile);
+                int width = int.Parse(sWidth), height = int.Parse(sHeight);
+                cpuForm.Size = new Size(width, height);
+            }
+            if (diskForm != null && !diskForm.IsDisposed) {
+                string sWidth = INIHelper.Read("DiskForm", "Width", diskForm.Width.ToString(), iniFile);
+                string sHeight = INIHelper.Read("DiskForm", "Height", diskForm.Height.ToString(), iniFile);
+                int width = int.Parse(sWidth), height = int.Parse(sHeight);
+                diskForm.Size = new Size(width, height);
+            }
+            if (networkForm != null && !networkForm.IsDisposed) {
+                string sWidth = INIHelper.Read("NetworkForm", "Width", networkForm.Width.ToString(), iniFile);
+                string sHeight = INIHelper.Read("NetworkForm", "Height", networkForm.Height.ToString(), iniFile);
+                int width = int.Parse(sWidth), height = int.Parse(sHeight);
+                networkForm.Size = new Size(width, height);
             }
         }
 
