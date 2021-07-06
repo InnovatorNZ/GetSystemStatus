@@ -76,13 +76,18 @@ namespace GetSystemStatusGUI {
             showNetwork.Checked = true;
             bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
             doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
+            bool loadLocation = bool.Parse(INIHelper.Read("LoadAtStartup", "Location", "true", iniFile));
+            loadAtStartup.Checked = loadLocation;
+            bool loadSize = bool.Parse(INIHelper.Read("LoadAtStartup", "Size", "false", iniFile));
+            loadSizeAtStartup.Checked = loadSize;
             if (Environment.OSVersion.Version.Major < 10) {
                 showGPU.Enabled = false;
                 showGPU.Text += " (Only available in Windows 10)";
             } else {
                 showGPU.Checked = ifShowGPU;
             }
-            LoadSavedLocation();
+            if (loadLocation) LoadSavedLocation();
+            if (loadSize) LoadSavedSize();
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
@@ -212,8 +217,6 @@ namespace GetSystemStatusGUI {
             if (ramForm != null && !ramForm.IsDisposed) {
                 INIHelper.Write("RAMForm", "X", ramForm.Location.X.ToString(), iniFile);
                 INIHelper.Write("RAMForm", "Y", ramForm.Location.Y.ToString(), iniFile);
-                //INIHelper.Write("RAMForm", "Width", ramForm.Width.ToString(), iniFile);
-                //INIHelper.Write("RAMForm", "Height", ramForm.Height.ToString(), iniFile);
             }
             if (diskForm != null && !diskForm.IsDisposed) {
                 INIHelper.Write("DiskForm", "X", diskForm.Location.X.ToString(), iniFile);
@@ -332,6 +335,32 @@ namespace GetSystemStatusGUI {
                 this.aboutBox = new AboutBox1();
             this.aboutBox.Show();
             this.aboutBox.Focus();
+        }
+
+        private void loadAtStartup_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("LoadAtStartup", "Location", "true", iniFile);
+            } else {
+                INIHelper.Write("LoadAtStartup", "Location", "false", iniFile);
+            }
+        }
+
+        private void loadSizeAtStartup_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("LoadAtStartup", "Size", "true", iniFile);
+            } else {
+                INIHelper.Write("LoadAtStartup", "Size", "false", iniFile);
+            }
+        }
+
+        private void btnFocus_Click(object sender, EventArgs e) {
+            if (showRAM.Checked) ramForm.Focus();
+            if (showNetwork.Checked) networkForm.Focus();
+            if (showDisk.Checked) diskForm.Focus();
+            if (showCPU.Checked) cpuForm.Focus();
+            this.Focus();
         }
     }
 }

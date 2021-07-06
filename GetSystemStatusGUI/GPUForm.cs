@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,8 @@ namespace GetSystemStatusGUI {
             label1.Text += " " + id.ToString();
             this.Text += " " + id.ToString();
             List<string> cGpuEngines = gpuInfo.GetGPUEngines(id);
+            long cGPUTotalMemory = gpuInfo.getAdapterTotalMemory(id);
+            if (cGPUTotalMemory > 0) cGpuEngines.Add("GPU Memory");
             foreach (string engine in cGpuEngines) {
                 chartGPU.Series.Add(engine);
                 chartGPU.ChartAreas.Add(engine);
@@ -106,6 +109,8 @@ namespace GetSystemStatusGUI {
                 for (int i = 0; i < Global.history_length; i++) cy.Add(0);
                 ys.Add(engine, cy);
             }
+            List<float> dediUsage = new List<float>();
+            for (int i = 0; i < Global.history_length; i++) dediUsage.Add(0);
             int t = 0;
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % 15 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
@@ -118,6 +123,14 @@ namespace GetSystemStatusGUI {
                             ys[cEngine].RemoveAt(0);
                             ys[cEngine].Add(cUti);
                             chartGPU.Series[cEngine].Points.DataBindY(ys[cEngine]);
+                        }
+                        long dediMem = gpuInfo.GetGPUDedicatedMemory(id);
+                        long totalMem = gpuInfo.getAdapterTotalMemory(id);
+                        if (totalMem > 0) {
+                            float cusage = (float)dediMem / (float)totalMem * 100;
+                            dediUsage.RemoveAt(0);
+                            dediUsage.Add(cusage);
+                            chartGPU.Series["GPU Memory"].Points.DataBindY(dediUsage);
                         }
                     }
                 );
@@ -161,27 +174,44 @@ namespace GetSystemStatusGUI {
         private List<PerformanceCounter> pcGPUEngine;
         private List<string> gpu_name;
         public int Count { get; private set; }
-        private List<PairedNamePcId> pairedNamePcIds;
+        private List<PairedAdapterInfo> pairedAdapterInfos;
 
-        struct PairedNamePcId : IComparable {
+        [DllImport(@"..\..\..\..\x64\Debug\GetNVGPUMemoryDLL.dll")]
+        private extern static long InitAndGetNVGPUMemory(int deviceId);
+
+        struct PairedAdapterInfo : IComparable {
             public string name { get; }
             public string pcid { get; }
-            public PairedNamePcId(string name, string pcid) {
+            public int nvid { get; }        //仅针对NVIDIA显卡有效的ID
+            public long totalMemory { get; }
+            public PairedAdapterInfo(string name, string pcid) {
                 this.name = name;
                 this.pcid = pcid;
+                this.nvid = -1;
+                this.totalMemory = 0;
+            }
+            public PairedAdapterInfo(string name, string pcid, int nvid, long totalMemory) {
+                this.name = name;
+                this.pcid = pcid;
+                this.nvid = nvid;
+                this.totalMemory = totalMemory;
             }
             public int CompareTo(object obj) {
-                PairedNamePcId target = (PairedNamePcId)obj;
+                PairedAdapterInfo target = (PairedAdapterInfo)obj;
                 return this.pcid.CompareTo(target.pcid);
             }
         }
 
         private string getGpuPcId(int id) {
-            return this.pairedNamePcIds[id].pcid;
+            return this.pairedAdapterInfos[id].pcid;
         }
 
         public string getGpuName(int id) {      //GPU型号名称
-            return this.pairedNamePcIds[id].name;
+            return this.pairedAdapterInfos[id].name;
+        }
+
+        public long getAdapterTotalMemory(int id) {     //GPU总显存
+            return this.pairedAdapterInfos[id].totalMemory;
         }
 
         // 构造函数，初始化计数器
@@ -256,11 +286,24 @@ namespace GetSystemStatusGUI {
             }
             Debug.Assert(GpuPcId.Count == this.Count);
             this.Count = Math.Min(GpuPcId.Count, this.Count);
-            this.pairedNamePcIds = new List<PairedNamePcId>();
+            this.pairedAdapterInfos = new List<PairedAdapterInfo>();
+            int nvcnt = 0;
             for (int i = 0; i < this.Count; i++) {
-                this.pairedNamePcIds.Add(new PairedNamePcId(gpu_name[i], GpuPcId[i]));
+                string manufactor = gpu_name[i].Substring(0, 6);
+                if (manufactor == "NVIDIA") {
+                    try {
+                        long cTotalMemory = InitAndGetNVGPUMemory(nvcnt);
+                        this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i], nvcnt, cTotalMemory));
+                        nvcnt++;
+                    }
+                    catch {
+                        this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i]));
+                    }
+                } else {
+                    this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i]));
+                }
             }
-            this.pairedNamePcIds.Sort();
+            this.pairedAdapterInfos.Sort();
         }
 
         private void RemoveUnnecessaryPC(int id) {

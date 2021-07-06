@@ -144,14 +144,14 @@ namespace GetSystemStatusGUI {
                 this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
         }
 
-		private void NetworkForm_Deactivate(object sender, EventArgs e) {
-			if (this.WindowState == FormWindowState.Minimized) {
+        private void NetworkForm_Deactivate(object sender, EventArgs e) {
+            if (this.WindowState == FormWindowState.Minimized) {
                 this.WindowState = FormWindowState.Normal;
                 mainForm.DisableChecked("Network");
-			}
-		}
+            }
+        }
 
-		private void network_load_thread() {
+        private void network_load_thread() {
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
                 ys[i] = new List<float>();
@@ -226,7 +226,9 @@ namespace GetSystemStatusGUI {
                     int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
                     if (fPnpInstanceID.Length <= 3) continue;
                     string connMethod = fPnpInstanceID.Substring(0, 3);
-                    if ((connMethod == "PCI" || connMethod == "USB" || connMethod == "BTH" || fMediaSubType == 2) && fMediaSubType != 1 && connMethod != "ROOT") {
+                    if ((connMethod == "PCI" || connMethod == "USB" || fMediaSubType == 2) && fMediaSubType != 1 && connMethod != "ROOT") {
+                        this.validAdapters.Add(adapter);
+                    } else if (connMethod == "BTH" && adapter.Speed != 3000000) {
                         this.validAdapters.Add(adapter);
                     }
                 }
@@ -291,8 +293,10 @@ namespace GetSystemStatusGUI {
             UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = adapterProperties.UnicastAddresses;
             string IPv6Address = "Not Present";
             foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection) {
-                if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetworkV6)
+                if (UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetworkV6) {
                     IPv6Address = UnicastIPAddressInformation.Address.ToString();
+                    break;
+                }
             }
             return IPv6Address;
         }
