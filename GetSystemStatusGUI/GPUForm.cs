@@ -176,34 +176,35 @@ namespace GetSystemStatusGUI {
         public int Count { get; private set; }
         private List<PairedAdapterInfo> pairedAdapterInfos;
 
-        [DllImport(@"..\..\..\..\x64\Debug\GetNVGPUMemoryDLL.dll")]
-        private extern static long InitAndGetNVGPUMemory(int deviceId);
+        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        private extern static int Init();
+        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        private extern static IntPtr getAdapterName(int luid);
+        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        private extern static long getDedicatedMemory(int luid);
 
         struct PairedAdapterInfo : IComparable {
             public string name { get; }
-            public string pcid { get; }
-            public int nvid { get; }        //仅针对NVIDIA显卡有效的ID
+            public string luid { get; }
             public long totalMemory { get; }
-            public PairedAdapterInfo(string name, string pcid) {
+            public PairedAdapterInfo(string name, string luid) {
                 this.name = name;
-                this.pcid = pcid;
-                this.nvid = -1;
+                this.luid = luid;
                 this.totalMemory = 0;
             }
-            public PairedAdapterInfo(string name, string pcid, int nvid, long totalMemory) {
+            public PairedAdapterInfo(string name, string luid, long totalMemory) {
                 this.name = name;
-                this.pcid = pcid;
-                this.nvid = nvid;
+                this.luid = luid;
                 this.totalMemory = totalMemory;
             }
             public int CompareTo(object obj) {
                 PairedAdapterInfo target = (PairedAdapterInfo)obj;
-                return this.pcid.CompareTo(target.pcid);
+                return this.luid.CompareTo(target.luid);
             }
         }
 
         private string getGpuPcId(int id) {
-            return this.pairedAdapterInfos[id].pcid;
+            return this.pairedAdapterInfos[id].luid;
         }
 
         public string getGpuName(int id) {      //GPU型号名称
@@ -260,49 +261,30 @@ namespace GetSystemStatusGUI {
         }
 
         private void FilterValidGPU() {
-            List<string> GpuPcId = new List<string>();
+            this.pairedAdapterInfos = new List<PairedAdapterInfo>();
+            int i = 0;
             foreach (PerformanceCounter pc in pcDedicateGPUMemory) {
                 string cDeviceId = pc.InstanceName.Split('_')[2];
-                float cVRAM = pc.NextValue();
-                if (cVRAM != 0) {
-                    GpuPcId.Add(cDeviceId);
-                } else {
-                    PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Local Adapter Memory", "Local Usage");
-                    gpuPfc.MachineName = ".";
-                    string[] instanceNames = gpuPfc.GetInstanceNames();
-                    foreach (string instanceName in instanceNames) {
-                        string tDeviceId = instanceName.Split('_')[2];
-                        if (cDeviceId == tDeviceId) {
-                            PerformanceCounter lpc = new PerformanceCounter("GPU Local Adapter Memory", "Local Usage", instanceName);
-                            lpc.MachineName = ".";
-                            float nvalue = lpc.NextValue();
-                            Debug.Assert(nvalue != 0);
-                            if (nvalue > 0 && nvalue != 8192) {
-                                GpuPcId.Add(cDeviceId);
-                            }
-                        }
-                    }
+                try {
+                    int suc = Init();
+                    if (suc != 0) throw new DllNotFoundException("Load DXGI DLL failed. Make sure DirectX is correctly installed.");
+                    int cluid = Convert.ToInt32(cDeviceId, 16);
+                    string c_gpu_name = Marshal.PtrToStringAnsi(getAdapterName(cluid));
+                    if (c_gpu_name.Contains("Microsoft Basic")) throw new NotSupportedException("Microsoft basic renderer is not supported. Skipping.");
+                    long dedicate_memory = 0;
+                    if (!c_gpu_name.Contains("HD Graphics"))
+                        dedicate_memory = getDedicatedMemory(cluid);
+                    this.pairedAdapterInfos.Add(new PairedAdapterInfo(c_gpu_name, cDeviceId, dedicate_memory));
                 }
-            }
-            Debug.Assert(GpuPcId.Count == this.Count);
-            this.Count = Math.Min(GpuPcId.Count, this.Count);
-            this.pairedAdapterInfos = new List<PairedAdapterInfo>();
-            int nvcnt = 0;
-            for (int i = 0; i < this.Count; i++) {
-                string manufactor = gpu_name[i].Substring(0, 6);
-                if (manufactor == "NVIDIA") {
-                    try {
-                        long cTotalMemory = InitAndGetNVGPUMemory(nvcnt);
-                        this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i], nvcnt, cTotalMemory));
-                        nvcnt++;
-                    }
-                    catch {
-                        this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i]));
-                    }
-                } else {
-                    this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], GpuPcId[i]));
+                catch (DllNotFoundException) {
+                    this.pairedAdapterInfos.Add(new PairedAdapterInfo(gpu_name[i], cDeviceId));
                 }
+                catch {
+                    continue;
+                }
+                i++;
             }
+            Debug.Assert(pairedAdapterInfos.Count == this.Count);
             this.pairedAdapterInfos.Sort();
         }
 
@@ -359,8 +341,7 @@ namespace GetSystemStatusGUI {
                     string cDeviceId = csplit[4];
                     if (cDeviceId == deviceId) {
                         string cEngine = getEngineString(csplit);
-                        float cvalue;
-                        if (result.TryGetValue(cEngine, out cvalue)) {
+                        if (result.TryGetValue(cEngine, out float cvalue)) {
                             cvalue += pc.NextValue();
                             result[cEngine] = cvalue;
                         } else {
