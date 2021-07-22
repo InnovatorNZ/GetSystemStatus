@@ -284,7 +284,11 @@ namespace GetSystemStatusGUI {
                 }
                 i++;
             }
-            Debug.Assert(pairedAdapterInfos.Count == this.Count);
+            //Debug.Assert(pairedAdapterInfos.Count == this.Count);
+            if (pairedAdapterInfos.Count != this.Count) {
+                MessageBox.Show("Some graphics card(s) are too old and not supported. Be sure your graphics driver is up-to-date and support WDDM 2.x.", "Not supported graphics detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Count = Math.Min(pairedAdapterInfos.Count, this.Count);
+            }
             this.pairedAdapterInfos.Sort();
         }
 
