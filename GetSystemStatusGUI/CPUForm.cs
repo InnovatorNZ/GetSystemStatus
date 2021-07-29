@@ -25,11 +25,16 @@ namespace GetSystemStatusGUI {
         private CPUInfo cpuInfo;
         private Chart[] subCharts;
         private int rows = 1, columns = 1;
+        private int ProcessorCount = 0;
 
-        public CPUForm(Form1 mainForm) {
+        public CPUForm(Form1 mainForm, int processorCount = 0) {
             InitializeComponent();
             this.mainForm = mainForm;
             cpuInfo = new CPUInfo();
+            if (processorCount == 0)
+                this.ProcessorCount = cpuInfo.ProcessorCount;
+            else
+                this.ProcessorCount = processorCount;
         }
 
         private void CPUForm_Load(object sender, EventArgs e) {
@@ -45,9 +50,9 @@ namespace GetSystemStatusGUI {
             chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = gridColor;
             chart1.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
 
-            Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
+            Utility.FactorDecompose(this.ProcessorCount, ref columns, ref rows);
 
-            subCharts = new Chart[cpuInfo.ProcessorCount];
+            subCharts = new Chart[this.ProcessorCount];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
@@ -122,7 +127,7 @@ namespace GetSystemStatusGUI {
                     ys[i].Add(0);
                 }
             }
-            while (true) {
+            while (!chart1.IsDisposed) {
                 y.RemoveAt(0);
                 y.Add(cpuInfo.CpuLoad);
                 for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
@@ -132,17 +137,12 @@ namespace GetSystemStatusGUI {
                 Action updateChart = new Action(
                     delegate () {
                         chart1.Series["Series1"].Points.DataBindY(y);
-                        for (int i = 0; i < cpuInfo.ProcessorCount; i++)
-                            subCharts[i].Series[0].Points.DataBindY(ys[i]);
+                        for (int i = 0; i < this.ProcessorCount; i++)
+                            subCharts[i].Series[0].Points.DataBindY(ys[i % cpuInfo.ProcessorCount]);
                     }
                 );
-                if (chart1.IsDisposed) break;
-                try {
-                    Invoke(updateChart);
-                }
-                catch {
-                    break;
-                }
+                try { Invoke(updateChart); }
+                catch { break; }
                 Thread.Sleep(Global.interval_ms);
             }
         }
@@ -153,7 +153,9 @@ namespace GetSystemStatusGUI {
             //int chartWidth = (int)Math.Round((double)this.Size.Width / (double)(columns + (columns + 1) / (double)ratioChartMargin));
             //int marginVertical = (int)Math.Round((double)chartHeight / (double)ratioChartMargin);
             //int marginHorizontal = (int)Math.Round((double)chartWidth / (double)ratioChartMargin);
-            int marginVertical = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / 50.0);
+            int margin_ratio = 50;
+            if (this.ProcessorCount >= 48) margin_ratio = 65;
+            int marginVertical = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / (double)margin_ratio);
             int marginHorizontal = marginVertical;
             int endRight = (int)Math.Round((double)marginHorizontal * 1.1);
             fixHeight = Math.Max(40, marginHorizontal * 3);
@@ -173,14 +175,14 @@ namespace GetSystemStatusGUI {
             chart1.Left = (int)Math.Round((double)marginHorizontal / 2.5);
         }
 
-		private void CPUForm_Deactivate(object sender, EventArgs e) {
-			if (this.WindowState == FormWindowState.Minimized) {
+        private void CPUForm_Deactivate(object sender, EventArgs e) {
+            if (this.WindowState == FormWindowState.Minimized) {
                 this.WindowState = FormWindowState.Normal;
                 mainForm.DisableChecked("CPU");
-			}
-		}
+            }
+        }
 
-		private void InitialSize() {
+        private void InitialSize() {
             const int iSize = 145;
             int iHeight = beginTop + rows * iSize + (rows + 1) * 3;
             int iWidth = columns * iSize + (columns + 1) * 7;

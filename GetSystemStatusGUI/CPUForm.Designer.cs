@@ -33,6 +33,7 @@ namespace GetSystemStatusGUI
 			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
 			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CPUForm));
 			this.label1 = new System.Windows.Forms.Label();
 			this.cpuName = new System.Windows.Forms.Label();
 			this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -134,6 +135,7 @@ namespace GetSystemStatusGUI
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.cpuName);
 			this.DoubleBuffered = true;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "CPUForm";
 			this.ShowInTaskbar = false;
 			this.Text = "CPU";

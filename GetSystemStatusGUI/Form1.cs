@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.VisualBasic;
 
 namespace GetSystemStatusGUI {
     public partial class Form1 : Form {
@@ -361,6 +362,25 @@ namespace GetSystemStatusGUI {
             if (showDisk.Checked) diskForm.Focus();
             if (showCPU.Checked) cpuForm.Focus();
             this.Focus();
+        }
+
+        private void fakeToolStripMenuItem_Click(object sender, EventArgs e) {
+            string str = Interaction.InputBox("Input the number of logical processor cores you want (0 for default):", "Fake CPU cores");
+            try {
+                if (str != string.Empty) {
+                    int core_num = int.Parse(str);
+                    if (core_num < 0 || core_num > 256) throw new Exception("Number of cores is too large or below 0");
+                    this.showCPU.Text = "Loading CPU...";
+                    this.showCPU.Checked = false;
+                    if (!cpuForm.IsDisposed) cpuForm.Dispose();
+                    cpuForm = new CPUForm(this, core_num);
+                    this.showCPU.Text = "Show CPU Utilizations";
+                    this.showCPU.Checked = true;
+                }
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Not valid: " + ex.Message);
+            }
         }
     }
 }

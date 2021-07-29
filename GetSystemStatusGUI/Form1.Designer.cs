@@ -54,6 +54,7 @@ namespace GetSystemStatusGUI
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnFocus = new System.Windows.Forms.Button();
+			this.fakeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -61,10 +62,9 @@ namespace GetSystemStatusGUI
 			// 
 			this.showCPU.AutoSize = true;
 			this.showCPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showCPU.Location = new System.Drawing.Point(131, 111);
-			this.showCPU.Margin = new System.Windows.Forms.Padding(4);
+			this.showCPU.Location = new System.Drawing.Point(105, 89);
 			this.showCPU.Name = "showCPU";
-			this.showCPU.Size = new System.Drawing.Size(236, 29);
+			this.showCPU.Size = new System.Drawing.Size(186, 24);
 			this.showCPU.TabIndex = 0;
 			this.showCPU.Text = "Show CPU Utilizations";
 			this.showCPU.UseVisualStyleBackColor = true;
@@ -74,10 +74,9 @@ namespace GetSystemStatusGUI
 			// 
 			this.showRAM.AutoSize = true;
 			this.showRAM.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showRAM.Location = new System.Drawing.Point(131, 148);
-			this.showRAM.Margin = new System.Windows.Forms.Padding(4);
+			this.showRAM.Location = new System.Drawing.Point(105, 118);
 			this.showRAM.Name = "showRAM";
-			this.showRAM.Size = new System.Drawing.Size(197, 29);
+			this.showRAM.Size = new System.Drawing.Size(157, 24);
 			this.showRAM.TabIndex = 1;
 			this.showRAM.Text = "Show RAM Usage";
 			this.showRAM.UseVisualStyleBackColor = true;
@@ -87,10 +86,9 @@ namespace GetSystemStatusGUI
 			// 
 			this.showDisk.AutoSize = true;
 			this.showDisk.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showDisk.Location = new System.Drawing.Point(131, 185);
-			this.showDisk.Margin = new System.Windows.Forms.Padding(4);
+			this.showDisk.Location = new System.Drawing.Point(105, 148);
 			this.showDisk.Name = "showDisk";
-			this.showDisk.Size = new System.Drawing.Size(364, 29);
+			this.showDisk.Size = new System.Drawing.Size(287, 24);
 			this.showDisk.TabIndex = 2;
 			this.showDisk.Text = "Show Disk Load and Transfer Speed";
 			this.showDisk.UseVisualStyleBackColor = true;
@@ -100,10 +98,9 @@ namespace GetSystemStatusGUI
 			// 
 			this.showNetwork.AutoSize = true;
 			this.showNetwork.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showNetwork.Location = new System.Drawing.Point(131, 222);
-			this.showNetwork.Margin = new System.Windows.Forms.Padding(4);
+			this.showNetwork.Location = new System.Drawing.Point(105, 178);
 			this.showNetwork.Name = "showNetwork";
-			this.showNetwork.Size = new System.Drawing.Size(350, 29);
+			this.showNetwork.Size = new System.Drawing.Size(281, 24);
 			this.showNetwork.TabIndex = 3;
 			this.showNetwork.Text = "Show Network and Adapter Speed";
 			this.showNetwork.UseVisualStyleBackColor = true;
@@ -113,10 +110,9 @@ namespace GetSystemStatusGUI
 			// 
 			this.showGPU.AutoSize = true;
 			this.showGPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.showGPU.Location = new System.Drawing.Point(131, 261);
-			this.showGPU.Margin = new System.Windows.Forms.Padding(4);
+			this.showGPU.Location = new System.Drawing.Point(105, 209);
 			this.showGPU.Name = "showGPU";
-			this.showGPU.Size = new System.Drawing.Size(237, 29);
+			this.showGPU.Size = new System.Drawing.Size(187, 24);
 			this.showGPU.TabIndex = 4;
 			this.showGPU.Text = "Show GPU Utilizations";
 			this.showGPU.UseVisualStyleBackColor = true;
@@ -124,10 +120,9 @@ namespace GetSystemStatusGUI
 			// 
 			// buttonExit
 			// 
-			this.buttonExit.Location = new System.Drawing.Point(564, 405);
-			this.buttonExit.Margin = new System.Windows.Forms.Padding(4);
+			this.buttonExit.Location = new System.Drawing.Point(451, 324);
 			this.buttonExit.Name = "buttonExit";
-			this.buttonExit.Size = new System.Drawing.Size(100, 29);
+			this.buttonExit.Size = new System.Drawing.Size(80, 23);
 			this.buttonExit.TabIndex = 5;
 			this.buttonExit.Text = "Exit";
 			this.buttonExit.UseVisualStyleBackColor = true;
@@ -143,10 +138,10 @@ namespace GetSystemStatusGUI
             "2 sec",
             "0.5 sec",
             "0.25 sec"});
-			this.cbUpdateInterval.Location = new System.Drawing.Point(310, 311);
+			this.cbUpdateInterval.Location = new System.Drawing.Point(248, 249);
 			this.cbUpdateInterval.Margin = new System.Windows.Forms.Padding(2);
 			this.cbUpdateInterval.Name = "cbUpdateInterval";
-			this.cbUpdateInterval.Size = new System.Drawing.Size(122, 28);
+			this.cbUpdateInterval.Size = new System.Drawing.Size(98, 25);
 			this.cbUpdateInterval.TabIndex = 6;
 			this.cbUpdateInterval.Text = "1 sec";
 			this.cbUpdateInterval.SelectedIndexChanged += new System.EventHandler(this.cbUpdateInterval_SelectedIndexChanged);
@@ -156,10 +151,10 @@ namespace GetSystemStatusGUI
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.label1.Location = new System.Drawing.Point(151, 311);
+			this.label1.Location = new System.Drawing.Point(121, 249);
 			this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(153, 25);
+			this.label1.Size = new System.Drawing.Size(121, 20);
 			this.label1.TabIndex = 7;
 			this.label1.Text = "Update interval";
 			// 
@@ -168,10 +163,10 @@ namespace GetSystemStatusGUI
 			this.btnDiskRefresh.AutoSize = true;
 			this.btnDiskRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.btnDiskRefresh.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnDiskRefresh.Location = new System.Drawing.Point(502, 184);
+			this.btnDiskRefresh.Location = new System.Drawing.Point(402, 147);
 			this.btnDiskRefresh.Margin = new System.Windows.Forms.Padding(2);
 			this.btnDiskRefresh.Name = "btnDiskRefresh";
-			this.btnDiskRefresh.Size = new System.Drawing.Size(29, 27);
+			this.btnDiskRefresh.Size = new System.Drawing.Size(26, 25);
 			this.btnDiskRefresh.TabIndex = 8;
 			this.btnDiskRefresh.Text = "R";
 			this.btnDiskRefresh.UseVisualStyleBackColor = true;
@@ -184,10 +179,9 @@ namespace GetSystemStatusGUI
 			this.btnNetworkRefresh.AutoSize = true;
 			this.btnNetworkRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.btnNetworkRefresh.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnNetworkRefresh.Location = new System.Drawing.Point(502, 221);
-			this.btnNetworkRefresh.Margin = new System.Windows.Forms.Padding(4);
+			this.btnNetworkRefresh.Location = new System.Drawing.Point(402, 177);
 			this.btnNetworkRefresh.Name = "btnNetworkRefresh";
-			this.btnNetworkRefresh.Size = new System.Drawing.Size(29, 27);
+			this.btnNetworkRefresh.Size = new System.Drawing.Size(26, 25);
 			this.btnNetworkRefresh.TabIndex = 9;
 			this.btnNetworkRefresh.Text = "R";
 			this.btnNetworkRefresh.UseVisualStyleBackColor = true;
@@ -203,7 +197,8 @@ namespace GetSystemStatusGUI
             this.helpToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(680, 28);
+			this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+			this.menuStrip1.Size = new System.Drawing.Size(544, 25);
 			this.menuStrip1.TabIndex = 10;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -217,21 +212,21 @@ namespace GetSystemStatusGUI
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
+			this.fileToolStripMenuItem.Size = new System.Drawing.Size(39, 21);
 			this.fileToolStripMenuItem.Text = "File";
 			// 
 			// saveOpenedWindowLocationsToolStripMenuItem
 			// 
 			this.saveOpenedWindowLocationsToolStripMenuItem.Name = "saveOpenedWindowLocationsToolStripMenuItem";
 			this.saveOpenedWindowLocationsToolStripMenuItem.ShowShortcutKeys = false;
-			this.saveOpenedWindowLocationsToolStripMenuItem.Size = new System.Drawing.Size(381, 26);
+			this.saveOpenedWindowLocationsToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
 			this.saveOpenedWindowLocationsToolStripMenuItem.Text = "Save opened window locations and sizes";
 			this.saveOpenedWindowLocationsToolStripMenuItem.Click += new System.EventHandler(this.saveOpenedWindowLocationsToolStripMenuItem_Click);
 			// 
 			// loadSavedLocationsToolStripMenuItem
 			// 
 			this.loadSavedLocationsToolStripMenuItem.Name = "loadSavedLocationsToolStripMenuItem";
-			this.loadSavedLocationsToolStripMenuItem.Size = new System.Drawing.Size(381, 26);
+			this.loadSavedLocationsToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
 			this.loadSavedLocationsToolStripMenuItem.Text = "Load saved locations and sizes manually";
 			this.loadSavedLocationsToolStripMenuItem.Click += new System.EventHandler(this.loadSavedLocationsToolStripMenuItem_Click);
 			// 
@@ -241,7 +236,7 @@ namespace GetSystemStatusGUI
 			this.loadAtStartup.CheckOnClick = true;
 			this.loadAtStartup.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.loadAtStartup.Name = "loadAtStartup";
-			this.loadAtStartup.Size = new System.Drawing.Size(381, 26);
+			this.loadAtStartup.Size = new System.Drawing.Size(312, 22);
 			this.loadAtStartup.Text = "Load saved locations at startup";
 			this.loadAtStartup.Click += new System.EventHandler(this.loadAtStartup_Click);
 			// 
@@ -249,35 +244,36 @@ namespace GetSystemStatusGUI
 			// 
 			this.loadSizeAtStartup.CheckOnClick = true;
 			this.loadSizeAtStartup.Name = "loadSizeAtStartup";
-			this.loadSizeAtStartup.Size = new System.Drawing.Size(381, 26);
+			this.loadSizeAtStartup.Size = new System.Drawing.Size(312, 22);
 			this.loadSizeAtStartup.Text = "Load saved sizes at startup";
 			this.loadSizeAtStartup.Click += new System.EventHandler(this.loadSizeAtStartup_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(378, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(309, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(381, 26);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
 			// optionToolStripMenuItem
 			// 
 			this.optionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.doNotShowGPUAtStartToolStripMenuItem});
+            this.doNotShowGPUAtStartToolStripMenuItem,
+            this.fakeToolStripMenuItem});
 			this.optionToolStripMenuItem.Name = "optionToolStripMenuItem";
-			this.optionToolStripMenuItem.Size = new System.Drawing.Size(74, 24);
+			this.optionToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
 			this.optionToolStripMenuItem.Text = "Option";
 			// 
 			// doNotShowGPUAtStartToolStripMenuItem
 			// 
 			this.doNotShowGPUAtStartToolStripMenuItem.CheckOnClick = true;
 			this.doNotShowGPUAtStartToolStripMenuItem.Name = "doNotShowGPUAtStartToolStripMenuItem";
-			this.doNotShowGPUAtStartToolStripMenuItem.Size = new System.Drawing.Size(274, 26);
+			this.doNotShowGPUAtStartToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
 			this.doNotShowGPUAtStartToolStripMenuItem.Text = "Do not show GPU at start";
 			this.doNotShowGPUAtStartToolStripMenuItem.Click += new System.EventHandler(this.doNotShowGPUAtStartToolStripMenuItem_Click);
 			// 
@@ -286,32 +282,40 @@ namespace GetSystemStatusGUI
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-			this.helpToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
+			this.helpToolStripMenuItem.Size = new System.Drawing.Size(47, 21);
 			this.helpToolStripMenuItem.Text = "Help";
 			// 
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(138, 26);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
 			this.aboutToolStripMenuItem.Text = "About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
 			// btnFocus
 			// 
-			this.btnFocus.Location = new System.Drawing.Point(447, 405);
+			this.btnFocus.Location = new System.Drawing.Point(358, 324);
+			this.btnFocus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.btnFocus.Name = "btnFocus";
-			this.btnFocus.Size = new System.Drawing.Size(110, 29);
+			this.btnFocus.Size = new System.Drawing.Size(88, 23);
 			this.btnFocus.TabIndex = 11;
 			this.btnFocus.Text = "Focus all";
 			this.btnFocus.UseVisualStyleBackColor = true;
 			this.btnFocus.Click += new System.EventHandler(this.btnFocus_Click);
 			// 
+			// fakeToolStripMenuItem
+			// 
+			this.fakeToolStripMenuItem.Name = "fakeToolStripMenuItem";
+			this.fakeToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+			this.fakeToolStripMenuItem.Text = "Fake CPU cores...";
+			this.fakeToolStripMenuItem.Click += new System.EventHandler(this.fakeToolStripMenuItem_Click);
+			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(680, 449);
+			this.ClientSize = new System.Drawing.Size(544, 359);
 			this.Controls.Add(this.btnFocus);
 			this.Controls.Add(this.btnNetworkRefresh);
 			this.Controls.Add(this.btnDiskRefresh);
@@ -326,7 +330,6 @@ namespace GetSystemStatusGUI
 			this.Controls.Add(this.menuStrip1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MainMenuStrip = this.menuStrip1;
-			this.Margin = new System.Windows.Forms.Padding(4);
 			this.MaximizeBox = false;
 			this.Name = "Form1";
 			this.Text = "GetSystemStatus";
@@ -365,6 +368,7 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.ToolStripMenuItem loadAtStartup;
 		private System.Windows.Forms.ToolStripMenuItem loadSizeAtStartup;
 		private System.Windows.Forms.Button btnFocus;
+		private System.Windows.Forms.ToolStripMenuItem fakeToolStripMenuItem;
 	}
 }
 
