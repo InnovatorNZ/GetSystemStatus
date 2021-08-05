@@ -155,7 +155,8 @@ namespace GetSystemStatusGUI {
                 for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                     ys[i].RemoveAt(0);
                     try {
-                        ys[i].Add(diskInfo.DiskLoad(i));
+                        float cload = diskInfo.DiskLoad(i);
+                        ys[i].Add(cload);
                     }
                     catch {
                         Action reload = new Action(
@@ -172,7 +173,18 @@ namespace GetSystemStatusGUI {
                     delegate () {
                         for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                             subCharts[i].Series[0].Points.DataBindY(ys[i]);
-                            string rw_speed = Utility.FormatSpeedString("Read", diskInfo.DiskRead(i), "Write", diskInfo.DiskWrite(i), false);
+                            float cRead = diskInfo.DiskRead(i);
+                            float cWrite = diskInfo.DiskWrite(i);
+                            string rw_speed = "Read -\nWrite -";
+                            if (cRead >= 0 && cWrite >= 0) {
+                                rw_speed = Utility.FormatSpeedString("Read", cRead, "Write", cWrite, false);
+                                string cTitle = subCharts[i].Titles[0].Text;
+                                int iES = cTitle.IndexOf("(Ejected)");
+                                if (iES != -1)
+                                    subCharts[i].Titles[0].Text = cTitle.Substring(0, iES);
+                            } else {
+                                subCharts[i].Titles[0].Text = "Disk " + i.ToString() + " (Ejected)";
+                            }
                             subCharts[i].Titles[2].Text = rw_speed;
                         }
                     }
@@ -201,6 +213,14 @@ namespace GetSystemStatusGUI {
             PerformanceCounterCategory diskPfc = new PerformanceCounterCategory("PhysicalDisk");
             string[] _diskInstanceNames = diskPfc.GetInstanceNames();
             m_DiskNum = _diskInstanceNames.Length - 1;
+            foreach (string disk in _diskInstanceNames) {
+                string[] split = disk.Split(' ');
+                try {
+                    int cid = int.Parse(split[0]);
+                    m_DiskNum = Math.Max(m_DiskNum, cid + 1);
+                }
+                catch (FormatException) { }
+            }
             string[] diskInstanceNames = new string[m_DiskNum];
             foreach (string disk in _diskInstanceNames) {
                 string[] split = disk.Split(' ');
@@ -208,7 +228,7 @@ namespace GetSystemStatusGUI {
                     int cid = int.Parse(split[0]);
                     diskInstanceNames[cid] = disk;
                 }
-                catch { }
+                catch (FormatException) { }
             }
             pcDisksRead = new PerformanceCounter[m_DiskNum];
             pcDisksWrite = new PerformanceCounter[m_DiskNum];
@@ -229,9 +249,11 @@ namespace GetSystemStatusGUI {
 
             for (int i = 0; i < m_DiskNum; i++) {
                 try {
-                    pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue();
+                    pcDisksRead[i].NextValue();
+                    pcDisksWrite[i].NextValue();
+                    pcDisksLoad[i].NextValue();
                 }
-                catch { }
+                catch (InvalidOperationException) { }
             }
 
             diskModelCaption = new string[m_DiskNum];
@@ -262,15 +284,15 @@ namespace GetSystemStatusGUI {
         }
         public float DiskRead(int diskId) {
             try { return pcDisksRead[diskId].NextValue(); }
-            catch { return 0; }
+            catch (InvalidOperationException) { return -1; }
         }
         public float DiskWrite(int diskId) {
             try { return pcDisksWrite[diskId].NextValue(); }
-            catch { return 0; }
+            catch (InvalidOperationException) { return -1; }
         }
         public float DiskLoad(int diskId) {
             try { return Math.Max(0, 100 - pcDisksLoad[diskId].NextValue()); }
-            catch { return 0; }
+            catch (InvalidOperationException) { return 0; }
         }
     }
 }
