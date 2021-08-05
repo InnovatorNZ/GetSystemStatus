@@ -138,14 +138,14 @@ namespace GetSystemStatusGUI {
             mainform.DisableChecked("Disk");
         }
 
-		private void DiskForm_Deactivate(object sender, EventArgs e) {
-			if (this.WindowState == FormWindowState.Minimized) {
+        private void DiskForm_Deactivate(object sender, EventArgs e) {
+            if (this.WindowState == FormWindowState.Minimized) {
                 this.WindowState = FormWindowState.Normal;
                 mainform.DisableChecked("Disk");
-			}
-		}
+            }
+        }
 
-		private void disk_load_thread() {
+        private void disk_load_thread() {
             List<float>[] ys = new List<float>[diskInfo.m_DiskNum];
             for (int i = 0; i < diskInfo.m_DiskNum; i++) {
                 ys[i] = new List<float>();
@@ -227,7 +227,12 @@ namespace GetSystemStatusGUI {
             pcDiskRead.NextValue();
             pcDiskWrite.NextValue();
 
-            for (int i = 0; i < m_DiskNum; i++) { pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue(); }
+            for (int i = 0; i < m_DiskNum; i++) {
+                try {
+                    pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue();
+                }
+                catch { }
+            }
 
             diskModelCaption = new string[m_DiskNum];
             var wmi_disk = new ManagementObjectSearcher("select * from Win32_DiskDrive");
@@ -256,13 +261,16 @@ namespace GetSystemStatusGUI {
             get { return pcDiskWrite.NextValue(); }
         }
         public float DiskRead(int diskId) {
-            return pcDisksRead[diskId].NextValue();
+            try { return pcDisksRead[diskId].NextValue(); }
+            catch { return 0; }
         }
         public float DiskWrite(int diskId) {
-            return pcDisksWrite[diskId].NextValue();
+            try { return pcDisksWrite[diskId].NextValue(); }
+            catch { return 0; }
         }
         public float DiskLoad(int diskId) {
-            return Math.Max(0, 100 - pcDisksLoad[diskId].NextValue());
+            try { return Math.Max(0, 100 - pcDisksLoad[diskId].NextValue()); }
+            catch { return 0; }
         }
     }
 }
