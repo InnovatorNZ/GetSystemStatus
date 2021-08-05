@@ -188,8 +188,19 @@ namespace GetSystemStatusGUI {
             int iWidth = columns * iSize + (columns + 1) * 7;
             iHeight = Math.Max(iHeight, this.Size.Height);
             iWidth = Math.Max(iWidth, this.Size.Width);
-            if (columns == 2) iWidth = Math.Min(iWidth, columns * 302 + (columns + 1) * 18);    // 专为四核、双核优化
+            if (columns == 2) iWidth = (int)Math.Min(iWidth, (columns * 302 + (columns + 1) * 18) * GetWinScaling());    // 专为四核、双核优化
             this.Size = new Size(iWidth, iHeight);
+        }
+
+        public float GetWinScaling() {
+            int dpiX;
+            Graphics graphics = this.CreateGraphics();
+            dpiX = (Int32)graphics.DpiX;
+            if (dpiX == 96) { return 1; }
+            else if (dpiX == 120) { return 1.25f; }
+            else if (dpiX == 144) { return 1.5f; }
+            else if (dpiX == 192) { return 2f; }
+            else { return 1; }
         }
     }
 
