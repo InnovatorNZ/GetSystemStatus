@@ -387,6 +387,8 @@ namespace GetSystemStatusGUI {
         private void showVirtualNetworkToolStrip_Click(object sender, EventArgs e) {
             ToolStripMenuItem sd = sender as ToolStripMenuItem;
             this.showVirtual = sd.Checked;
+            this.showNetwork.Enabled = true;
+            this.showNetwork.Text = "Show Network and Adapter Speed";
             this.showNetwork.Checked = false;
             if (!networkForm.IsDisposed) networkForm.Dispose();
             networkForm = new NetworkForm(this, this.showVirtual);
