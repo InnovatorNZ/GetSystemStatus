@@ -19,6 +19,7 @@ namespace GetSystemStatusGUI {
         protected GPUForm gpuForm;
         private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
+        private bool showVirtual = false;
 
         public Form1() {
             InitializeComponent();
@@ -182,7 +183,7 @@ namespace GetSystemStatusGUI {
             this.showNetwork.Text = "Show Network and Adapter Speed";
             this.showNetwork.Checked = false;
             if (!networkForm.IsDisposed) networkForm.Dispose();
-            networkForm = new NetworkForm(this);
+            networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
         }
 
@@ -381,6 +382,15 @@ namespace GetSystemStatusGUI {
             catch (Exception ex) {
                 MessageBox.Show("Not valid: " + ex.Message);
             }
+        }
+
+        private void showVirtualNetworkToolStrip_Click(object sender, EventArgs e) {
+            ToolStripMenuItem sd = sender as ToolStripMenuItem;
+            this.showVirtual = sd.Checked;
+            this.showNetwork.Checked = false;
+            if (!networkForm.IsDisposed) networkForm.Dispose();
+            networkForm = new NetworkForm(this, this.showVirtual);
+            this.showNetwork.Checked = true;
         }
     }
 }

@@ -28,9 +28,9 @@ namespace GetSystemStatusGUI {
         private const double margin_ratio = 35;
         private Form1 mainForm;
 
-        public NetworkForm(Form1 mainForm) {
+        public NetworkForm(Form1 mainForm, bool showVirtual = false) {
             InitializeComponent();
-            networkInfo = new NetworkInfo();
+            networkInfo = new NetworkInfo(showVirtual);
             if (networkInfo.adapterNum == 0) {
                 mainForm.DisableChecked("noNetwork");
                 this.Dispose();
@@ -196,7 +196,7 @@ namespace GetSystemStatusGUI {
         private Dictionary<string, PerformanceCounter> pcNetworkSend;
 
         // 构造函数，初始化计数器
-        public NetworkInfo() {
+        public NetworkInfo(bool showVirtual = false) {
             //网卡性能计数器
             allAdapters = NetworkInterface.GetAllNetworkInterfaces();
             pcNetworkReceive = new Dictionary<string, PerformanceCounter>();
@@ -210,11 +210,12 @@ namespace GetSystemStatusGUI {
                     pcNetworkSend.Add(adapter.Description, new PerformanceCounter("Network Interface", "Bytes Sent/sec", R(adapter.Description), "."));
                 }
             }
-            ScreenValidAdapters();
+            if (!showVirtual) FilterValidAdapters();
+            else AddAllAdapters();
         }
 
         // 筛选出合法的网卡（活动的物理网卡）
-        private void ScreenValidAdapters() {
+        private void FilterValidAdapters() {
             validAdapters = new List<NetworkInterface>();
             foreach (NetworkInterface adapter in allAdapters) {
                 if (adapter.Speed > 0 && adapter.Speed != 1073741824) {
@@ -231,6 +232,16 @@ namespace GetSystemStatusGUI {
                     } else if (connMethod == "BTH" && adapter.Speed != 3000000) {
                         this.validAdapters.Add(adapter);
                     }
+                }
+            }
+        }
+
+        // 添加所有网卡（启用了显示虚拟网络适配器）
+        private void AddAllAdapters() {
+            validAdapters = new List<NetworkInterface>();
+            foreach (NetworkInterface adapter in allAdapters) {
+                if (adapter.Speed > 0 && adapter.Speed != 1073741824) {
+                    this.validAdapters.Add(adapter);
                 }
             }
         }

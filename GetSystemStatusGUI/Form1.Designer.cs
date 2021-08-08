@@ -51,10 +51,11 @@ namespace GetSystemStatusGUI
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.doNotShowGPUAtStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.fakeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnFocus = new System.Windows.Forms.Button();
-			this.fakeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.showVirtualNetworkToolStrip = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -264,6 +265,7 @@ namespace GetSystemStatusGUI
 			// 
 			this.optionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.doNotShowGPUAtStartToolStripMenuItem,
+            this.showVirtualNetworkToolStrip,
             this.fakeToolStripMenuItem});
 			this.optionToolStripMenuItem.Name = "optionToolStripMenuItem";
 			this.optionToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
@@ -273,9 +275,16 @@ namespace GetSystemStatusGUI
 			// 
 			this.doNotShowGPUAtStartToolStripMenuItem.CheckOnClick = true;
 			this.doNotShowGPUAtStartToolStripMenuItem.Name = "doNotShowGPUAtStartToolStripMenuItem";
-			this.doNotShowGPUAtStartToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+			this.doNotShowGPUAtStartToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.doNotShowGPUAtStartToolStripMenuItem.Text = "Do not show GPU at start";
 			this.doNotShowGPUAtStartToolStripMenuItem.Click += new System.EventHandler(this.doNotShowGPUAtStartToolStripMenuItem_Click);
+			// 
+			// fakeToolStripMenuItem
+			// 
+			this.fakeToolStripMenuItem.Name = "fakeToolStripMenuItem";
+			this.fakeToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.fakeToolStripMenuItem.Text = "Fake CPU cores...";
+			this.fakeToolStripMenuItem.Click += new System.EventHandler(this.fakeToolStripMenuItem_Click);
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -295,7 +304,7 @@ namespace GetSystemStatusGUI
 			// btnFocus
 			// 
 			this.btnFocus.Location = new System.Drawing.Point(358, 324);
-			this.btnFocus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.btnFocus.Margin = new System.Windows.Forms.Padding(2);
 			this.btnFocus.Name = "btnFocus";
 			this.btnFocus.Size = new System.Drawing.Size(88, 23);
 			this.btnFocus.TabIndex = 11;
@@ -303,12 +312,13 @@ namespace GetSystemStatusGUI
 			this.btnFocus.UseVisualStyleBackColor = true;
 			this.btnFocus.Click += new System.EventHandler(this.btnFocus_Click);
 			// 
-			// fakeToolStripMenuItem
+			// showVirtualNetworkToolStrip
 			// 
-			this.fakeToolStripMenuItem.Name = "fakeToolStripMenuItem";
-			this.fakeToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-			this.fakeToolStripMenuItem.Text = "Fake CPU cores...";
-			this.fakeToolStripMenuItem.Click += new System.EventHandler(this.fakeToolStripMenuItem_Click);
+			this.showVirtualNetworkToolStrip.CheckOnClick = true;
+			this.showVirtualNetworkToolStrip.Name = "showVirtualNetworkToolStrip";
+			this.showVirtualNetworkToolStrip.Size = new System.Drawing.Size(253, 22);
+			this.showVirtualNetworkToolStrip.Text = "Show virtual network adapters";
+			this.showVirtualNetworkToolStrip.Click += new System.EventHandler(this.showVirtualNetworkToolStrip_Click);
 			// 
 			// Form1
 			// 
@@ -369,6 +379,7 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.ToolStripMenuItem loadSizeAtStartup;
 		private System.Windows.Forms.Button btnFocus;
 		private System.Windows.Forms.ToolStripMenuItem fakeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem showVirtualNetworkToolStrip;
 	}
 }
 
