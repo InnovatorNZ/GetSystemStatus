@@ -176,11 +176,11 @@ namespace GetSystemStatusGUI {
         public int Count { get; private set; }
         private List<PairedAdapterInfo> pairedAdapterInfos;
 
-        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        [DllImport("GetGPUInfoDXDLL.dll")]
         private extern static int Init();
-        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        [DllImport("GetGPUInfoDXDLL.dll")]
         private extern static IntPtr getAdapterName(int luid);
-        [DllImport(@"..\..\..\..\x64\Debug\GetGPUInfoDXDLL.dll")]
+        [DllImport("GetGPUInfoDXDLL.dll")]
         private extern static long getDedicatedMemory(int luid);
 
         struct PairedAdapterInfo : IComparable {

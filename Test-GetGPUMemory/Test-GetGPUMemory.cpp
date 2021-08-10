@@ -1,6 +1,9 @@
-﻿#include <cuda.h>
+﻿//#define CUDA_METHOD
+#ifdef CUDA_METHOD
+#include <cuda.h>
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
+#endif
 #include <stdio.h>
 #include <Windows.h>  
 #include <iostream>  
@@ -9,9 +12,10 @@
 using namespace std;
 
 #pragma comment(lib, "dxgi.lib")
+
+#ifdef CUDA_METHOD
 #pragma comment(lib, "cuda.lib")
 #pragma comment(lib, "cudart.lib")
-
 int CUDA() {
 	cudaError_t cerr = cudaSetDevice(0);
 	if (cerr != cudaSuccess(0)) return -1;
@@ -25,6 +29,7 @@ int CUDA() {
 		printf("free = %dM\ntotal = %dM", free / 1024 / 1024, total / 1024 / 1024);
 	return 0;
 }
+#endif
 
 std::string WStringToString(const std::wstring& wstr) {
 	std::string str(wstr.length(), ' ');
