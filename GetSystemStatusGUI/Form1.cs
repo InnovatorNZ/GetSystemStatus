@@ -172,19 +172,23 @@ namespace GetSystemStatusGUI {
         }
 
         public void btnDiskRefresh_Click(object sender, EventArgs e) {
+            var diskLocation = diskForm.Location;
             this.showDisk.Checked = false;
             if (!diskForm.IsDisposed) diskForm.Dispose();
             diskForm = new DiskForm(this);
             this.showDisk.Checked = true;
+            this.diskForm.Location = diskLocation;
         }
 
         private void btnNetworkRefresh_Click(object sender, EventArgs e) {
             this.showNetwork.Enabled = true;
             this.showNetwork.Text = "Show Network and Adapter Speed";
+            var networkLocation = networkForm.Location;
             this.showNetwork.Checked = false;
             if (!networkForm.IsDisposed) networkForm.Dispose();
             networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
+            this.networkForm.Location = networkLocation;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
@@ -372,15 +376,17 @@ namespace GetSystemStatusGUI {
                     int core_num = int.Parse(str);
                     if (core_num < 0 || core_num > 256) throw new Exception("Number of cores is too large or below 0");
                     this.showCPU.Text = "Loading CPU...";
+                    var cpuLocation = cpuForm.Location;
                     this.showCPU.Checked = false;
                     if (!cpuForm.IsDisposed) cpuForm.Dispose();
                     cpuForm = new CPUForm(this, core_num);
                     this.showCPU.Text = "Show CPU Utilizations";
                     this.showCPU.Checked = true;
+                    this.cpuForm.Location = cpuLocation;
                 }
             }
             catch (Exception ex) {
-                MessageBox.Show("Not valid: " + ex.Message);
+                MessageBox.Show("Not valid: " + ex.Message, "Invalid core number", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -389,10 +395,12 @@ namespace GetSystemStatusGUI {
             this.showVirtual = sd.Checked;
             this.showNetwork.Enabled = true;
             this.showNetwork.Text = "Show Network and Adapter Speed";
+            var networkLocation = networkForm.Location;
             this.showNetwork.Checked = false;
             if (!networkForm.IsDisposed) networkForm.Dispose();
             networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
+            this.networkForm.Location = networkLocation;
         }
     }
 }

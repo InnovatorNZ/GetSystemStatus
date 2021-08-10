@@ -52,6 +52,12 @@ namespace GetSystemStatusGUI {
 
             Utility.FactorDecompose(this.ProcessorCount, ref columns, ref rows);
 
+            if (columns / rows > 100) {
+                MessageBox.Show("The CPU logical core number is very strange and maybe odd. Reset logical cores to default.", "Error occured when loading", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.ProcessorCount = cpuInfo.ProcessorCount;
+                Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
+            }
+
             subCharts = new Chart[this.ProcessorCount];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
