@@ -352,7 +352,9 @@ namespace GetSystemStatusGUI {
         }
 
         private string R(string str) {
-            return str.Replace('#', '_').Replace('(', '[').Replace(')', ']').Replace('/', '_');
+            string ret = str.Replace('#', '_').Replace('(', '[').Replace(')', ']').Replace('/', '_');
+            if (ret.Contains("Microsoft ISATAP Adapter")) ret = "isatap.localdomain";
+            return ret;
         }
     }
 }
