@@ -154,6 +154,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RAMForm.resx">
       <DependentUpon>RAMForm.cs</DependentUpon>
@@ -175,7 +176,11 @@
   <ItemGroup>
     <Content Include="cpuicon.ico" />
     <Content Include="diskicon.ico" />
+    <Content Include="graphics-card.ico" />
+    <Content Include="networkicon.ico" />
     <Content Include="pfcico.ico" />
+    <Content Include="ramicon.ico" />
+    <Content Include="restart-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

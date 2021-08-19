@@ -157,6 +157,15 @@ namespace GetSystemStatusGUI {
             base.Dispose();
         }
 
+        public new void Focus() {
+            if (id == 0) {
+                foreach (var subform in moreGPUForms) {
+                    subform.Focus();
+                }
+            }
+            base.Focus();
+        }
+
         private void GPUForm_Resize(object sender, EventArgs e) {
             int width = this.Width - (int)(chartGPU.Location.X * 2.5);
             int height = this.Height - chartGPU.Location.Y - chartGPU.Location.X * 6;

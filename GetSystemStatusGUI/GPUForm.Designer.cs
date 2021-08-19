@@ -24,6 +24,7 @@ namespace GetSystemStatusGUI {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GPUForm));
 			this.label1 = new System.Windows.Forms.Label();
 			this.chartGPU = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.lblGPUName = new System.Windows.Forms.Label();
@@ -73,8 +74,10 @@ namespace GetSystemStatusGUI {
 			this.Controls.Add(this.chartGPU);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblGPUName);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(2);
 			this.Name = "GPUForm";
+			this.ShowInTaskbar = false;
 			this.Text = "GPU";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GPUForm_FormClosing);
 			this.Load += new System.EventHandler(this.GPUForm_Load);

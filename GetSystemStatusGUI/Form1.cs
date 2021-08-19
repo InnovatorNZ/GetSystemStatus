@@ -31,8 +31,12 @@ namespace GetSystemStatusGUI {
                 if (cpuForm == null || cpuForm.IsDisposed)
                     cpuForm = new CPUForm(this);
                 cpuForm.Show();
+                //btnFocusCPU.Visible = true;
+                btnFocusCPU.Enabled = true;
             } else {
                 cpuForm.Hide();
+                btnFocusCPU.Enabled = false;
+                //btnFocusCPU.Visible = false;
             }
         }
 
@@ -97,8 +101,10 @@ namespace GetSystemStatusGUI {
             if (self.Checked) {
                 if (ramForm == null || ramForm.IsDisposed) ramForm = new RAMForm(this);
                 ramForm.Show();
+                btnFocusRAM.Enabled = true;
             } else {
                 ramForm.Hide();
+                btnFocusRAM.Enabled = false;
             }
         }
 
@@ -107,8 +113,10 @@ namespace GetSystemStatusGUI {
             if (self.Checked) {
                 if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm(this);
                 diskForm.Show();
+                btnFocusDisk.Enabled = true;
             } else {
                 diskForm.Hide();
+                btnFocusDisk.Enabled = false;
             }
         }
 
@@ -116,9 +124,13 @@ namespace GetSystemStatusGUI {
             CheckBox self = (CheckBox)sender;
             if (self.Checked) {
                 if (networkForm == null || networkForm.IsDisposed) networkForm = new NetworkForm(this);
-                if (!networkForm.IsDisposed) networkForm.Show();
+                if (!networkForm.IsDisposed) {
+                    networkForm.Show();
+                    btnFocusNetwork.Enabled = true;
+                }
             } else {
                 if (networkForm != null) networkForm.Hide();
+                btnFocusNetwork.Enabled = false;
             }
         }
 
@@ -128,10 +140,12 @@ namespace GetSystemStatusGUI {
                 if (gpuForm == null || gpuForm.IsDisposed) gpuForm = new GPUForm(this);
                 if (!gpuForm.IsDisposed) {
                     gpuForm.Show();
+                    btnFocusGPU.Enabled = true;
                     loadGPUFormLocation();
                 }
             } else {
                 if (gpuForm != null) gpuForm.Dispose();
+                btnFocusGPU.Enabled = false;
             }
         }
 
@@ -401,6 +415,26 @@ namespace GetSystemStatusGUI {
             networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
             this.networkForm.Location = networkLocation;
+        }
+
+        private void btnFocusCPU_Click(object sender, EventArgs e) {
+            cpuForm.Focus();
+        }
+
+        private void btnFocusRAM_Click(object sender, EventArgs e) {
+            ramForm.Focus();
+        }
+
+        private void btnFocusDisk_Click(object sender, EventArgs e) {
+            diskForm.Focus();
+        }
+
+        private void btnFocusNetwork_Click(object sender, EventArgs e) {
+            networkForm.Focus();
+        }
+
+        private void btnFocusGPU_Click(object sender, EventArgs e) {
+            gpuForm.Focus();
         }
     }
 }
