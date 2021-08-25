@@ -113,7 +113,8 @@ namespace GetSystemStatusGUI {
             for (int i = 0; i < Global.history_length; i++) dediUsage.Add(0);
             int t = 0;
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
-                if (t % 15 == 0 && t != 0) gpuInfo.RefreshGPUEnginePerfCnt(id);
+                if (t % Global.refresh_gpupc_interval == 0 && t != 0)
+                    gpuInfo.RefreshGPUEnginePerfCnt(id);
                 Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilization(id);
                 Action update = new Action(
                     delegate () {
