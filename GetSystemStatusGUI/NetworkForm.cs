@@ -162,7 +162,15 @@ namespace GetSystemStatusGUI {
                 float[] receive_speed = new float[networkInfo.adapterNum];
                 for (int i = 0; i < networkInfo.adapterNum; i++) {
                     float cLoad, cSendSpeed, cReceiveSpeed;
-                    networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
+                    try {
+                        networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
+                    }
+                    catch (InvalidOperationException) {
+                        cLoad = 0;
+                        cSendSpeed = 0;
+                        cReceiveSpeed = 0;
+                    }
+
                     ys[i].RemoveAt(0);
                     ys[i].Add(cLoad);
                     send_speed[i] = cSendSpeed;
