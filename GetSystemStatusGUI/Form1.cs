@@ -379,6 +379,7 @@ namespace GetSystemStatusGUI {
             if (showRAM.Checked) ramForm.Focus();
             if (showNetwork.Checked) networkForm.Focus();
             if (showDisk.Checked) diskForm.Focus();
+            if (showGPU.Checked) gpuForm.Focus();
             if (showCPU.Checked) cpuForm.Focus();
             this.Focus();
         }
