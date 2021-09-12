@@ -358,9 +358,8 @@ namespace GetSystemStatusGUI {
                     string cDeviceId = csplit[4];
                     if (cDeviceId == deviceId) {
                         string cEngine = getEngineString(csplit);
-                        if (result.TryGetValue(cEngine, out float cvalue)) {
-                            cvalue += pc.NextValue();
-                            result[cEngine] = cvalue;
+                        if (result.ContainsKey(cEngine)) {
+                            result[cEngine] += pc.NextValue();
                         } else {
                             result.Add(cEngine, pc.NextValue());
                         }
