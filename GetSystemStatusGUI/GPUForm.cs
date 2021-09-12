@@ -227,6 +227,9 @@ namespace GetSystemStatusGUI {
 
         // 构造函数，初始化计数器
         public GPUInfo(int id = -1) {
+            this.resetEvents = new ManualResetEvent[max_thread_num];
+            for (int i = 0; i < max_thread_num; i++)
+                this.resetEvents[i] = new ManualResetEvent(false);
             //专用GPU显存计数器
             PerformanceCounterCategory gpuPfc = new PerformanceCounterCategory("GPU Adapter Memory", "Dedicated Usage");
             gpuPfc.MachineName = ".";
@@ -263,7 +266,7 @@ namespace GetSystemStatusGUI {
                     string mem = mo["AdapterRAM"].ToString();
                     gpu_name.Add(c_gpu_name);
                 }
-                catch { }
+                catch (NullReferenceException) { }
             }
             this.Count = gpu_name.Count;
             this.FilterValidGPU();
@@ -370,6 +373,76 @@ namespace GetSystemStatusGUI {
                 return this.GetGPUUtilization(id);
             }
         }
+
+        private const int max_thread_num = 3;
+        private ManualResetEvent[] resetEvents;
+        private struct Para {
+            public int tid;
+            public List<PerformanceCounter> cPcGPUs;
+            public ManualResetEvent reset_event;
+            public Para(int id, ManualResetEvent resetEvent) {
+                this.tid = id;
+                this.cPcGPUs = new List<PerformanceCounter>();
+                this.reset_event = resetEvent;
+            }
+        }
+        private Dictionary<string, float>[] retDic = new Dictionary<string, float>[max_thread_num];
+        public Dictionary<string, float> GetGPUUtilizationMT(int id) {
+            string deviceId = this.getGpuPcId(id);
+            int per_pc_cnt = pcGPUEngine.Count / max_thread_num;
+            Para[] paras = new Para[max_thread_num];
+            for (int tid = 0; tid < max_thread_num; tid++) {
+                paras[tid] = new Para(tid, resetEvents[tid]);
+                //this.retDic[tid] = new Dictionary<string, float>();
+            }
+            for (int i = 0; i < pcGPUEngine.Count; i++) {
+                int tid = Math.Min(i / per_pc_cnt, max_thread_num - 1);
+                PerformanceCounter pc = pcGPUEngine[i];
+                string[] csplit = pc.InstanceName.Split('_');
+                string cDeviceId = csplit[4];
+                if (cDeviceId == deviceId) {
+                    paras[tid].cPcGPUs.Add(pc);
+                }
+            }
+            for (int tid = 0; tid < max_thread_num; tid++) {
+                resetEvents[tid].Reset();
+                ThreadPool.QueueUserWorkItem(new WaitCallback(getGPUUti_workingthread), paras[tid]);
+            }
+            WaitHandle.WaitAll(resetEvents);
+            Dictionary<string, float> ret = new Dictionary<string, float>();
+            for (int th = 0; th < max_thread_num; th++) {
+                foreach (var kv in retDic[th]) {
+                    string key = kv.Key;
+                    float value = kv.Value;
+                    if (ret.ContainsKey(key)) {
+                        ret[key] += value;
+                    } else {
+                        ret[key] = value;
+                    }
+                }
+            }
+            return ret;
+        }
+        private void getGPUUti_workingthread(object obj) {
+            Para para = (Para)obj;
+            Dictionary<string, float> cret = new Dictionary<string, float>();
+            foreach (var pc in para.cPcGPUs) {
+                string cEngine = getEngineString(pc);
+                float cvalue = 0;
+                try {
+                    cvalue = pc.NextValue();
+                }
+                catch (InvalidOperationException) { }
+                if (cret.ContainsKey(cEngine)) {
+                    cret[cEngine] += cvalue;
+                } else {
+                    cret[cEngine] = cvalue;
+                }
+            }
+            this.retDic[para.tid] = cret;
+            para.reset_event.Set();
+        }
+
         public Dictionary<string, Dictionary<string, float>> GetGPUUtilization() {
             Dictionary<string, Dictionary<string, float>> ret = new Dictionary<string, Dictionary<string, float>>();
             foreach (PerformanceCounter pc in pcGPUEngine) {
@@ -424,6 +497,9 @@ namespace GetSystemStatusGUI {
             }
             return cEngine;
         }
+        private string getEngineString(PerformanceCounter pc) {
+            return getEngineString(pc.InstanceName.Split('_'));
+        }
 
         public void RefreshGPUEnginePerfCnt() {
             //刷新GPU利用率计数器
@@ -433,7 +509,7 @@ namespace GetSystemStatusGUI {
             pcGPUEngine.Clear();
             foreach (var gpu in pcDedicateGPUMemory) {
                 string c_device_id = gpu.InstanceName.Split('_')[2];
-                gpu.NextValue();
+                //gpu.NextValue();      //TODO: TEST THIS LINE TO ENSURE IF IT IS REALLY UNNECESSARY
                 //if (gpu.NextValue() < 0.5) continue;
                 foreach (string pidInstanceName in pidGpuInstanceNames) {
                     string c_pid_deviceId = pidInstanceName.Split('_')[4];
