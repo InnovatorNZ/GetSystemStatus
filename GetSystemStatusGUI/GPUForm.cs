@@ -115,7 +115,7 @@ namespace GetSystemStatusGUI {
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % Global.refresh_gpupc_interval == 0 && t != 0)
                     gpuInfo.RefreshGPUEnginePerfCnt(id);
-                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilization(id);
+                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationPL(id);
                 Action update = new Action(
                     delegate () {
                         foreach (var keyValuePair in cGpuUti) {
@@ -371,6 +371,29 @@ namespace GetSystemStatusGUI {
                 this.RefreshGPUEnginePerfCnt(id);
                 return this.GetGPUUtilization(id);
             }
+        }
+
+        public Dictionary<string, float> GetGPUUtilizationPL(int id) {
+            string deviceId = this.getGpuPcId(id);
+            Dictionary<string, float> result = new Dictionary<string, float>();
+            Parallel.ForEach(pcGPUEngine, pc => {
+                string[] csplit = pc.InstanceName.Split('_');
+                string cDeviceId = csplit[4];
+                if (cDeviceId == deviceId) {
+                    string cEngine = getEngineString(csplit);
+                    float cvalue = 0;
+                    try { cvalue = pc.NextValue(); }
+                    catch (InvalidOperationException) { }
+                    lock (result) {
+                        if (result.ContainsKey(cEngine)) {
+                            result[cEngine] += cvalue;
+                        } else {
+                            result[cEngine] = cvalue;
+                        }
+                    }
+                }
+            });
+            return result;
         }
 
         private const int max_thread_num = 3;
