@@ -115,7 +115,7 @@ namespace GetSystemStatusGUI {
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % Global.refresh_gpupc_interval == 0 && t != 0)
                     gpuInfo.RefreshGPUEnginePerfCnt(id);
-                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationPL(id);
+                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationPLL(id);
                 Action update = new Action(
                     delegate () {
                         foreach (var keyValuePair in cGpuUti) {
@@ -349,6 +349,7 @@ namespace GetSystemStatusGUI {
         }
 
         // GPU各引擎利用率
+        // 原始版本
         public Dictionary<string, float> GetGPUUtilization(int id) {
             string deviceId = this.getGpuPcId(id);
             try {
@@ -372,7 +373,7 @@ namespace GetSystemStatusGUI {
                 return this.GetGPUUtilization(id);
             }
         }
-
+        // 使用了System.Threading.Tasks.Parallel类的ForEach
         public Dictionary<string, float> GetGPUUtilizationPL(int id) {
             string deviceId = this.getGpuPcId(id);
             Dictionary<string, float> result = new Dictionary<string, float>();
@@ -395,6 +396,36 @@ namespace GetSystemStatusGUI {
             });
             return result;
         }
+        // 使用了System.Threading.Tasks.Parallel类的For且限制了最大并发数量
+        private const int max_parallel_num = 6;
+        public Dictionary<string, float> GetGPUUtilizationPLL(int id) {
+            string deviceId = this.getGpuPcId(id);
+            int per_pc_cnt = pcGPUEngine.Count / max_parallel_num;
+            Dictionary<string, float> result = new Dictionary<string, float>();
+            Parallel.For(0, max_parallel_num, tid => {
+                int start_i = tid * per_pc_cnt;
+                int end_i = (tid + 1) * per_pc_cnt;
+                if (tid == max_parallel_num - 1) end_i = pcGPUEngine.Count;
+                for (int i = start_i; i < end_i; i++) {
+                    PerformanceCounter pc = pcGPUEngine[i];
+                    string cDeviceId = pc.InstanceName.Split('_')[4];
+                    if (cDeviceId == deviceId) {
+                        string cEngine = getEngineString(pc);
+                        float cvalue = 0;
+                        try { cvalue = pc.NextValue(); }
+                        catch (InvalidOperationException) { }
+                        lock (result) {
+                            if (result.ContainsKey(cEngine)) {
+                                result[cEngine] += cvalue;
+                            } else {
+                                result[cEngine] = cvalue;
+                            }
+                        }
+                    }
+                }
+            });
+            return result;
+        }
 
         private const int max_thread_num = 3;
         private ManualResetEvent[] resetEvents;
@@ -409,6 +440,7 @@ namespace GetSystemStatusGUI {
             }
         }
         private Dictionary<string, float>[] retDic = new Dictionary<string, float>[max_thread_num];
+        // 使用了System.Threading.ThreadPool类创建线程池并使用WaitHandle与线程池通信且限制了最大线程数量
         public Dictionary<string, float> GetGPUUtilizationMT(int id) {
             string deviceId = this.getGpuPcId(id);
             int per_pc_cnt = pcGPUEngine.Count / max_thread_num;
