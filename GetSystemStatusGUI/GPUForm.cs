@@ -115,7 +115,7 @@ namespace GetSystemStatusGUI {
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % Global.refresh_gpupc_interval == 0 && t != 0)
                     gpuInfo.RefreshGPUEnginePerfCnt(id);
-                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationPLL(id);
+                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
                 Action update = new Action(
                     delegate () {
                         foreach (var keyValuePair in cGpuUti) {
@@ -398,7 +398,7 @@ namespace GetSystemStatusGUI {
         }
         // 使用了System.Threading.Tasks.Parallel类的For且限制了最大并发数量
         private const int max_parallel_num = 6;
-        public Dictionary<string, float> GetGPUUtilizationPLL(int id) {
+        public Dictionary<string, float> GetGPUUtilizationLPL(int id) {
             string deviceId = this.getGpuPcId(id);
             int per_pc_cnt = pcGPUEngine.Count / max_parallel_num;
             Dictionary<string, float> result = new Dictionary<string, float>();
@@ -441,7 +441,7 @@ namespace GetSystemStatusGUI {
         }
         private Dictionary<string, float>[] retDic = new Dictionary<string, float>[max_thread_num];
         // 使用了System.Threading.ThreadPool类创建线程池并使用WaitHandle与线程池通信且限制了最大线程数量
-        public Dictionary<string, float> GetGPUUtilizationMT(int id) {
+        public Dictionary<string, float> GetGPUUtilizationTP(int id) {
             string deviceId = this.getGpuPcId(id);
             int per_pc_cnt = pcGPUEngine.Count / max_thread_num;
             Para[] paras = new Para[max_thread_num];
@@ -583,11 +583,16 @@ namespace GetSystemStatusGUI {
                 string c_pid_deviceId = pidInstanceName.Split('_')[4];
                 if (c_pid_deviceId == c_device_id) {
                     PerformanceCounter pc = new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName);
-                    try {
-                        pc.NextValue();
+                    const bool nv_init = true;     //TEST FAILURE: Must NextValue() before use
+                    if (nv_init) {
+                        try {
+                            pc.NextValue();
+                            pcGPUEngine.Add(pc);
+                        }
+                        catch (InvalidOperationException) { }
+                    } else {
                         pcGPUEngine.Add(pc);
                     }
-                    catch { }
                 }
             }
         }
