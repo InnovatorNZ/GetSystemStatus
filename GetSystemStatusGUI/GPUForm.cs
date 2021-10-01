@@ -114,7 +114,7 @@ namespace GetSystemStatusGUI {
             int t = 0;
             while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
                 if (t % Global.refresh_gpupc_interval == 0 && t != 0)
-                    gpuInfo.RefreshGPUEnginePerfCnt(id);
+                    gpuInfo.RefreshGPUEnginePerfCntLPL(id);
                 Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
                 Action update = new Action(
                     delegate () {
@@ -397,8 +397,8 @@ namespace GetSystemStatusGUI {
             return result;
         }
         // 使用了System.Threading.Tasks.Parallel类的For且限制了最大并发数量
-        private const int max_parallel_num = 6;
         public Dictionary<string, float> GetGPUUtilizationLPL(int id) {
+            const int max_parallel_num = 6;
             string deviceId = this.getGpuPcId(id);
             int per_pc_cnt = pcGPUEngine.Count / max_parallel_num;
             Dictionary<string, float> result = new Dictionary<string, float>();
@@ -595,6 +595,35 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
+        }
+        public void RefreshGPUEnginePerfCntLPL(int id) {
+            const int max_parallel_num = 4;
+            PerformanceCounterCategory pidGpuPfc = new PerformanceCounterCategory("GPU Engine", "Utilization Percentage");
+            pidGpuPfc.MachineName = ".";
+            string[] pidGpuInstanceNames = pidGpuPfc.GetInstanceNames();
+            pcGPUEngine.Clear();
+            int per_pc_cnt = pidGpuInstanceNames.Length / max_parallel_num;
+            string c_device_id = this.getGpuPcId(id);
+            Parallel.For(0, max_parallel_num, tid => {
+                int start_i = tid * per_pc_cnt;
+                int end_i = (tid + 1) * per_pc_cnt;
+                if (tid == max_parallel_num - 1) end_i = pidGpuInstanceNames.Length;
+                for (int i = start_i; i < end_i; i++) {
+                    string pidInstanceName = pidGpuInstanceNames[i];
+                    string c_pid_deviceId = pidInstanceName.Split('_')[4];
+                    if (c_pid_deviceId == c_device_id) {
+                        PerformanceCounter pc = new PerformanceCounter("GPU Engine", "Utilization Percentage", pidInstanceName);
+                        // Must NextValue() before use
+                        try {
+                            pc.NextValue();
+                            lock (this.pcGPUEngine) {
+                                this.pcGPUEngine.Add(pc);
+                            }
+                        }
+                        catch (InvalidOperationException) { }
+                    }
+                }
+            });
         }
     }
 }
