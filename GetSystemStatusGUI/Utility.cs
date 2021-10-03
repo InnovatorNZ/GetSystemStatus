@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace GetSystemStatusGUI {
     public static class Utility {
@@ -39,6 +40,10 @@ namespace GetSystemStatusGUI {
             double finalValue = Math.Round((double)bytes / Math.Pow(baseSystem, scale), 1);
             string strscale = scale_unit[scale];
             string ret = desc + ": " + finalValue.ToString() + " " + strscale + "\n";
+            return ret;
+        }
+        public static Font ScaleFont(Font proto, float scale) {
+            Font ret = new Font(proto.Name, proto.Size * scale, proto.Style, proto.Unit);
             return ret;
         }
     }
