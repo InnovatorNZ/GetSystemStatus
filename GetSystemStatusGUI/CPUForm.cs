@@ -16,11 +16,9 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace GetSystemStatusGUI {
     public partial class CPUForm : Form {
         private const int historyLength = 60;
-        private int beginTop = 311;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
         private Color gridColor = ColorTranslator.FromHtml("#905baeff");
-        private int fixHeight = 40;   //修正高度
         private Form1 mainForm;
         private CPUInfo cpuInfo;
         private Chart[] subCharts;
@@ -39,7 +37,6 @@ namespace GetSystemStatusGUI {
 
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
-            this.beginTop = chart1.Location.Y + chart1.Size.Height + 5;
             List<float> y = new List<float>();
             for (int i = 0; i < historyLength; i++) y.Add(0);
             chart1.Series[0].Points.DataBindY(y);
@@ -99,6 +96,8 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisY2.LineWidth = 2;
+                    chart.ChartAreas[0].AxisX.MajorGrid.LineWidth = 1;
+                    chart.ChartAreas[0].AxisY.MajorGrid.LineWidth = 1;
                     chart.Titles.Add(cid.ToString());
                     chart.Titles[0].Text = "CPU " + cid.ToString();
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
@@ -164,7 +163,8 @@ namespace GetSystemStatusGUI {
             int marginVertical = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / (double)margin_ratio);
             int marginHorizontal = marginVertical;
             int endRight = (int)Math.Round((double)marginHorizontal * 1.1);
-            fixHeight = Math.Max(40, marginHorizontal * 3);
+            int fixHeight = Math.Max(40, marginHorizontal * 3);
+            int beginTop = chart1.Location.Y + chart1.Size.Height + 5;
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
             int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
             if (chartHeight <= 0 || chartWidth <= 0 || subCharts is null) return;
@@ -190,6 +190,7 @@ namespace GetSystemStatusGUI {
 
         private void InitialSize() {
             const int iSize = 145;
+            int beginTop = chart1.Location.Y + chart1.Size.Height + 5;
             int iHeight = beginTop + rows * iSize + (rows + 1) * 3;
             int iWidth = columns * iSize + (columns + 1) * 7;
             iHeight = Math.Max(iHeight, this.Size.Height);
@@ -198,15 +199,54 @@ namespace GetSystemStatusGUI {
             this.Size = new Size(iWidth, iHeight);
         }
 
-        public float GetWinScaling() {
-            int dpiX;
+        private void CPUForm_DpiChanged(object sender, DpiChangedEventArgs e) {
+            if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                new Action(delegate () {
+                    Thread.Sleep(150);
+                    Invoke(new Action(delegate () {
+                        this.CPUForm_Resize(sender, e);
+                    }));
+                }).BeginInvoke(null, null);
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                foreach (var control in this.Controls) {
+                    if (control is Label) {
+                        Label c = control as Label;
+                        c.Font = Utility.ScaleFont(c.Font, scale);
+                    }
+                }
+                foreach (var c in this.Controls) {
+                    if (c is Chart) {
+                        Chart subchart = c as Chart;
+                        foreach (var title in subchart.Titles) {
+                            title.Font = Utility.ScaleFont(title.Font, scale);
+                        }
+                        foreach (var chartarea in subchart.ChartAreas) {
+                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
+                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            chartarea.AxisX.LineWidth = lineWidth;
+                            chartarea.AxisY.LineWidth = lineWidth;
+                            chartarea.AxisX2.LineWidth = lineWidth;
+                            chartarea.AxisY2.LineWidth = lineWidth;
+                            chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                        }
+                    }
+                }
+            }
+        }
+
+        private float GetWinScaling() {
             Graphics graphics = this.CreateGraphics();
-            dpiX = (Int32)graphics.DpiX;
+            /*
+            int dpiX = (Int32)graphics.DpiX;
             if (dpiX == 96) { return 1; }
             else if (dpiX == 120) { return 1.25f; }
             else if (dpiX == 144) { return 1.5f; }
             else if (dpiX == 192) { return 2f; }
             else { return 1; }
+            */
+            float scale = graphics.DpiX / 96.0f;
+            return scale;
         }
     }
 

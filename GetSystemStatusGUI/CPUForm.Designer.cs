@@ -143,6 +143,7 @@ namespace GetSystemStatusGUI
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CPUForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CPUForm_FormClosed);
 			this.Load += new System.EventHandler(this.CPUForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.CPUForm_DpiChanged);
 			this.Resize += new System.EventHandler(this.CPUForm_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
 			this.ResumeLayout(false);
