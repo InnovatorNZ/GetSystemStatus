@@ -133,8 +133,8 @@ namespace GetSystemStatusGUI {
 			this.textBoxDescription.Size = new System.Drawing.Size(271, 116);
 			this.textBoxDescription.TabIndex = 23;
 			this.textBoxDescription.TabStop = false;
-			this.textBoxDescription.Text = "允许将此程序在注明原作者的情况下传播、修改或重发布\r\n\r\n项目仓库代码地址：https://northern_oceans.coding.net/public/G" +
-    "etSystemStatus/GetSystemStatus/git/files";
+			this.textBoxDescription.Text = "允许将此程序在注明原作者的情况下传播、修改或重发布，该仓库代码基于MIT开源协议\r\n\r\n项目仓库代码地址：https://northern_oceans.codi" +
+    "ng.net/public/GetSystemStatus/GetSystemStatus/git/files";
 			// 
 			// okButton
 			// 
@@ -152,6 +152,7 @@ namespace GetSystemStatusGUI {
 			this.AcceptButton = this.okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.okButton;
 			this.ClientSize = new System.Drawing.Size(435, 261);
 			this.Controls.Add(this.tableLayoutPanel);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

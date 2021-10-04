@@ -20,6 +20,8 @@ namespace GetSystemStatusGUI {
         private Color chartColor = Color.FromArgb(105, 139, 0, 139);
         private Color borderColor = Color.FromArgb(180, 139, 0, 139);
         private Form1 mainform;
+        private float fLineWidth = 2;
+        private float fGridWidth = 1;
 
         public RAMForm(Form1 mainform) {
             ramInfo = new RAMInfo();
@@ -33,6 +35,8 @@ namespace GetSystemStatusGUI {
             chart1.Series[0].Points.DataBindY(list);
             chart1.PaletteCustomColors[0] = chartColor;
             chart1.Series[0].BorderColor = borderColor;
+            fLineWidth = chart1.ChartAreas[0].AxisX.LineWidth;
+            fGridWidth = chart1.ChartAreas[0].AxisX.MajorGrid.LineWidth;
             new Action(ram_update_thread).BeginInvoke(null, null);
         }
 
@@ -78,6 +82,8 @@ namespace GetSystemStatusGUI {
         private void RAMForm_DpiChanged(object sender, DpiChangedEventArgs e) {
             if (e.DeviceDpiNew != e.DeviceDpiOld) {
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                this.fLineWidth *= scale;
+                this.fGridWidth *= scale;
                 foreach (var control in this.Controls) {
                     if (control is Label) {
                         Label label = control as Label;
@@ -88,8 +94,8 @@ namespace GetSystemStatusGUI {
                             title.Font = Utility.ScaleFont(title.Font, scale);
                         }
                         foreach (var chartarea in subchart.ChartAreas) {
-                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
-                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            int lineWidth = (int)Math.Round(fLineWidth);
+                            int gridLineWidth = (int)Math.Round(fGridWidth);
                             chartarea.AxisX.LineWidth = lineWidth;
                             chartarea.AxisY.LineWidth = lineWidth;
                             chartarea.AxisX2.LineWidth = lineWidth;

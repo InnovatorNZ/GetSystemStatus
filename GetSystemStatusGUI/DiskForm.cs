@@ -22,6 +22,8 @@ namespace GetSystemStatusGUI {
         private const double margin_ratio = 35;
         private const int history_length = 60;
         private Form1 mainform;
+        private float fLineWidth = 2;
+        private float fGridWidth = 1;
 
         public DiskForm(Form1 mainform) {
             InitializeComponent();
@@ -58,8 +60,8 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX.MinorGrid.LineColor = Color.LightGreen;
                     chart.ChartAreas[0].AxisX.LineColor = Color.LimeGreen;
                     chart.ChartAreas[0].AxisY.LineColor = Color.LimeGreen;
-                    chart.ChartAreas[0].AxisX.LineWidth = 2;
-                    chart.ChartAreas[0].AxisY.LineWidth = 2;
+                    chart.ChartAreas[0].AxisX.LineWidth = (int)fLineWidth;
+                    chart.ChartAreas[0].AxisY.LineWidth = (int)fLineWidth;
                     chart.ChartAreas[0].AxisX.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisX2.Enabled = AxisEnabled.True;
@@ -67,13 +69,13 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisX2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisX2.LineColor = Color.LimeGreen;
-                    chart.ChartAreas[0].AxisX2.LineWidth = 2;
+                    chart.ChartAreas[0].AxisX2.LineWidth = (int)this.fLineWidth;
                     chart.ChartAreas[0].AxisY2.Enabled = AxisEnabled.True;
                     chart.ChartAreas[0].AxisY2.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = Color.LimeGreen;
-                    chart.ChartAreas[0].AxisY2.LineWidth = 2;
+                    chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
                     chart.Titles.Add(cid.ToString() + "_0");
                     chart.Titles[0].Text = "Disk " + cid.ToString();
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
@@ -154,6 +156,8 @@ namespace GetSystemStatusGUI {
                     }));
                 }).BeginInvoke(null, null);
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                fLineWidth *= scale;
+                fGridWidth *= scale;
                 foreach (var control in this.Controls) {
                     if (control is Label) {
                         Label c = control as Label;
@@ -164,8 +168,8 @@ namespace GetSystemStatusGUI {
                             title.Font = Utility.ScaleFont(title.Font, scale);
                         }
                         foreach (var chartarea in subchart.ChartAreas) {
-                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
-                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            int lineWidth = (int)Math.Round(fLineWidth);
+                            int gridLineWidth = (int)Math.Round(fGridWidth);
                             chartarea.AxisX.LineWidth = lineWidth;
                             chartarea.AxisY.LineWidth = lineWidth;
                             chartarea.AxisX2.LineWidth = lineWidth;

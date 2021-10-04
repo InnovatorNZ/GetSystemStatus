@@ -22,6 +22,8 @@ namespace GetSystemStatusGUI {
         private Color chartColor = Color.FromArgb(120, Color.LightCoral);
         private Color borderColor = Color.FromArgb(180, Color.LightCoral);
         private Color lineColor = Color.LightPink;
+        private float fLineWidth = 2;
+        private float fGridWidth = 1;
         private int rows = 1, columns = 1;
         private const int history_length = 60;
         private const double margin_ratio = 35;
@@ -67,8 +69,8 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX.MinorGrid.LineColor = lineColor;
                     chart.ChartAreas[0].AxisX.LineColor = baseColor;
                     chart.ChartAreas[0].AxisY.LineColor = baseColor;
-                    chart.ChartAreas[0].AxisX.LineWidth = 2;
-                    chart.ChartAreas[0].AxisY.LineWidth = 2;
+                    chart.ChartAreas[0].AxisX.LineWidth = (int)this.fLineWidth;
+                    chart.ChartAreas[0].AxisY.LineWidth = (int)this.fLineWidth;
                     chart.ChartAreas[0].AxisX.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisX2.Enabled = AxisEnabled.True;
@@ -76,13 +78,13 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisX2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisX2.LineColor = baseColor;
-                    chart.ChartAreas[0].AxisX2.LineWidth = 2;
+                    chart.ChartAreas[0].AxisX2.LineWidth = (int)this.fLineWidth;
                     chart.ChartAreas[0].AxisY2.Enabled = AxisEnabled.True;
                     chart.ChartAreas[0].AxisY2.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = baseColor;
-                    chart.ChartAreas[0].AxisY2.LineWidth = 2;
+                    chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
                     chart.Titles.Add(cid.ToString() + "_0");
                     chart.Titles[0].Text = networkInfo.getAdapterName(cid);
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
@@ -142,7 +144,7 @@ namespace GetSystemStatusGUI {
             if (this.columns > 2)
                 this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
             if (this.rows >= 2)
-                this.Height = (int)Math.Round(this.Height / 2f * rows * .97f);
+                this.Height = (int)Math.Round(this.Height * rows * .94f);
         }
 
         private void NetworkForm_Deactivate(object sender, EventArgs e) {
@@ -161,6 +163,8 @@ namespace GetSystemStatusGUI {
                     }));
                 }).BeginInvoke(null, null);
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                fLineWidth *= scale;
+                fGridWidth *= scale;
                 foreach (var control in this.Controls) {
                     if (control is Label) {
                         Label label = control as Label;
@@ -171,8 +175,8 @@ namespace GetSystemStatusGUI {
                             title.Font = Utility.ScaleFont(title.Font, scale);
                         }
                         foreach (var chartarea in subchart.ChartAreas) {
-                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
-                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            int lineWidth = (int)Math.Round(fLineWidth);
+                            int gridLineWidth = (int)Math.Round(fGridWidth);
                             chartarea.AxisX.LineWidth = lineWidth;
                             chartarea.AxisY.LineWidth = lineWidth;
                             chartarea.AxisX2.LineWidth = lineWidth;

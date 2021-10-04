@@ -437,5 +437,26 @@ namespace GetSystemStatusGUI {
         private void btnFocusGPU_Click(object sender, EventArgs e) {
             gpuForm.Focus();
         }
+
+        private void Form1_DpiChanged(object sender, DpiChangedEventArgs e) {
+            if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                foreach (var control in this.Controls) {
+                    if (control is CheckBox) {
+                        CheckBox cb = control as CheckBox;
+                        cb.Font = Utility.ScaleFont(cb.Font, scale);
+                    } else if (control is ComboBox) {
+                        ComboBox cb = control as ComboBox;
+                        cb.Font = Utility.ScaleFont(cb.Font, scale);
+                    } else if (control is Label) {
+                        Label lbl = control as Label;
+                        lbl.Font = Utility.ScaleFont(lbl.Font, scale);
+                    } else if (control is ToolStrip) {
+                        ToolStrip tsmi = control as ToolStrip;
+                        tsmi.Font = Utility.ScaleFont(tsmi.Font, scale);
+                    }
+                }
+            }
+        }
     }
 }

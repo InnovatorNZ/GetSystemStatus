@@ -23,6 +23,8 @@ namespace GetSystemStatusGUI {
         private Color chartColor = Color.FromArgb(120, Color.DeepSkyBlue);
         private Color borderColor = Color.FromArgb(180, Color.DeepSkyBlue);
         private Color lineColor = Color.FromArgb(150, Color.DeepSkyBlue);
+        private float fLineWidth = 2;
+        private float fGridWidth = 1;
 
         public GPUForm(Form1 mainForm, int id = 0) {
             InitializeComponent();
@@ -73,8 +75,8 @@ namespace GetSystemStatusGUI {
                 chartGPU.ChartAreas[engine].AxisX.MinorGrid.LineColor = lineColor;
                 chartGPU.ChartAreas[engine].AxisX.LineColor = baseColor;
                 chartGPU.ChartAreas[engine].AxisY.LineColor = baseColor;
-                chartGPU.ChartAreas[engine].AxisX.LineWidth = 2;
-                chartGPU.ChartAreas[engine].AxisY.LineWidth = 2;
+                chartGPU.ChartAreas[engine].AxisX.LineWidth = (int)this.fLineWidth;
+                chartGPU.ChartAreas[engine].AxisY.LineWidth = (int)this.fLineWidth;
                 chartGPU.ChartAreas[engine].AxisX.LabelStyle.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisY.LabelStyle.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisX2.Enabled = AxisEnabled.True;
@@ -82,13 +84,13 @@ namespace GetSystemStatusGUI {
                 chartGPU.ChartAreas[engine].AxisX2.MajorGrid.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisX2.MajorTickMark.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisX2.LineColor = baseColor;
-                chartGPU.ChartAreas[engine].AxisX2.LineWidth = 2;
+                chartGPU.ChartAreas[engine].AxisX2.LineWidth = (int)this.fLineWidth;
                 chartGPU.ChartAreas[engine].AxisY2.Enabled = AxisEnabled.True;
                 chartGPU.ChartAreas[engine].AxisY2.LabelStyle.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisY2.MajorGrid.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisY2.MajorTickMark.Enabled = false;
                 chartGPU.ChartAreas[engine].AxisY2.LineColor = baseColor;
-                chartGPU.ChartAreas[engine].AxisY2.LineWidth = 2;
+                chartGPU.ChartAreas[engine].AxisY2.LineWidth = (int)this.fLineWidth;
                 chartGPU.Titles[engine].Text = engine;
                 chartGPU.Titles[engine].Alignment = ContentAlignment.MiddleLeft;
                 chartGPU.Titles[engine].DockedToChartArea = engine;
@@ -187,6 +189,8 @@ namespace GetSystemStatusGUI {
                     }));
                 }).BeginInvoke(null, null);
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                fLineWidth *= scale;
+                fGridWidth *= scale;
                 foreach (var control in this.Controls) {
                     if (control is Label) {
                         Label label = control as Label;
@@ -197,8 +201,8 @@ namespace GetSystemStatusGUI {
                             title.Font = Utility.ScaleFont(title.Font, scale);
                         }
                         foreach (var chartarea in subchart.ChartAreas) {
-                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
-                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            int lineWidth = (int)Math.Round(fLineWidth);
+                            int gridLineWidth = (int)Math.Round(fGridWidth);
                             chartarea.AxisX.LineWidth = lineWidth;
                             chartarea.AxisY.LineWidth = lineWidth;
                             chartarea.AxisX2.LineWidth = lineWidth;

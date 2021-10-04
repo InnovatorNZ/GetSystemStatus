@@ -66,11 +66,10 @@ namespace GetSystemStatusGUI
 			// 
 			// showCPU
 			// 
-			this.showCPU.AutoSize = true;
 			this.showCPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showCPU.Location = new System.Drawing.Point(126, 89);
 			this.showCPU.Name = "showCPU";
-			this.showCPU.Size = new System.Drawing.Size(186, 24);
+			this.showCPU.Size = new System.Drawing.Size(323, 24);
 			this.showCPU.TabIndex = 0;
 			this.showCPU.Text = "Show CPU Utilizations";
 			this.showCPU.UseVisualStyleBackColor = true;
@@ -78,11 +77,10 @@ namespace GetSystemStatusGUI
 			// 
 			// showRAM
 			// 
-			this.showRAM.AutoSize = true;
 			this.showRAM.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showRAM.Location = new System.Drawing.Point(126, 118);
 			this.showRAM.Name = "showRAM";
-			this.showRAM.Size = new System.Drawing.Size(157, 24);
+			this.showRAM.Size = new System.Drawing.Size(323, 24);
 			this.showRAM.TabIndex = 1;
 			this.showRAM.Text = "Show RAM Usage";
 			this.showRAM.UseVisualStyleBackColor = true;
@@ -90,11 +88,10 @@ namespace GetSystemStatusGUI
 			// 
 			// showDisk
 			// 
-			this.showDisk.AutoSize = true;
 			this.showDisk.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showDisk.Location = new System.Drawing.Point(126, 148);
 			this.showDisk.Name = "showDisk";
-			this.showDisk.Size = new System.Drawing.Size(287, 24);
+			this.showDisk.Size = new System.Drawing.Size(323, 24);
 			this.showDisk.TabIndex = 2;
 			this.showDisk.Text = "Show Disk Load and Transfer Speed";
 			this.showDisk.UseVisualStyleBackColor = true;
@@ -102,11 +99,10 @@ namespace GetSystemStatusGUI
 			// 
 			// showNetwork
 			// 
-			this.showNetwork.AutoSize = true;
 			this.showNetwork.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showNetwork.Location = new System.Drawing.Point(126, 178);
 			this.showNetwork.Name = "showNetwork";
-			this.showNetwork.Size = new System.Drawing.Size(281, 24);
+			this.showNetwork.Size = new System.Drawing.Size(323, 24);
 			this.showNetwork.TabIndex = 3;
 			this.showNetwork.Text = "Show Network and Adapter Speed";
 			this.showNetwork.UseVisualStyleBackColor = true;
@@ -114,11 +110,10 @@ namespace GetSystemStatusGUI
 			// 
 			// showGPU
 			// 
-			this.showGPU.AutoSize = true;
 			this.showGPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showGPU.Location = new System.Drawing.Point(126, 209);
 			this.showGPU.Name = "showGPU";
-			this.showGPU.Size = new System.Drawing.Size(187, 24);
+			this.showGPU.Size = new System.Drawing.Size(320, 24);
 			this.showGPU.TabIndex = 4;
 			this.showGPU.Text = "Show GPU Utilizations";
 			this.showGPU.UseVisualStyleBackColor = true;
@@ -378,8 +373,7 @@ namespace GetSystemStatusGUI
 			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(544, 359);
 			this.Controls.Add(this.btnFocusGPU);
@@ -406,6 +400,7 @@ namespace GetSystemStatusGUI
 			this.Text = "GetSystemStatus";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
 			this.Load += new System.EventHandler(this.Form1_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.Form1_DpiChanged);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
