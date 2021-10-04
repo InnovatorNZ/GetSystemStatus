@@ -177,6 +177,44 @@ namespace GetSystemStatusGUI {
         private void GPUForm_FormClosing(object sender, FormClosingEventArgs e) {
             mainForm.DisableChecked("GPU");
         }
+
+        private void GPUForm_DpiChanged(object sender, DpiChangedEventArgs e) {
+            if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                new Action(delegate () {
+                    Thread.Sleep(150);
+                    Invoke(new Action(delegate () {
+                        this.GPUForm_Resize(sender, e);
+                    }));
+                }).BeginInvoke(null, null);
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                foreach (var control in this.Controls) {
+                    if (control is Label) {
+                        Label label = control as Label;
+                        label.Font = Utility.ScaleFont(label.Font, scale);
+                    } else if (control is Chart) {
+                        Chart subchart = control as Chart;
+                        foreach (var title in subchart.Titles) {
+                            title.Font = Utility.ScaleFont(title.Font, scale);
+                        }
+                        foreach (var chartarea in subchart.ChartAreas) {
+                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
+                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            chartarea.AxisX.LineWidth = lineWidth;
+                            chartarea.AxisY.LineWidth = lineWidth;
+                            chartarea.AxisX2.LineWidth = lineWidth;
+                            chartarea.AxisY2.LineWidth = lineWidth;
+                            chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
+                        }
+                        foreach (var series in subchart.Series) {
+                            int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
+                            series.BorderWidth = borderWidth;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public class GPUInfo {

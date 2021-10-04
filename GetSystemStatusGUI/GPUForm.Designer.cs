@@ -81,6 +81,7 @@ namespace GetSystemStatusGUI {
 			this.Text = "GPU";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GPUForm_FormClosing);
 			this.Load += new System.EventHandler(this.GPUForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.GPUForm_DpiChanged);
 			this.Resize += new System.EventHandler(this.GPUForm_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.chartGPU)).EndInit();
 			this.ResumeLayout(false);

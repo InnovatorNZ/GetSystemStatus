@@ -134,6 +134,7 @@
 			this.Deactivate += new System.EventHandler(this.RAMForm_Deactivate);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RAMForm_FormClosing);
 			this.Load += new System.EventHandler(this.RAMForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.RAMForm_DpiChanged);
 			((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace GetSystemStatusGUI {
     public partial class RAMForm : Form {
@@ -67,15 +68,47 @@ namespace GetSystemStatusGUI {
             mainform.DisableChecked("RAM");
         }
 
-		private void RAMForm_Deactivate(object sender, EventArgs e) {
-			if (this.WindowState == FormWindowState.Minimized) {
+        private void RAMForm_Deactivate(object sender, EventArgs e) {
+            if (this.WindowState == FormWindowState.Minimized) {
                 this.WindowState = FormWindowState.Normal;
                 mainform.DisableChecked("RAM");
-			}
-		}
-	}
+            }
+        }
 
-	public class RAMInfo {
+        private void RAMForm_DpiChanged(object sender, DpiChangedEventArgs e) {
+            if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                foreach (var control in this.Controls) {
+                    if (control is Label) {
+                        Label label = control as Label;
+                        label.Font = Utility.ScaleFont(label.Font, scale);
+                    } else if (control is Chart) {
+                        Chart subchart = control as Chart;
+                        foreach (var title in subchart.Titles) {
+                            title.Font = Utility.ScaleFont(title.Font, scale);
+                        }
+                        foreach (var chartarea in subchart.ChartAreas) {
+                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
+                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            chartarea.AxisX.LineWidth = lineWidth;
+                            chartarea.AxisY.LineWidth = lineWidth;
+                            chartarea.AxisX2.LineWidth = lineWidth;
+                            chartarea.AxisY2.LineWidth = lineWidth;
+                            chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
+                        }
+                        foreach (var series in subchart.Series) {
+                            int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
+                            series.BorderWidth = borderWidth;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public class RAMInfo {
         private long m_PhysicalMemory = 0;   //物理内存
         private PerformanceCounter pcAvailMemory;   //可用内存（性能计数器版）
 

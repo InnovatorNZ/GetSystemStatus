@@ -22,7 +22,6 @@ namespace GetSystemStatusGUI {
         private Color chartColor = Color.FromArgb(120, Color.LightCoral);
         private Color borderColor = Color.FromArgb(180, Color.LightCoral);
         private Color lineColor = Color.LightPink;
-        private int beginTop;
         private int rows = 1, columns = 1;
         private const int history_length = 60;
         private const double margin_ratio = 35;
@@ -42,7 +41,6 @@ namespace GetSystemStatusGUI {
         private void NetworkForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
             for (int i = 0; i < history_length; i++) y.Add(0);
-            beginTop = label1.Location.Y + label1.Size.Height;
             Utility.FactorDecompose(networkInfo.adapterNum, ref columns, ref rows);
             subCharts = new Chart[networkInfo.adapterNum];
             for (int i = 0; i < rows; i++) {
@@ -119,6 +117,7 @@ namespace GetSystemStatusGUI {
             int marginHorizontal = (int)Math.Round((double)Math.Min(this.Size.Height, this.Size.Width) / (double)margin_ratio);
             int marginVertical = marginHorizontal;
             int endRight = (int)Math.Round((double)marginHorizontal * 1.1);
+            int beginTop = label1.Location.Y + label1.Size.Height;
             int fixHeight = Math.Max(40, marginHorizontal * 2);
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
             int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
@@ -142,12 +141,52 @@ namespace GetSystemStatusGUI {
         private void InitialSize() {
             if (this.columns > 2)
                 this.Width = (int)Math.Round(this.Width / 2f * columns * .97f);
+            if (this.rows >= 2)
+                this.Height = (int)Math.Round(this.Height / 2f * rows * .97f);
         }
 
         private void NetworkForm_Deactivate(object sender, EventArgs e) {
             if (this.WindowState == FormWindowState.Minimized) {
                 this.WindowState = FormWindowState.Normal;
                 mainForm.DisableChecked("Network");
+            }
+        }
+
+        private void NetworkForm_DpiChanged(object sender, DpiChangedEventArgs e) {
+            if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                new Action(delegate () {
+                    Thread.Sleep(150);
+                    Invoke(new Action(delegate () {
+                        this.NetworkForm_Resize(sender, e);
+                    }));
+                }).BeginInvoke(null, null);
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                foreach (var control in this.Controls) {
+                    if (control is Label) {
+                        Label label = control as Label;
+                        label.Font = Utility.ScaleFont(label.Font, scale);
+                    } else if (control is Chart) {
+                        Chart subchart = control as Chart;
+                        foreach (var title in subchart.Titles) {
+                            title.Font = Utility.ScaleFont(title.Font, scale);
+                        }
+                        foreach (var chartarea in subchart.ChartAreas) {
+                            int lineWidth = (int)Math.Round(chartarea.AxisX.LineWidth * scale);
+                            int gridLineWidth = (int)Math.Round(chartarea.AxisX.MajorGrid.LineWidth * scale);
+                            chartarea.AxisX.LineWidth = lineWidth;
+                            chartarea.AxisY.LineWidth = lineWidth;
+                            chartarea.AxisX2.LineWidth = lineWidth;
+                            chartarea.AxisY2.LineWidth = lineWidth;
+                            chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
+                        }
+                        foreach (var series in subchart.Series) {
+                            int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
+                            series.BorderWidth = borderWidth;
+                        }
+                    }
+                }
             }
         }
 

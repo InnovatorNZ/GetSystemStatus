@@ -53,6 +53,7 @@
 			this.Deactivate += new System.EventHandler(this.NetworkForm_Deactivate);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NetworkForm_FormClosing);
 			this.Load += new System.EventHandler(this.NetworkForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.NetworkForm_DpiChanged);
 			this.Resize += new System.EventHandler(this.NetworkForm_Resize);
 			this.ResumeLayout(false);
 			this.PerformLayout();

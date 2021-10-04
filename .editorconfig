@@ -4,7 +4,7 @@
 dotnet_diagnostic.IDE0055.severity = silent
 
 # CS0162: 检测到无法访问的代码
-dotnet_diagnostic.CS0162.severity = silent
+dotnet_diagnostic.CS0162.severity = suggestion
 
 # CA1031: Do not catch general exception types
 dotnet_diagnostic.CA1031.severity = silent
