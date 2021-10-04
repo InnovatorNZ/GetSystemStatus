@@ -59,13 +59,14 @@
 			legend1.Enabled = false;
 			legend1.Name = "Legend1";
 			this.chart1.Legends.Add(legend1);
-			this.chart1.Location = new System.Drawing.Point(31, 37);
-			this.chart1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+			this.chart1.Location = new System.Drawing.Point(23, 30);
+			this.chart1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.chart1.Name = "chart1";
 			this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart1.PaletteCustomColors = new System.Drawing.Color[] {
         System.Drawing.Color.Gray};
 			series1.BorderColor = System.Drawing.Color.Black;
+			series1.BorderWidth = 2;
 			series1.ChartArea = "ChartArea1";
 			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
 			series1.LabelBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
@@ -73,7 +74,7 @@
 			series1.MarkerBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
 			series1.Name = "Series1";
 			this.chart1.Series.Add(series1);
-			this.chart1.Size = new System.Drawing.Size(439, 231);
+			this.chart1.Size = new System.Drawing.Size(329, 185);
 			this.chart1.TabIndex = 0;
 			this.chart1.Text = "chart1";
 			// 
@@ -83,8 +84,8 @@
 			this.chart2.ChartAreas.Add(chartArea2);
 			legend2.Name = "Legend1";
 			this.chart2.Legends.Add(legend2);
-			this.chart2.Location = new System.Drawing.Point(31, 272);
-			this.chart2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+			this.chart2.Location = new System.Drawing.Point(23, 218);
+			this.chart2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.chart2.Name = "chart2";
 			this.chart2.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart2.PaletteCustomColors = new System.Drawing.Color[] {
@@ -93,7 +94,7 @@
 			series2.Legend = "Legend1";
 			series2.Name = "Series1";
 			this.chart2.Series.Add(series2);
-			this.chart2.Size = new System.Drawing.Size(439, 239);
+			this.chart2.Size = new System.Drawing.Size(329, 191);
 			this.chart2.TabIndex = 1;
 			this.chart2.Text = "chart2";
 			// 
@@ -107,7 +108,8 @@
 			this.chart3.ChartAreas.Add(chartArea4);
 			this.chart3.ChartAreas.Add(chartArea5);
 			this.chart3.ChartAreas.Add(chartArea6);
-			this.chart3.Location = new System.Drawing.Point(476, 37);
+			this.chart3.Location = new System.Drawing.Point(357, 30);
+			this.chart3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.chart3.Name = "chart3";
 			series3.ChartArea = "ChartArea1";
 			series3.Name = "Series1";
@@ -118,7 +120,7 @@
 			this.chart3.Series.Add(series3);
 			this.chart3.Series.Add(series4);
 			this.chart3.Series.Add(series5);
-			this.chart3.Size = new System.Drawing.Size(422, 474);
+			this.chart3.Size = new System.Drawing.Size(316, 379);
 			this.chart3.TabIndex = 2;
 			this.chart3.Text = "chart3";
 			title1.DockedToChartArea = "ChartArea1";
@@ -145,14 +147,14 @@
 			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(938, 547);
+			this.ClientSize = new System.Drawing.Size(704, 438);
 			this.Controls.Add(this.chart3);
 			this.Controls.Add(this.chart2);
 			this.Controls.Add(this.chart1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+			this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";

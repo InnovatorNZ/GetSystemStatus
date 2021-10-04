@@ -53,6 +53,7 @@
 			this.Deactivate += new System.EventHandler(this.DiskForm_Deactivate);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DiskForm_FormClosing);
 			this.Load += new System.EventHandler(this.DiskForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.DiskForm_DpiChanged);
 			this.Resize += new System.EventHandler(this.DiskForm_Resize);
 			this.ResumeLayout(false);
 			this.PerformLayout();

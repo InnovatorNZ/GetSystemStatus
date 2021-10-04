@@ -210,13 +210,10 @@ namespace GetSystemStatusGUI {
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
                 foreach (var control in this.Controls) {
                     if (control is Label) {
-                        Label c = control as Label;
-                        c.Font = Utility.ScaleFont(c.Font, scale);
-                    }
-                }
-                foreach (var c in this.Controls) {
-                    if (c is Chart) {
-                        Chart subchart = c as Chart;
+                        Label label = control as Label;
+                        label.Font = Utility.ScaleFont(label.Font, scale);
+                    } else if (control is Chart) {
+                        Chart subchart = control as Chart;
                         foreach (var title in subchart.Titles) {
                             title.Font = Utility.ScaleFont(title.Font, scale);
                         }
@@ -229,6 +226,11 @@ namespace GetSystemStatusGUI {
                             chartarea.AxisY2.LineWidth = lineWidth;
                             chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
                             chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                            chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
+                        }
+                        foreach (var series in subchart.Series) {
+                            int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
+                            series.BorderWidth = borderWidth;
                         }
                     }
                 }
