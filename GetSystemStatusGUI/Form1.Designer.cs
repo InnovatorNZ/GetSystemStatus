@@ -102,7 +102,7 @@ namespace GetSystemStatusGUI
 			this.showNetwork.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showNetwork.Location = new System.Drawing.Point(126, 178);
 			this.showNetwork.Name = "showNetwork";
-			this.showNetwork.Size = new System.Drawing.Size(323, 24);
+			this.showNetwork.Size = new System.Drawing.Size(405, 24);
 			this.showNetwork.TabIndex = 3;
 			this.showNetwork.Text = "Show Network and Adapter Speed";
 			this.showNetwork.UseVisualStyleBackColor = true;
@@ -113,7 +113,7 @@ namespace GetSystemStatusGUI
 			this.showGPU.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.showGPU.Location = new System.Drawing.Point(126, 209);
 			this.showGPU.Name = "showGPU";
-			this.showGPU.Size = new System.Drawing.Size(320, 24);
+			this.showGPU.Size = new System.Drawing.Size(405, 24);
 			this.showGPU.TabIndex = 4;
 			this.showGPU.Text = "Show GPU Utilizations";
 			this.showGPU.UseVisualStyleBackColor = true;
@@ -191,6 +191,11 @@ namespace GetSystemStatusGUI
 			// 
 			// menuStrip1
 			// 
+			this.menuStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.menuStrip1.AutoSize = false;
+			this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
 			this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -205,6 +210,7 @@ namespace GetSystemStatusGUI
 			// 
 			// fileToolStripMenuItem
 			// 
+			this.fileToolStripMenuItem.AutoSize = false;
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveOpenedWindowLocationsToolStripMenuItem,
             this.loadSavedLocationsToolStripMenuItem,
@@ -263,6 +269,7 @@ namespace GetSystemStatusGUI
 			// 
 			// optionToolStripMenuItem
 			// 
+			this.optionToolStripMenuItem.AutoSize = false;
 			this.optionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.doNotShowGPUAtStartToolStripMenuItem,
             this.showVirtualNetworkToolStrip,
@@ -296,6 +303,7 @@ namespace GetSystemStatusGUI
 			// 
 			// helpToolStripMenuItem
 			// 
+			this.helpToolStripMenuItem.AutoSize = false;
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
@@ -373,7 +381,9 @@ namespace GetSystemStatusGUI
 			// 
 			// Form1
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(544, 359);
 			this.Controls.Add(this.btnFocusGPU);
@@ -421,8 +431,6 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.Button btnDiskRefresh;
         private System.Windows.Forms.Button btnNetworkRefresh;
 		private System.Windows.Forms.ToolTip toolTip1;
-		private System.Windows.Forms.MenuStrip menuStrip1;
-		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveOpenedWindowLocationsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem loadSavedLocationsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem optionToolStripMenuItem;
@@ -441,6 +449,8 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.Button btnFocusDisk;
 		private System.Windows.Forms.Button btnFocusNetwork;
 		private System.Windows.Forms.Button btnFocusGPU;
+		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+		private System.Windows.Forms.MenuStrip menuStrip1;
 	}
 }
 

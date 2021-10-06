@@ -452,8 +452,13 @@ namespace GetSystemStatusGUI {
                         Label lbl = control as Label;
                         lbl.Font = Utility.ScaleFont(lbl.Font, scale);
                     } else if (control is ToolStrip) {
-                        ToolStrip tsmi = control as ToolStrip;
-                        tsmi.Font = Utility.ScaleFont(tsmi.Font, scale);
+                        ToolStrip ts = control as ToolStrip;
+                        for (int i = 0; i < ts.Items.Count; i++) {
+                            var item = ts.Items[i] as ToolStripMenuItem;
+                            item.Height = (int)Math.Round(item.Height * scale);
+                            item.Width = (int)Math.Round(item.Width * scale);
+                            item.Font = Utility.ScaleFont(item.Font, scale);
+                        }
                     }
                 }
             }
