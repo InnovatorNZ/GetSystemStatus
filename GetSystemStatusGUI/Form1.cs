@@ -88,12 +88,19 @@ namespace GetSystemStatusGUI {
             loadSizeAtStartup.Checked = loadSize;
             if (Environment.OSVersion.Version.Major < 10) {
                 showGPU.Enabled = false;
-                showGPU.Text += " (Only available in Windows 10)";
+                showGPU.Text = "Show GPU (Only available in Windows 10)";
             } else {
                 showGPU.Checked = ifShowGPU;
             }
             if (loadLocation) LoadSavedLocation();
             if (loadSize) LoadSavedSize();
+            FixMainFormDPI();
+        }
+
+        private void FixMainFormDPI() {
+            Point cLocation = this.Location;
+            this.Location = new Point(0, 0);
+            this.Location = cLocation;
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
