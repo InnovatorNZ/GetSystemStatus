@@ -95,12 +95,27 @@ namespace GetSystemStatusGUI {
             if (loadLocation) LoadSavedLocation();
             if (loadSize) LoadSavedSize();
             FixMainFormDPI();
+            FixToolStripDPI();
         }
 
         private void FixMainFormDPI() {
             Point cLocation = this.Location;
             this.Location = new Point(0, 0);
             this.Location = cLocation;
+        }
+
+        private void FixToolStripDPI() {
+            foreach (var control in this.Controls) {
+                if (control is ToolStrip) {
+                    ToolStrip ts = control as ToolStrip;
+                    float dpi = this.DeviceDpi / 96f;
+                    for (int i = 0; i < ts.Items.Count; i++) {
+                        var item = ts.Items[i] as ToolStripMenuItem;
+                        item.Height = (int)Math.Round(item.Height * dpi);
+                        item.Width = (int)Math.Round(item.Width * dpi);
+                    }
+                }
+            }
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
