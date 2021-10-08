@@ -108,7 +108,7 @@ namespace GetSystemStatusGUI {
             foreach (var control in this.Controls) {
                 if (control is ToolStrip) {
                     ToolStrip ts = control as ToolStrip;
-                    float dpi = this.DeviceDpi / 96f;
+                    float dpi = this.GetWinScaling();
                     for (int i = 0; i < ts.Items.Count; i++) {
                         var item = ts.Items[i] as ToolStripMenuItem;
                         item.Height = (int)Math.Round(item.Height * dpi);
@@ -116,6 +116,12 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
+        }
+
+        private float GetWinScaling() {
+            Graphics graphics = this.CreateGraphics();
+            float scale = graphics.DpiX / 96.0f;
+            return scale;
         }
 
         private void showRAM_CheckedChanged(object sender, EventArgs e) {
