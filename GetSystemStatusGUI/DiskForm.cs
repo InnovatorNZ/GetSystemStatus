@@ -15,27 +15,51 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace GetSystemStatusGUI {
     public partial class DiskForm : Form {
         private DiskInfo diskInfo;
+        public List<DiskForm> moreDiskForms { get; private set; }
+        private Form1 mainform;
+        private readonly int startId;
         private Chart[] subCharts;
         private Color chartColor = Color.FromArgb(120, Color.LimeGreen);
         private Color borderColor = Color.FromArgb(180, Color.LimeGreen);
         private int rows = 1, columns = 1;
         private const double margin_ratio = 35;
         private const int history_length = 60;
-        private Form1 mainform;
         private float fLineWidth = 2;
         private float fGridWidth = 1;
+        private int cDiskNum {
+            get { return rows * columns; }
+        }
 
-        public DiskForm(Form1 mainform) {
+        public DiskForm(Form1 mainform, int startId = 0) {
             InitializeComponent();
+            moreDiskForms = new List<DiskForm>();
             diskInfo = new DiskInfo();
             this.mainform = mainform;
+            this.startId = startId;
+            if (startId == 0) {
+                List<int> factors = Utility.FactorDisposeRecurse2(diskInfo.m_DiskNum);
+                this.setColumnRow(factors[0], factors[1]);
+                if (factors.Count > 2) {
+                    for (int i = 2; i < factors.Count; i += 2) {
+                        int nStartId = factors[i - 2] * factors[i - 1];
+                        DiskForm nDiskForm = new DiskForm(mainform, nStartId);
+                        nDiskForm.setColumnRow(factors[i], factors[i + 1]);
+                        moreDiskForms.Add(nDiskForm);
+                    }
+                }
+            }
+        }
+
+        protected void setColumnRow(int column, int row) {
+            this.rows = row;
+            this.columns = column;
         }
 
         private void DiskForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
             for (int i = 0; i < history_length; i++) y.Add(0);
-            Utility.FactorDecompose(diskInfo.m_DiskNum, ref columns, ref rows);
-            subCharts = new Chart[diskInfo.m_DiskNum];
+            //Utility.FactorDecompose(diskInfo.m_DiskNum, out columns, out rows);
+            subCharts = new Chart[rows * columns];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
@@ -77,14 +101,14 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.LineColor = Color.LimeGreen;
                     chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
                     chart.Titles.Add(cid.ToString() + "_0");
-                    chart.Titles[0].Text = "Disk " + cid.ToString();
+                    chart.Titles[0].Text = "Disk " + (cid + startId).ToString();
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
                     chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 14);
                     chart.Titles.Add(cid.ToString() + "_1");
                     //chart.Titles[1].Text = "Load rate in 60 secs";
-                    chart.Titles[1].Text = diskInfo.DiskModel(cid);
+                    chart.Titles[1].Text = diskInfo.DiskModel(cid + startId);
                     chart.Titles[1].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[1].DockedToChartArea = cid.ToString();
                     chart.Titles[1].IsDockedInsideChartArea = false;
@@ -137,7 +161,7 @@ namespace GetSystemStatusGUI {
 
         private void DiskForm_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
-            mainform.DisableChecked("Disk");
+            if (startId == 0) mainform.DisableChecked("Disk");
         }
 
         private void DiskForm_Deactivate(object sender, EventArgs e) {
@@ -186,52 +210,90 @@ namespace GetSystemStatusGUI {
             }
         }
 
+        public new void Show() {
+            if (startId == 0) {
+                foreach (var subForm in moreDiskForms) {
+                    subForm.Show();
+                }
+            }
+            base.Show();
+        }
+
+        public new void Hide() {
+            if (startId == 0) {
+                foreach (var subForm in moreDiskForms) {
+                    subForm.Hide();
+                }
+            }
+            base.Hide();
+        }
+
+        public new void Dispose() {
+            if (startId == 0) {
+                foreach (var subform in moreDiskForms) {
+                    subform.Dispose();
+                }
+            }
+            base.Dispose();
+        }
+
+        public new void Focus() {
+            if (startId == 0) {
+                foreach (var subform in moreDiskForms) {
+                    subform.Focus();
+                }
+            }
+            base.Focus();
+        }
+
         private void disk_load_thread() {
-            List<float>[] ys = new List<float>[diskInfo.m_DiskNum];
-            for (int i = 0; i < diskInfo.m_DiskNum; i++) {
+            List<float>[] ys = new List<float>[cDiskNum];
+            for (int i = 0; i < cDiskNum; i++) {
                 ys[i] = new List<float>();
                 for (int j = 0; j < history_length; j++) ys[i].Add(0);
             }
-            while (!subCharts[0].IsDisposed) {
-                for (int i = 0; i < diskInfo.m_DiskNum; i++) {
-                    ys[i].RemoveAt(0);
-                    try {
-                        float cload = diskInfo.DiskLoad(i);
-                        ys[i].Add(cload);
-                    }
-                    catch {
-                        Action reload = new Action(
-                            delegate () {
-                                Thread.Sleep(100);
-                                mainform.btnDiskRefresh_Click(null, null);
-                            }
-                        );
-                        Invoke(reload);
-                        break;
-                    }
-                }
-                Action updateChart = new Action(
-                    delegate () {
-                        for (int i = 0; i < diskInfo.m_DiskNum; i++) {
-                            subCharts[i].Series[0].Points.DataBindY(ys[i]);
-                            float cRead = diskInfo.DiskRead(i);
-                            float cWrite = diskInfo.DiskWrite(i);
-                            string rw_speed = "Read -\nWrite -";
-                            if (cRead >= 0 && cWrite >= 0) {
-                                rw_speed = Utility.FormatSpeedString("Read", cRead, "Write", cWrite, false);
-                                string cTitle = subCharts[i].Titles[0].Text;
-                                int iES = cTitle.IndexOf("(Ejected)");
-                                if (iES != -1)
-                                    subCharts[i].Titles[0].Text = cTitle.Substring(0, iES);
-                            } else {
-                                subCharts[i].Titles[0].Text = "Disk " + i.ToString() + " (Ejected)";
-                            }
-                            subCharts[i].Titles[2].Text = rw_speed;
+            while (!this.IsDisposed && !subCharts[0].IsDisposed) {
+                if (this.Visible) {
+                    for (int i = 0; i < cDiskNum; i++) {
+                        ys[i].RemoveAt(0);
+                        try {
+                            float cload = diskInfo.DiskLoad(i + startId);
+                            ys[i].Add(cload);
+                        }
+                        catch {
+                            Action reload = new Action(
+                                delegate () {
+                                    Thread.Sleep(100);
+                                    mainform.btnDiskRefresh_Click(null, null);
+                                }
+                            );
+                            Invoke(reload);
+                            break;
                         }
                     }
-                );
-                try { Invoke(updateChart); }
-                catch { break; }
+                    Action updateChart = new Action(
+                        delegate () {
+                            for (int i = 0; i < cDiskNum; i++) {
+                                subCharts[i].Series[0].Points.DataBindY(ys[i]);
+                                float cRead = diskInfo.DiskRead(i + startId);
+                                float cWrite = diskInfo.DiskWrite(i + startId);
+                                string rw_speed = "Read -\nWrite -";
+                                if (cRead >= 0 && cWrite >= 0) {
+                                    rw_speed = Utility.FormatSpeedString("Read", cRead, "Write", cWrite, false);
+                                    string cTitle = subCharts[i].Titles[0].Text;
+                                    int iES = cTitle.IndexOf("(Ejected)");
+                                    if (iES != -1)
+                                        subCharts[i].Titles[0].Text = cTitle.Substring(0, iES);
+                                } else {
+                                    subCharts[i].Titles[0].Text = "Disk " + (i + startId).ToString() + " (Ejected)";
+                                }
+                                subCharts[i].Titles[2].Text = rw_speed;
+                            }
+                        }
+                    );
+                    try { Invoke(updateChart); }
+                    catch { break; }
+                }
                 Thread.Sleep(Global.interval_ms);
             }
         }

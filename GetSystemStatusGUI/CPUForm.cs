@@ -49,12 +49,12 @@ namespace GetSystemStatusGUI {
             chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = gridColor;
             chart1.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
 
-            Utility.FactorDecompose(this.ProcessorCount, ref columns, ref rows);
+            Utility.FactorDecompose(this.ProcessorCount, out columns, out rows);
 
             if (columns / rows > 100) {
                 MessageBox.Show("The CPU logical core number is very strange and maybe odd. Reset logical cores to default.", "Error occured when loading", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.ProcessorCount = cpuInfo.ProcessorCount;
-                Utility.FactorDecompose(cpuInfo.ProcessorCount, ref columns, ref rows);
+                Utility.FactorDecompose(cpuInfo.ProcessorCount, out columns, out rows);
             }
 
             subCharts = new Chart[this.ProcessorCount];

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
+using System.Diagnostics;
 
 namespace GetSystemStatusGUI {
     public partial class Form1 : Form {
@@ -22,6 +23,10 @@ namespace GetSystemStatusGUI {
         private bool showVirtual = false;
 
         public Form1() {
+            Process proc = Process.GetCurrentProcess();
+            long affinityMask = (long)proc.ProcessorAffinity;
+            affinityMask &= 0xffff0000;
+            proc.ProcessorAffinity = (IntPtr)affinityMask;
             InitializeComponent();
         }
 
@@ -271,6 +276,13 @@ namespace GetSystemStatusGUI {
                 INIHelper.Write("DiskForm", "Y", diskForm.Location.Y.ToString(), iniFile);
                 INIHelper.Write("DiskForm", "Width", diskForm.Width.ToString(), iniFile);
                 INIHelper.Write("DiskForm", "Height", diskForm.Height.ToString(), iniFile);
+                for (int i = 0; i < diskForm.moreDiskForms.Count; i++) {
+                    var cSubDiskForm = diskForm.moreDiskForms[i];
+                    INIHelper.Write("DiskForm" + (i + 1).ToString(), "X", cSubDiskForm.Location.X.ToString(), iniFile);
+                    INIHelper.Write("DiskForm" + (i + 1).ToString(), "Y", cSubDiskForm.Location.Y.ToString(), iniFile);
+                    INIHelper.Write("DiskForm" + (i + 1).ToString(), "Width", cSubDiskForm.Width.ToString(), iniFile);
+                    INIHelper.Write("DiskForm" + (i + 1).ToString(), "Height", cSubDiskForm.Height.ToString(), iniFile);
+                }
             }
             if (networkForm != null && !networkForm.IsDisposed) {
                 INIHelper.Write("NetworkForm", "X", networkForm.Location.X.ToString(), iniFile);
@@ -317,6 +329,14 @@ namespace GetSystemStatusGUI {
                 string sY = INIHelper.Read("DiskForm", "Y", diskForm.Location.Y.ToString(), iniFile);
                 int x = int.Parse(sX), y = int.Parse(sY);
                 diskForm.Location = new Point(x, y);
+                for (int i = 1; i <= diskForm.moreDiskForms.Count; i++) {
+                    var cSubDiskForm = diskForm.moreDiskForms[i - 1];
+                    sX = INIHelper.Read("DiskForm" + i.ToString(), "X", cSubDiskForm.Location.X.ToString(), iniFile);
+                    sY = INIHelper.Read("DiskForm" + i.ToString(), "Y", cSubDiskForm.Location.Y.ToString(), iniFile);
+                    x = int.Parse(sX);
+                    y = int.Parse(sY);
+                    cSubDiskForm.Location = new Point(x, y);
+                }
             }
             if (networkForm != null && !networkForm.IsDisposed) {
                 string sX = INIHelper.Read("NetworkForm", "X", networkForm.Location.X.ToString(), iniFile);
@@ -340,6 +360,7 @@ namespace GetSystemStatusGUI {
                     x = int.Parse(sX);
                     y = int.Parse(sY);
                     subGpuForm.Location = new Point(x, y);
+                    i++;
                 }
             }
         }
@@ -356,6 +377,14 @@ namespace GetSystemStatusGUI {
                 string sHeight = INIHelper.Read("DiskForm", "Height", diskForm.Height.ToString(), iniFile);
                 int width = int.Parse(sWidth), height = int.Parse(sHeight);
                 diskForm.Size = new Size(width, height);
+                for (int i = 1; i <= diskForm.moreDiskForms.Count; i++) {
+                    var cSubDiskForm = diskForm.moreDiskForms[i - 1];
+                    sWidth = INIHelper.Read("DiskForm" + i.ToString(), "Width", diskForm.Width.ToString(), iniFile);
+                    sHeight = INIHelper.Read("DiskForm" + i.ToString(), "Height", diskForm.Height.ToString(), iniFile);
+                    width = int.Parse(sWidth);
+                    height = int.Parse(sHeight);
+                    cSubDiskForm.Size = new Size(width, height);
+                }
             }
             if (networkForm != null && !networkForm.IsDisposed) {
                 string sWidth = INIHelper.Read("NetworkForm", "Width", networkForm.Width.ToString(), iniFile);

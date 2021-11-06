@@ -33,9 +33,12 @@
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
 			System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
 			System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
@@ -60,7 +63,7 @@
 			legend1.Name = "Legend1";
 			this.chart1.Legends.Add(legend1);
 			this.chart1.Location = new System.Drawing.Point(23, 30);
-			this.chart1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.chart1.Margin = new System.Windows.Forms.Padding(2);
 			this.chart1.Name = "chart1";
 			this.chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart1.PaletteCustomColors = new System.Drawing.Color[] {
@@ -85,7 +88,7 @@
 			legend2.Name = "Legend1";
 			this.chart2.Legends.Add(legend2);
 			this.chart2.Location = new System.Drawing.Point(23, 218);
-			this.chart2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.chart2.Margin = new System.Windows.Forms.Padding(2);
 			this.chart2.Name = "chart2";
 			this.chart2.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
 			this.chart2.PaletteCustomColors = new System.Drawing.Color[] {
@@ -104,12 +107,14 @@
 			chartArea4.Name = "ChartArea2";
 			chartArea5.Name = "ChartArea3";
 			chartArea6.Name = "ChartArea4";
+			chartArea7.Name = "ChartArea5";
 			this.chart3.ChartAreas.Add(chartArea3);
 			this.chart3.ChartAreas.Add(chartArea4);
 			this.chart3.ChartAreas.Add(chartArea5);
 			this.chart3.ChartAreas.Add(chartArea6);
+			this.chart3.ChartAreas.Add(chartArea7);
 			this.chart3.Location = new System.Drawing.Point(357, 30);
-			this.chart3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.chart3.Margin = new System.Windows.Forms.Padding(2);
 			this.chart3.Name = "chart3";
 			series3.ChartArea = "ChartArea1";
 			series3.Name = "Series1";
@@ -117,9 +122,15 @@
 			series4.Name = "Series2";
 			series5.ChartArea = "ChartArea3";
 			series5.Name = "Series3";
+			series6.ChartArea = "ChartArea4";
+			series6.Name = "Series4";
+			series7.ChartArea = "ChartArea5";
+			series7.Name = "Series5";
 			this.chart3.Series.Add(series3);
 			this.chart3.Series.Add(series4);
 			this.chart3.Series.Add(series5);
+			this.chart3.Series.Add(series6);
+			this.chart3.Series.Add(series7);
 			this.chart3.Size = new System.Drawing.Size(316, 379);
 			this.chart3.TabIndex = 2;
 			this.chart3.Text = "chart3";
@@ -154,7 +165,7 @@
 			this.Controls.Add(this.chart2);
 			this.Controls.Add(this.chart1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.Margin = new System.Windows.Forms.Padding(2);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";

@@ -43,7 +43,7 @@ namespace GetSystemStatusGUI {
         private void NetworkForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
             for (int i = 0; i < history_length; i++) y.Add(0);
-            Utility.FactorDecompose(networkInfo.adapterNum, ref columns, ref rows);
+            Utility.FactorDecompose(networkInfo.adapterNum, out columns, out rows);
             subCharts = new Chart[networkInfo.adapterNum];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
