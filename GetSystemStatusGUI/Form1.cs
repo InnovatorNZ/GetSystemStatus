@@ -23,11 +23,17 @@ namespace GetSystemStatusGUI {
         private bool showVirtual = false;
 
         public Form1() {
+            SetProcessorAffinity();
+            InitializeComponent();
+        }
+
+        private void SetProcessorAffinity() {
             Process proc = Process.GetCurrentProcess();
             long affinityMask = (long)proc.ProcessorAffinity;
-            affinityMask &= 0xffff0000;
+            int cpuCnt = Environment.ProcessorCount;
+            long secondMask = affinityMask << (cpuCnt / 2);
+            affinityMask &= secondMask;
             proc.ProcessorAffinity = (IntPtr)affinityMask;
-            InitializeComponent();
         }
 
         private void showCPU_CheckedChanged(object sender, EventArgs e) {
