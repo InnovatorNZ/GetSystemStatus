@@ -226,11 +226,18 @@ namespace GetSystemStatusGUI {
 
         public void btnDiskRefresh_Click(object sender, EventArgs e) {
             var diskLocation = diskForm.Location;
+            List<Point> diskLocations = new List<Point>();
+            foreach (var subdiskform in diskForm.moreDiskForms) {
+                diskLocations.Add(subdiskform.Location);
+            }
             this.showDisk.Checked = false;
             if (!diskForm.IsDisposed) diskForm.Dispose();
             diskForm = new DiskForm(this);
             this.showDisk.Checked = true;
             this.diskForm.Location = diskLocation;
+            for (int i = 0; i < diskForm.moreDiskForms.Count; i++) {
+                diskForm.moreDiskForms[i].Location = diskLocations[i];
+            }
         }
 
         private void btnNetworkRefresh_Click(object sender, EventArgs e) {
