@@ -451,7 +451,6 @@ namespace GetSystemStatusGUI {
             if (showDisk.Checked) diskForm.Focus();
             if (showGPU.Checked) gpuForm.Focus();
             if (showCPU.Checked) cpuForm.Focus();
-            this.Focus();
         }
 
         private void fakeToolStripMenuItem_Click(object sender, EventArgs e) {
