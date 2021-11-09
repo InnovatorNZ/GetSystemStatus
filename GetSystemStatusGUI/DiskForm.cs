@@ -161,7 +161,7 @@ namespace GetSystemStatusGUI {
 
         private void DiskForm_FormClosing(object sender, FormClosingEventArgs e) {
             e.Cancel = true;
-            if (startId == 0) mainform.DisableChecked("Disk");
+            mainform.DisableChecked("Disk");
         }
 
         private void DiskForm_Deactivate(object sender, EventArgs e) {
