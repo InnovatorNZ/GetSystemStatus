@@ -246,6 +246,10 @@ namespace GetSystemStatusGUI {
             base.Focus();
         }
 
+        private void DiskForm_Activated(object sender, EventArgs e) {
+            mainform.diskForm.Focus();
+        }
+
         private void disk_load_thread() {
             List<float>[] ys = new List<float>[cDiskNum];
             for (int i = 0; i < cDiskNum; i++) {

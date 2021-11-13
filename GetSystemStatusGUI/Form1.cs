@@ -13,11 +13,11 @@ using System.Diagnostics;
 
 namespace GetSystemStatusGUI {
     public partial class Form1 : Form {
-        protected CPUForm cpuForm;
-        protected RAMForm ramForm;
-        protected DiskForm diskForm;
-        protected NetworkForm networkForm;
-        protected GPUForm gpuForm;
+        public CPUForm cpuForm;
+        public RAMForm ramForm;
+        public DiskForm diskForm;
+        public NetworkForm networkForm;
+        public GPUForm gpuForm;
         private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
         private bool showVirtual = false;

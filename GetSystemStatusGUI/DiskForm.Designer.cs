@@ -50,6 +50,7 @@
 			this.Name = "DiskForm";
 			this.ShowInTaskbar = false;
 			this.Text = "Disks";
+			this.Activated += new System.EventHandler(this.DiskForm_Activated);
 			this.Deactivate += new System.EventHandler(this.DiskForm_Deactivate);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DiskForm_FormClosing);
 			this.Load += new System.EventHandler(this.DiskForm_Load);
