@@ -27,6 +27,30 @@ namespace GetSystemStatusGUI {
             InitializeComponent();
         }
 
+        private void Form1_Load(object sender, EventArgs e) {
+            showCPU.Checked = true;
+            showRAM.Checked = true;
+            showDisk.Checked = true;
+            showNetwork.Checked = true;
+            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
+            doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
+            bool loadLocation = bool.Parse(INIHelper.Read("LoadAtStartup", "Location", "true", iniFile));
+            loadAtStartup.Checked = loadLocation;
+            bool loadSize = bool.Parse(INIHelper.Read("LoadAtStartup", "Size", "false", iniFile));
+            loadSizeAtStartup.Checked = loadSize;
+            if (Environment.OSVersion.Version.Major < 10) {
+                showGPU.Enabled = false;
+                showGPU.Text = "Show GPU (Only available in Windows 10)";
+            } else {
+                showGPU.Checked = ifShowGPU;
+            }
+            if (loadLocation) LoadSavedLocation();
+            if (loadSize) LoadSavedSize();
+            LoadTopMost();
+            FixMainFormDPI();
+            FixToolStripDPI();
+        }
+
         private void SetProcessorAffinity() {
             Process proc = Process.GetCurrentProcess();
             long affinityMask = (long)proc.ProcessorAffinity;
@@ -84,29 +108,6 @@ namespace GetSystemStatusGUI {
         private void buttonExit_Click(object sender, EventArgs e) {
             //Application.Exit();
             this.Close();
-        }
-
-        private void Form1_Load(object sender, EventArgs e) {
-            showCPU.Checked = true;
-            showRAM.Checked = true;
-            showDisk.Checked = true;
-            showNetwork.Checked = true;
-            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
-            doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
-            bool loadLocation = bool.Parse(INIHelper.Read("LoadAtStartup", "Location", "true", iniFile));
-            loadAtStartup.Checked = loadLocation;
-            bool loadSize = bool.Parse(INIHelper.Read("LoadAtStartup", "Size", "false", iniFile));
-            loadSizeAtStartup.Checked = loadSize;
-            if (Environment.OSVersion.Version.Major < 10) {
-                showGPU.Enabled = false;
-                showGPU.Text = "Show GPU (Only available in Windows 10)";
-            } else {
-                showGPU.Checked = ifShowGPU;
-            }
-            if (loadLocation) LoadSavedLocation();
-            if (loadSize) LoadSavedSize();
-            FixMainFormDPI();
-            FixToolStripDPI();
         }
 
         private void FixMainFormDPI() {
@@ -181,6 +182,7 @@ namespace GetSystemStatusGUI {
                     gpuForm.Show();
                     btnFocusGPU.Enabled = true;
                     loadGPUFormLocation();
+                    gpuForm.TopMost = gPUFormToolStripMenuItem.Checked;
                 }
             } else {
                 if (gpuForm != null) gpuForm.Dispose();
@@ -531,6 +533,76 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
+        }
+
+        private void CPUFormToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("CPUForm", "TopMost", "true", iniFile);
+                cpuForm.TopMost = true;
+            } else {
+                INIHelper.Write("CPUForm", "TopMost", "false", iniFile);
+                cpuForm.TopMost = false;
+            }
+        }
+
+        private void ramFormToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("RAMForm", "TopMost", "true", iniFile);
+                ramForm.TopMost = true;
+            } else {
+                INIHelper.Write("RAMForm", "TopMost", "false", iniFile);
+                ramForm.TopMost = false;
+            }
+        }
+
+        private void diskFormToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("DiskForm", "TopMost", "true", iniFile);
+                diskForm.TopMost = true;
+            } else {
+                INIHelper.Write("DiskForm", "TopMost", "false", iniFile);
+                diskForm.TopMost = false;
+            }
+        }
+
+        private void networkFormToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("NetworkForm", "TopMost", "true", iniFile);
+                networkForm.TopMost = true;
+            } else {
+                INIHelper.Write("NetworkForm", "TopMost", "false", iniFile);
+                networkForm.TopMost = false;
+            }
+        }
+
+        private void gPUFormToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            if (here.Checked) {
+                INIHelper.Write("GPUForm0", "TopMost", "true", iniFile);
+                if (gpuForm != null && !gpuForm.IsDisposed)
+                    gpuForm.TopMost = true;
+            } else {
+                INIHelper.Write("GPUForm0", "TopMost", "false", iniFile);
+                if (gpuForm != null && !gpuForm.IsDisposed)
+                    gpuForm.TopMost = false;
+            }
+        }
+
+        private void LoadTopMost() {
+            string topMost = INIHelper.Read("CPUForm", "TopMost", "false", iniFile);
+            CPUFormToolStripMenuItem.Checked = bool.Parse(topMost);
+            topMost = INIHelper.Read("RAMForm", "TopMost", "false", iniFile);
+            ramFormToolStripMenuItem.Checked = bool.Parse(topMost);
+            topMost = INIHelper.Read("DiskForm", "TopMost", "false", iniFile);
+            diskFormToolStripMenuItem.Checked = bool.Parse(topMost);
+            topMost = INIHelper.Read("NetworkForm", "TopMost", "false", iniFile);
+            networkFormToolStripMenuItem.Checked = bool.Parse(topMost);
+            topMost = INIHelper.Read("GPUForm0", "TopMost", "false", iniFile);
+            gPUFormToolStripMenuItem.Checked = bool.Parse(topMost);
         }
     }
 }

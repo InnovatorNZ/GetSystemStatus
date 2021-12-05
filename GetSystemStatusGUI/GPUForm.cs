@@ -25,6 +25,17 @@ namespace GetSystemStatusGUI {
         private Color lineColor = Color.FromArgb(150, Color.DeepSkyBlue);
         private float fLineWidth = 2;
         private float fGridWidth = 1;
+        public new bool TopMost {
+            get { return base.TopMost; }
+            set {
+                if (id == 0) {
+                    foreach (var subform in moreGPUForms) {
+                        subform.TopMost = value;
+                    }
+                }
+                base.TopMost = value;
+            }
+        }
 
         public GPUForm(Form1 mainForm, int id = 0) {
             InitializeComponent();

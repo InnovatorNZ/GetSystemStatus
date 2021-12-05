@@ -29,6 +29,17 @@ namespace GetSystemStatusGUI {
         private int cDiskNum {
             get { return rows * columns; }
         }
+        public new bool TopMost {
+            get { return base.TopMost; }
+            set {
+                if (startId == 0) {
+                    foreach (var subform in this.moreDiskForms) {
+                        subform.TopMost = value;
+                    }
+                }
+                base.TopMost = value;
+            }
+        }
 
         public DiskForm(Form1 mainform, int startId = 0) {
             InitializeComponent();
@@ -247,7 +258,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void DiskForm_Activated(object sender, EventArgs e) {
-            mainform.diskForm.Focus();
+            //mainform.diskForm.Focus();
         }
 
         private void disk_load_thread() {

@@ -61,6 +61,12 @@ namespace GetSystemStatusGUI
 			this.btnFocusDisk = new System.Windows.Forms.Button();
 			this.btnFocusNetwork = new System.Windows.Forms.Button();
 			this.btnFocusGPU = new System.Windows.Forms.Button();
+			this.topMostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CPUFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.ramFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.diskFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.networkFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.gPUFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -273,7 +279,8 @@ namespace GetSystemStatusGUI
 			this.optionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.doNotShowGPUAtStartToolStripMenuItem,
             this.showVirtualNetworkToolStrip,
-            this.fakeToolStripMenuItem});
+            this.fakeToolStripMenuItem,
+            this.topMostToolStripMenuItem});
 			this.optionToolStripMenuItem.Name = "optionToolStripMenuItem";
 			this.optionToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
 			this.optionToolStripMenuItem.Text = "Option";
@@ -379,6 +386,58 @@ namespace GetSystemStatusGUI
 			this.btnFocusGPU.UseVisualStyleBackColor = true;
 			this.btnFocusGPU.Click += new System.EventHandler(this.btnFocusGPU_Click);
 			// 
+			// topMostToolStripMenuItem
+			// 
+			this.topMostToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CPUFormToolStripMenuItem,
+            this.ramFormToolStripMenuItem,
+            this.diskFormToolStripMenuItem,
+            this.networkFormToolStripMenuItem,
+            this.gPUFormToolStripMenuItem});
+			this.topMostToolStripMenuItem.Name = "topMostToolStripMenuItem";
+			this.topMostToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.topMostToolStripMenuItem.Text = "Top most";
+			// 
+			// CPUFormToolStripMenuItem
+			// 
+			this.CPUFormToolStripMenuItem.CheckOnClick = true;
+			this.CPUFormToolStripMenuItem.Name = "CPUFormToolStripMenuItem";
+			this.CPUFormToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.CPUFormToolStripMenuItem.Text = "CPU Form";
+			this.CPUFormToolStripMenuItem.Click += new System.EventHandler(this.CPUFormToolStripMenuItem_Click);
+			// 
+			// ramFormToolStripMenuItem
+			// 
+			this.ramFormToolStripMenuItem.CheckOnClick = true;
+			this.ramFormToolStripMenuItem.Name = "ramFormToolStripMenuItem";
+			this.ramFormToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ramFormToolStripMenuItem.Text = "RAM Form";
+			this.ramFormToolStripMenuItem.Click += new System.EventHandler(this.ramFormToolStripMenuItem_Click);
+			// 
+			// diskFormToolStripMenuItem
+			// 
+			this.diskFormToolStripMenuItem.CheckOnClick = true;
+			this.diskFormToolStripMenuItem.Name = "diskFormToolStripMenuItem";
+			this.diskFormToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.diskFormToolStripMenuItem.Text = "Disk Form(s)";
+			this.diskFormToolStripMenuItem.Click += new System.EventHandler(this.diskFormToolStripMenuItem_Click);
+			// 
+			// networkFormToolStripMenuItem
+			// 
+			this.networkFormToolStripMenuItem.CheckOnClick = true;
+			this.networkFormToolStripMenuItem.Name = "networkFormToolStripMenuItem";
+			this.networkFormToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.networkFormToolStripMenuItem.Text = "Network Form";
+			this.networkFormToolStripMenuItem.Click += new System.EventHandler(this.networkFormToolStripMenuItem_Click);
+			// 
+			// gPUFormToolStripMenuItem
+			// 
+			this.gPUFormToolStripMenuItem.CheckOnClick = true;
+			this.gPUFormToolStripMenuItem.Name = "gPUFormToolStripMenuItem";
+			this.gPUFormToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.gPUFormToolStripMenuItem.Text = "GPU Form(s)";
+			this.gPUFormToolStripMenuItem.Click += new System.EventHandler(this.gPUFormToolStripMenuItem_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -451,6 +510,12 @@ namespace GetSystemStatusGUI
 		private System.Windows.Forms.Button btnFocusGPU;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem topMostToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem CPUFormToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem ramFormToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem diskFormToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem networkFormToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem gPUFormToolStripMenuItem;
 	}
 }
 
