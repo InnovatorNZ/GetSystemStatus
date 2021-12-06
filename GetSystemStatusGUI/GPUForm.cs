@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class GPUForm : Form {
@@ -125,34 +126,43 @@ namespace GetSystemStatusGUI {
             List<float> dediUsage = new List<float>();
             for (int i = 0; i < Global.history_length; i++) dediUsage.Add(0);
             int t = 0;
-            while (!chartGPU.IsDisposed && !mainForm.IsDisposed) {
-                if (t % Global.refresh_gpupc_interval == 0 && t != 0)
-                    gpuInfo.RefreshGPUEnginePerfCntLPL(id);
-                Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
-                Action update = new Action(
-                    delegate () {
-                        foreach (var keyValuePair in cGpuUti) {
-                            string cEngine = keyValuePair.Key;
-                            float cUti = keyValuePair.Value;
-                            ys[cEngine].RemoveAt(0);
-                            ys[cEngine].Add(cUti);
-                            chartGPU.Series[cEngine].Points.DataBindY(ys[cEngine]);
+            while (!this.IsDisposed && !chartGPU.IsDisposed) {
+                if (this.Visible) {
+                    if (t % Global.refresh_gpupc_interval == 0 && t != 0)
+                        gpuInfo.RefreshGPUEnginePerfCntLPL(id);
+                    Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
+                    Action update = new Action(
+                        delegate () {
+                            foreach (var keyValuePair in cGpuUti) {
+                                string cEngine = keyValuePair.Key;
+                                float cUti = keyValuePair.Value;
+                                ys[cEngine].RemoveAt(0);
+                                ys[cEngine].Add(cUti);
+                                chartGPU.Series[cEngine].Points.DataBindY(ys[cEngine]);
+                            }
+                            long dediMem = gpuInfo.GetGPUDedicatedMemory(id);
+                            long totalMem = gpuInfo.getAdapterTotalMemory(id);
+                            if (totalMem > 0) {
+                                float cusage = (float)dediMem / (float)totalMem * 100;
+                                dediUsage.RemoveAt(0);
+                                dediUsage.Add(cusage);
+                                chartGPU.Series["GPU Memory"].Points.DataBindY(dediUsage);
+                            }
                         }
-                        long dediMem = gpuInfo.GetGPUDedicatedMemory(id);
-                        long totalMem = gpuInfo.getAdapterTotalMemory(id);
-                        if (totalMem > 0) {
-                            float cusage = (float)dediMem / (float)totalMem * 100;
-                            dediUsage.RemoveAt(0);
-                            dediUsage.Add(cusage);
-                            chartGPU.Series["GPU Memory"].Points.DataBindY(dediUsage);
-                        }
-                    }
-                );
-                try { Invoke(update); }
-                catch { break; }
-                t++;
+                    );
+                    try { Invoke(update); }
+                    catch { break; }
+                    t++;
+                }
                 Thread.Sleep(Global.interval_ms);
             }
+        }
+
+        public new void Show() {
+            if (id == 0) {
+                this.TopMost = mainForm.TopMostChecked(FormType.GPU);
+            }
+            base.Show();
         }
 
         public new void Hide() {

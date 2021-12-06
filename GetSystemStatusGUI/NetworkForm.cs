@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class NetworkForm : Form {
@@ -194,47 +195,54 @@ namespace GetSystemStatusGUI {
             }
         }
 
+        public new void Show() {
+            this.TopMost = mainForm.TopMostChecked(FormType.Network);
+            base.Show();
+        }
+
         private void network_load_thread() {
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
                 ys[i] = new List<float>();
                 for (int j = 0; j < history_length; j++) ys[i].Add(0);
             }
-            while (!subCharts[0].IsDisposed && !mainForm.IsDisposed) {
-                float[] send_speed = new float[networkInfo.adapterNum];
-                float[] receive_speed = new float[networkInfo.adapterNum];
-                for (int i = 0; i < networkInfo.adapterNum; i++) {
-                    float cLoad, cSendSpeed, cReceiveSpeed;
-                    try {
-                        networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
-                    }
-                    catch (InvalidOperationException) {
-                        cLoad = 0;
-                        cSendSpeed = 0;
-                        cReceiveSpeed = 0;
-                    }
-
-                    ys[i].RemoveAt(0);
-                    ys[i].Add(cLoad);
-                    send_speed[i] = cSendSpeed;
-                    receive_speed[i] = cReceiveSpeed;
-                }
-                Action updateChart = new Action(
-                    delegate () {
-                        for (int i = 0; i < networkInfo.adapterNum; i++) {
-                            subCharts[i].Series[0].Points.DataBindY(ys[i]);
-                            string titleStr = string.Empty;
-                            string ud_spd = Utility.FormatSpeedString("Send", send_speed[i], "Receive", receive_speed[i], true);
-                            string link_spd = "Link Speed " + networkInfo.getLinkSpeedString(i);
-                            string ipv4_addr = "IPv4 Address " + networkInfo.getIPv4Address(i);
-                            string ipv6_addr = "IPv6 Address " + networkInfo.getIPv6Address(i);
-                            titleStr = ud_spd + "\n" + link_spd + "\n" + ipv4_addr + "\n" + ipv6_addr;
-                            subCharts[i].Titles[2].Text = titleStr;
+            while (!this.IsDisposed && !subCharts[0].IsDisposed) {
+                if (this.Visible) {
+                    float[] send_speed = new float[networkInfo.adapterNum];
+                    float[] receive_speed = new float[networkInfo.adapterNum];
+                    for (int i = 0; i < networkInfo.adapterNum; i++) {
+                        float cLoad, cSendSpeed, cReceiveSpeed;
+                        try {
+                            networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
                         }
+                        catch (InvalidOperationException) {
+                            cLoad = 0;
+                            cSendSpeed = 0;
+                            cReceiveSpeed = 0;
+                        }
+
+                        ys[i].RemoveAt(0);
+                        ys[i].Add(cLoad);
+                        send_speed[i] = cSendSpeed;
+                        receive_speed[i] = cReceiveSpeed;
                     }
-                );
-                try { Invoke(updateChart); }
-                catch { break; }
+                    Action updateChart = new Action(
+                        delegate () {
+                            for (int i = 0; i < networkInfo.adapterNum; i++) {
+                                subCharts[i].Series[0].Points.DataBindY(ys[i]);
+                                string titleStr = string.Empty;
+                                string ud_spd = Utility.FormatSpeedString("Send", send_speed[i], "Receive", receive_speed[i], true);
+                                string link_spd = "Link Speed " + networkInfo.getLinkSpeedString(i);
+                                string ipv4_addr = "IPv4 Address " + networkInfo.getIPv4Address(i);
+                                string ipv6_addr = "IPv6 Address " + networkInfo.getIPv6Address(i);
+                                titleStr = ud_spd + "\n" + link_spd + "\n" + ipv4_addr + "\n" + ipv6_addr;
+                                subCharts[i].Titles[2].Text = titleStr;
+                            }
+                        }
+                    );
+                    try { Invoke(updateChart); }
+                    catch { break; }
+                }
                 Thread.Sleep(Global.interval_ms);
             }
         }

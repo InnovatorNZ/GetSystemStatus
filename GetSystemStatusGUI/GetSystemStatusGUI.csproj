@@ -112,6 +112,7 @@
       <DependentUpon>GPUForm.cs</DependentUpon>
     </Compile>
     <Compile Include="INIHelper.cs" />
+    <Compile Include="ModuleEnum.cs" />
     <Compile Include="NetworkForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using System.Diagnostics;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class Form1 : Form {
@@ -535,7 +536,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void CPUFormToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void CPUFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("CPUForm", "TopMost", "true", iniFile);
@@ -546,7 +547,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void ramFormToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void ramFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("RAMForm", "TopMost", "true", iniFile);
@@ -557,7 +558,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void diskFormToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void diskFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("DiskForm", "TopMost", "true", iniFile);
@@ -568,7 +569,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void networkFormToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void networkFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("NetworkForm", "TopMost", "true", iniFile);
@@ -579,7 +580,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        private void gPUFormToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void gPUFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("GPUForm0", "TopMost", "true", iniFile);
@@ -603,6 +604,23 @@ namespace GetSystemStatusGUI {
             networkFormToolStripMenuItem.Checked = bool.Parse(topMost);
             topMost = INIHelper.Read("GPUForm0", "TopMost", "false", iniFile);
             gPUFormToolStripMenuItem.Checked = bool.Parse(topMost);
+        }
+
+        public bool TopMostChecked(FormType formType) {
+            switch (formType) {
+                case FormType.CPU:
+                    return CPUFormToolStripMenuItem.Checked;
+                case FormType.RAM:
+                    return ramFormToolStripMenuItem.Checked;
+                case FormType.Disk:
+                    return diskFormToolStripMenuItem.Checked;
+                case FormType.Network:
+                    return networkFormToolStripMenuItem.Checked;
+                case FormType.GPU:
+                    return gPUFormToolStripMenuItem.Checked;
+                default:
+                    return false;
+            }
         }
     }
 }

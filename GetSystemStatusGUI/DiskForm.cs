@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class DiskForm : Form {
@@ -223,6 +224,7 @@ namespace GetSystemStatusGUI {
 
         public new void Show() {
             if (startId == 0) {
+                this.TopMost = mainform.TopMostChecked(FormType.Disk);
                 foreach (var subForm in moreDiskForms) {
                     subForm.Show();
                 }

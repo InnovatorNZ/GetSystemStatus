@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class CPUForm : Form {
@@ -124,6 +125,11 @@ namespace GetSystemStatusGUI {
             this.Hide();
         }
 
+        public new void Show() {
+            this.TopMost = mainForm.TopMostChecked(FormType.CPU);
+            base.Show();
+        }
+
         private void cpu_load_thread() {
             List<float> y = new List<float>();
             List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
@@ -134,22 +140,24 @@ namespace GetSystemStatusGUI {
                     ys[i].Add(0);
                 }
             }
-            while (!chart1.IsDisposed) {
-                y.RemoveAt(0);
-                y.Add(cpuInfo.CpuLoad);
-                for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                    ys[i].RemoveAt(0);
-                    ys[i].Add(cpuInfo.CpuCoreLoad(i));
-                }
-                Action updateChart = new Action(
-                    delegate () {
-                        chart1.Series["Series1"].Points.DataBindY(y);
-                        for (int i = 0; i < this.ProcessorCount; i++)
-                            subCharts[i].Series[0].Points.DataBindY(ys[i % cpuInfo.ProcessorCount]);
+            while (!this.IsDisposed && !chart1.IsDisposed) {
+                if (this.Visible) {
+                    y.RemoveAt(0);
+                    y.Add(cpuInfo.CpuLoad);
+                    for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
+                        ys[i].RemoveAt(0);
+                        ys[i].Add(cpuInfo.CpuCoreLoad(i));
                     }
-                );
-                try { Invoke(updateChart); }
-                catch { break; }
+                    Action updateChart = new Action(
+                        delegate () {
+                            chart1.Series["Series1"].Points.DataBindY(y);
+                            for (int i = 0; i < this.ProcessorCount; i++)
+                                subCharts[i].Series[0].Points.DataBindY(ys[i % cpuInfo.ProcessorCount]);
+                        }
+                    );
+                    try { Invoke(updateChart); }
+                    catch { break; }
+                }
                 Thread.Sleep(Global.interval_ms);
             }
         }

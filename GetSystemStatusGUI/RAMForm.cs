@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class RAMForm : Form {
@@ -40,29 +41,36 @@ namespace GetSystemStatusGUI {
             new Action(ram_update_thread).BeginInvoke(null, null);
         }
 
+        public new void Show() {
+            this.TopMost = mainform.TopMostChecked(FormType.RAM);
+            base.Show();
+        }
+
         private void ram_update_thread() {
             List<int> usageList = new List<int>();
             for (int i = 0; i < historyLength; i++) usageList.Add(0);
             while (!chart1.IsDisposed && !lblRAM.IsDisposed) {
-                int rusage = (int)Math.Round((1.0 - (double)ramInfo.MemoryAvailable / (double)ramInfo.PhysicalMemory) * 100.0);
-                int ramScale = (int)Math.Floor(Math.Log(ramInfo.PhysicalMemory - ramInfo.MemoryAvailable, 1024));
-                double memAvail = Math.Round((double)ramInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
-                double memTotal = Math.Round((double)ramInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
-                usageList.RemoveAt(0);
-                usageList.Add(rusage);
-                Action updateChart = new Action(
-                    delegate () {
-                        if (ramScale == 2)
-                            lblRAM.Text = string.Format("{0:f0} / {1:f0}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
-                        else if (ramScale == 3)
-                            lblRAM.Text = string.Format("{0:f1} / {1:f1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
-                        else if (ramScale == 4)
-                            lblRAM.Text = string.Format("{0:f2} / {1:f2}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
-                        chart1.Series[0].Points.DataBindY(usageList);
-                    }
-                );
-                try { Invoke(updateChart); }
-                catch { break; }
+                if (this.Visible) {
+                    int rusage = (int)Math.Round((1.0 - (double)ramInfo.MemoryAvailable / (double)ramInfo.PhysicalMemory) * 100.0);
+                    int ramScale = (int)Math.Floor(Math.Log(ramInfo.PhysicalMemory - ramInfo.MemoryAvailable, 1024));
+                    double memAvail = Math.Round((double)ramInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
+                    double memTotal = Math.Round((double)ramInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
+                    usageList.RemoveAt(0);
+                    usageList.Add(rusage);
+                    Action updateChart = new Action(
+                        delegate () {
+                            if (ramScale == 2)
+                                lblRAM.Text = string.Format("{0:f0} / {1:f0}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                            else if (ramScale == 3)
+                                lblRAM.Text = string.Format("{0:f1} / {1:f1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                            else if (ramScale == 4)
+                                lblRAM.Text = string.Format("{0:f2} / {1:f2}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                            chart1.Series[0].Points.DataBindY(usageList);
+                        }
+                    );
+                    try { Invoke(updateChart); }
+                    catch { break; }
+                }
                 Thread.Sleep(Global.interval_ms);
             }
         }
