@@ -42,8 +42,8 @@ namespace GetSystemStatusGUI {
         }
 
         public new void Show() {
-            this.TopMost = mainform.TopMostChecked(FormType.RAM);
             base.Show();
+            this.TopMost = mainform.TopMostChecked(FormType.RAM);
         }
 
         private void ram_update_thread() {

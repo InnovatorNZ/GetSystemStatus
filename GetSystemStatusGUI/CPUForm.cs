@@ -126,8 +126,8 @@ namespace GetSystemStatusGUI {
         }
 
         public new void Show() {
-            this.TopMost = mainForm.TopMostChecked(FormType.CPU);
             base.Show();
+            this.TopMost = mainForm.TopMostChecked(FormType.CPU);
         }
 
         private void cpu_load_thread() {

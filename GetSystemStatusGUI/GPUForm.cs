@@ -159,10 +159,8 @@ namespace GetSystemStatusGUI {
         }
 
         public new void Show() {
-            if (id == 0) {
-                this.TopMost = mainForm.TopMostChecked(FormType.GPU);
-            }
             base.Show();
+            if (id == 0) this.TopMost = mainForm.TopMostChecked(FormType.GPU);
         }
 
         public new void Hide() {

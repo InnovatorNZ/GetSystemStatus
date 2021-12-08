@@ -196,8 +196,8 @@ namespace GetSystemStatusGUI {
         }
 
         public new void Show() {
-            this.TopMost = mainForm.TopMostChecked(FormType.Network);
             base.Show();
+            this.TopMost = mainForm.TopMostChecked(FormType.Network);
         }
 
         private void network_load_thread() {

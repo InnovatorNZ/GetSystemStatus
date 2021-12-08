@@ -223,13 +223,13 @@ namespace GetSystemStatusGUI {
         }
 
         public new void Show() {
+            base.Show();
             if (startId == 0) {
-                this.TopMost = mainform.TopMostChecked(FormType.Disk);
                 foreach (var subForm in moreDiskForms) {
                     subForm.Show();
                 }
+                this.TopMost = mainform.TopMostChecked(FormType.Disk);
             }
-            base.Show();
         }
 
         public new void Hide() {
