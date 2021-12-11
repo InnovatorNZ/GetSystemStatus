@@ -260,7 +260,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void DiskForm_Activated(object sender, EventArgs e) {
-            //mainform.diskForm.Focus();
+            mainform.diskForm.Focus();
         }
 
         private void disk_load_thread() {
