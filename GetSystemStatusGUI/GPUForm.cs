@@ -473,7 +473,10 @@ namespace GetSystemStatusGUI {
                     if (cDeviceId == deviceId) {
                         string cEngine = getEngineString(pc);
                         float cvalue = 0;
-                        try { cvalue = pc.NextValue(); }
+                        try {
+                            cvalue = pc.NextValue();
+                            Thread.Sleep(20);
+                        }
                         catch (InvalidOperationException) { }
                         lock (result) {
                             if (result.ContainsKey(cEngine)) {
