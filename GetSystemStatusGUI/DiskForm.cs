@@ -113,8 +113,7 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.LineColor = Color.LimeGreen;
                     chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
                     chart.Titles.Add(cid.ToString() + "_0");
-                    chart.Titles[0].Text = "Disk " + (cid + startId).ToString() +
-                        " (" + diskInfo.DriveLetters(cid).Trim() + ")";
+                    chart.Titles[0].Text = getChartTitle(cid);
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
@@ -302,9 +301,8 @@ namespace GetSystemStatusGUI {
                                 if (cRead >= 0 && cWrite >= 0) {
                                     rw_speed = Utility.FormatSpeedString("Read", cRead, "Write", cWrite, false);
                                     string cTitle = subCharts[i].Titles[0].Text;
-                                    int iES = cTitle.IndexOf("(Ejected)");
-                                    if (iES != -1)
-                                        subCharts[i].Titles[0].Text = cTitle.Substring(0, iES);
+                                    if (cTitle.Contains("Ejected"))
+                                        subCharts[i].Titles[0].Text = getChartTitle(i);
                                 } else {
                                     subCharts[i].Titles[0].Text = "Disk " + (i + startId).ToString() + " (Ejected)";
                                 }
@@ -317,6 +315,11 @@ namespace GetSystemStatusGUI {
                 }
                 Thread.Sleep(Global.interval_ms);
             }
+        }
+
+        private string getChartTitle(int id) {
+            string ret = "Disk " + (id + startId).ToString() + " (" + diskInfo.DriveLetters(id) + ")";
+            return ret;
         }
     }
 
@@ -417,7 +420,7 @@ namespace GetSystemStatusGUI {
         }
         // 磁盘分区卷标
         public string DriveLetters(int id) {
-            return diskDriveLetters[id];
+            return diskDriveLetters[id].Trim();
         }
 
         // 磁盘占用、读写速率
