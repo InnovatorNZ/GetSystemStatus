@@ -113,11 +113,15 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.LineColor = Color.LimeGreen;
                     chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
                     chart.Titles.Add(cid.ToString() + "_0");
-                    chart.Titles[0].Text = "Disk " + (cid + startId).ToString();
+                    chart.Titles[0].Text = "Disk " + (cid + startId).ToString() +
+                        " (" + diskInfo.DriveLetters(cid).Trim() + ")";
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
-                    chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 14);
+                    if (chart.Titles[0].Text.Length <= 18)
+                        chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 14);
+                    else
+                        chart.Titles[0].Font = new Font(FontFamily.GenericSansSerif, 11);
                     chart.Titles.Add(cid.ToString() + "_1");
                     //chart.Titles[1].Text = "Load rate in 60 secs";
                     chart.Titles[1].Text = diskInfo.DiskModel(cid + startId);
@@ -325,6 +329,7 @@ namespace GetSystemStatusGUI {
         public int m_DiskNum = 0;    //磁盘个数
         public List<string> DiskInstanceNames = new List<string>();
         private string[] diskModelCaption;   //磁盘型号名称
+        private string[] diskDriveLetters;   //磁盘分区卷标
 
         // 构造函数，初始化计数器
         public DiskInfo() {
@@ -388,11 +393,31 @@ namespace GetSystemStatusGUI {
                 int cid = int.Parse(scid);
                 diskModelCaption[cid] = cModel;
             }
+            wmi_disk.Dispose();
+            diskDriveLetters = new string[m_DiskNum];
+            wmi_disk = new ManagementObjectSearcher("select * from Win32_LogicalDiskToPartition");
+            foreach (var o in wmi_disk.Get()) {
+                var mo = o as ManagementObject;
+                string _relpath = mo["__RELPATH"].ToString();
+                const string s_drvLetter = "Win32_LogicalDisk.DeviceID=\\\"";
+                const string s_drvID = "Win32_DiskPartition.DeviceID=\\\"Disk #";
+                int i_drvLetter = _relpath.IndexOf(s_drvLetter) + s_drvLetter.Length;
+                string drvLetter = _relpath.Substring(i_drvLetter, 2);
+                int i_drvID = _relpath.IndexOf(s_drvID) + s_drvID.Length;
+                string whole_drvID = _relpath.Substring(i_drvID, 4);
+                int drvID = int.Parse(whole_drvID.Split(',')[0]);
+                diskDriveLetters[drvID] += drvLetter + " ";
+            }
+            wmi_disk.Dispose();
         }
 
         // 磁盘型号
         public string DiskModel(int id) {
             return diskModelCaption[id];
+        }
+        // 磁盘分区卷标
+        public string DriveLetters(int id) {
+            return diskDriveLetters[id];
         }
 
         // 磁盘占用、读写速率
