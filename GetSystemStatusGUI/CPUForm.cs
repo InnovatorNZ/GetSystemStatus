@@ -65,10 +65,7 @@ namespace GetSystemStatusGUI {
                     Chart chart = new Chart();
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
-                    chart.Series.Add(cid.ToString());
-                    chart.Series[0].Points.DataBindY(y);
-                    chart.Series[0].ChartType = SeriesChartType.SplineArea;
-                    chart.Series[0].BorderColor = borderColor;
+
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
@@ -101,12 +98,19 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.LineWidth = (int)fLineWidth;
                     chart.ChartAreas[0].AxisX.MajorGrid.LineWidth = (int)fGridWidth;
                     chart.ChartAreas[0].AxisY.MajorGrid.LineWidth = (int)fGridWidth;
+
+                    chart.Series.Add(cid.ToString());
+                    chart.Series[0].Points.DataBindY(y);
+                    chart.Series[0].ChartType = SeriesChartType.SplineArea;
+                    chart.Series[0].BorderColor = borderColor;
+
                     chart.Titles.Add(cid.ToString());
                     chart.Titles[0].Text = "CPU " + cid.ToString();
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
                     chart.Titles[0].DockedToChartArea = cid.ToString();
                     chart.Titles[0].IsDockedInsideChartArea = false;
                     chart.Titles[0].ForeColor = SystemColors.GrayText;
+
                     subCharts[cid] = chart;
                     this.Controls.Add(subCharts[cid]);
                 }

@@ -78,10 +78,7 @@ namespace GetSystemStatusGUI {
                     Chart chart = new Chart();
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
-                    chart.Series.Add(cid.ToString());
-                    chart.Series[0].Points.DataBindY(y);
-                    chart.Series[0].ChartType = SeriesChartType.SplineArea;
-                    chart.Series[0].BorderColor = borderColor;
+                    
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
@@ -112,6 +109,12 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = Color.LimeGreen;
                     chart.ChartAreas[0].AxisY2.LineWidth = (int)this.fLineWidth;
+
+                    chart.Series.Add(cid.ToString());
+                    chart.Series[0].Points.DataBindY(y);
+                    chart.Series[0].ChartType = SeriesChartType.SplineArea;
+                    chart.Series[0].BorderColor = borderColor;
+
                     chart.Titles.Add(cid.ToString() + "_0");
                     chart.Titles[0].Text = getChartTitle(cid);
                     chart.Titles[0].Alignment = ContentAlignment.MiddleLeft;
@@ -136,6 +139,7 @@ namespace GetSystemStatusGUI {
                     chart.Titles[2].IsDockedInsideChartArea = false;
                     chart.Titles[2].Font = new Font(FontFamily.GenericSansSerif, 11);
                     chart.Titles[2].ForeColor = ColorTranslator.FromHtml("#494949");
+
                     subCharts[cid] = chart;
                     this.Controls.Add(subCharts[cid]);
                 }
