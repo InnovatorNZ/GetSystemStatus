@@ -205,12 +205,14 @@ namespace GetSystemStatusGUI {
         private void InitialSize() {
             const int iSize = 145;
             int beginTop = chart1.Location.Y + chart1.Size.Height + 5;
-            int iHeight = beginTop + rows * iSize + (rows + 1) * 3;
-            int iWidth = columns * iSize + (columns + 1) * 7;
+            float iHeight = beginTop + rows * iSize + (rows + 1) * 3;
+            iHeight *= GetWinScaling();
+            float iWidth = columns * iSize + (columns + 1) * 7;
+            iWidth *= GetWinScaling();
             iHeight = Math.Max(iHeight, this.Size.Height);
             iWidth = Math.Max(iWidth, this.Size.Width);
             if (columns == 2) iWidth = (int)Math.Min(iWidth, (columns * 302 + (columns + 1) * 18) * GetWinScaling());    // 专为四核、双核优化
-            this.Size = new Size(iWidth, iHeight);
+            this.Size = new Size((int)iWidth, (int)iHeight);
         }
 
         private void CPUForm_DpiChanged(object sender, DpiChangedEventArgs e) {
