@@ -49,6 +49,14 @@ namespace GetSystemStatusGUI {
             chart1.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
             chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = gridColor;
             chart1.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
+            int lineWidth = (int)Math.Round(this.fLineWidth * GetWinScaling());
+            int gridWidth = (int)Math.Round(this.fGridWidth * GetWinScaling());
+            chart1.ChartAreas[0].AxisX.MajorGrid.LineWidth = gridWidth;
+            chart1.ChartAreas[0].AxisY.MajorGrid.LineWidth = gridWidth;
+            chart1.ChartAreas[0].AxisX.LineWidth = lineWidth;
+            chart1.ChartAreas[0].AxisY.LineWidth = lineWidth;
+            chart1.ChartAreas[0].AxisX2.LineWidth = lineWidth;
+            chart1.ChartAreas[0].AxisY2.LineWidth = lineWidth;
 
             Utility.FactorDecompose(this.ProcessorCount, out columns, out rows);
 
@@ -80,8 +88,8 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX.MinorGrid.LineColor = gridColor;
                     chart.ChartAreas[0].AxisX.LineColor = Color.DodgerBlue;
                     chart.ChartAreas[0].AxisY.LineColor = Color.DodgerBlue;
-                    chart.ChartAreas[0].AxisX.LineWidth = (int)fLineWidth;
-                    chart.ChartAreas[0].AxisY.LineWidth = (int)fLineWidth;
+                    chart.ChartAreas[0].AxisX.LineWidth = lineWidth;
+                    chart.ChartAreas[0].AxisY.LineWidth = lineWidth;
                     chart.ChartAreas[0].AxisX.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisX2.Enabled = AxisEnabled.True;
@@ -89,15 +97,15 @@ namespace GetSystemStatusGUI {
                     chart.ChartAreas[0].AxisX2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisX2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisX2.LineColor = Color.DodgerBlue;
-                    chart.ChartAreas[0].AxisX2.LineWidth = (int)fLineWidth;
+                    chart.ChartAreas[0].AxisX2.LineWidth = lineWidth;
                     chart.ChartAreas[0].AxisY2.Enabled = AxisEnabled.True;
                     chart.ChartAreas[0].AxisY2.LabelStyle.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorGrid.Enabled = false;
                     chart.ChartAreas[0].AxisY2.MajorTickMark.Enabled = false;
                     chart.ChartAreas[0].AxisY2.LineColor = Color.DodgerBlue;
-                    chart.ChartAreas[0].AxisY2.LineWidth = (int)fLineWidth;
-                    chart.ChartAreas[0].AxisX.MajorGrid.LineWidth = (int)fGridWidth;
-                    chart.ChartAreas[0].AxisY.MajorGrid.LineWidth = (int)fGridWidth;
+                    chart.ChartAreas[0].AxisY2.LineWidth = lineWidth;
+                    chart.ChartAreas[0].AxisX.MajorGrid.LineWidth = gridWidth;
+                    chart.ChartAreas[0].AxisY.MajorGrid.LineWidth = gridWidth;
 
                     chart.Series.Add(cid.ToString());
                     chart.Series[0].Points.DataBindY(y);
@@ -205,10 +213,8 @@ namespace GetSystemStatusGUI {
         private void InitialSize() {
             const int iSize = 145;
             int beginTop = chart1.Location.Y + chart1.Size.Height + 5;
-            float iHeight = beginTop + rows * iSize + (rows + 1) * 3;
-            iHeight *= GetWinScaling();
-            float iWidth = columns * iSize + (columns + 1) * 7;
-            iWidth *= GetWinScaling();
+            float iHeight = beginTop + (rows * iSize + (rows + 1) * 3) * GetWinScaling();
+            float iWidth = (columns * iSize + (columns + 1) * 7) * GetWinScaling();
             iHeight = Math.Max(iHeight, this.Size.Height);
             iWidth = Math.Max(iWidth, this.Size.Width);
             if (columns == 2) iWidth = (int)Math.Min(iWidth, (columns * 302 + (columns + 1) * 18) * GetWinScaling());    // 专为四核、双核优化
