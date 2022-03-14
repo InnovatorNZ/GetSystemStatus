@@ -78,7 +78,7 @@ namespace GetSystemStatusGUI {
                     Chart chart = new Chart();
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
-                    
+
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
@@ -322,8 +322,12 @@ namespace GetSystemStatusGUI {
         }
 
         private string getChartTitle(int id) {
-            string ret = "Disk " + (id + startId).ToString() + " (" + diskInfo.DriveLetters(id) + ")";
-            return ret;
+            int rid = id + startId;
+            string title = "Disk " + rid.ToString();
+            string c_drive_letters = diskInfo.DriveLetters(rid);
+            if (!string.IsNullOrEmpty(c_drive_letters))
+                title += " (" + c_drive_letters + ")";
+            return title;
         }
     }
 
@@ -424,7 +428,9 @@ namespace GetSystemStatusGUI {
         }
         // 磁盘分区卷标
         public string DriveLetters(int id) {
-            return diskDriveLetters[id].Trim();
+            string driveletter = diskDriveLetters[id];
+            if (driveletter == null) return string.Empty;
+            else return driveletter.Trim();
         }
 
         // 磁盘占用、读写速率
