@@ -42,7 +42,8 @@ namespace GetSystemStatusGUI {
             if (Environment.OSVersion.Version.Major < 10) {
                 showGPU.Enabled = false;
                 showGPU.Text = "Show GPU (Only available in Windows 10)";
-            } else {
+            }
+            else {
                 showGPU.Checked = ifShowGPU;
             }
             if (loadLocation) LoadSavedLocation();
@@ -69,7 +70,8 @@ namespace GetSystemStatusGUI {
                 cpuForm.Show();
                 //btnFocusCPU.Visible = true;
                 btnFocusCPU.Enabled = true;
-            } else {
+            }
+            else {
                 cpuForm.Hide();
                 btnFocusCPU.Enabled = false;
                 //btnFocusCPU.Visible = false;
@@ -143,7 +145,8 @@ namespace GetSystemStatusGUI {
                 if (ramForm == null || ramForm.IsDisposed) ramForm = new RAMForm(this);
                 ramForm.Show();
                 btnFocusRAM.Enabled = true;
-            } else {
+            }
+            else {
                 ramForm.Hide();
                 btnFocusRAM.Enabled = false;
             }
@@ -155,7 +158,8 @@ namespace GetSystemStatusGUI {
                 if (diskForm == null || diskForm.IsDisposed) diskForm = new DiskForm(this);
                 diskForm.Show();
                 btnFocusDisk.Enabled = true;
-            } else {
+            }
+            else {
                 diskForm.Hide();
                 btnFocusDisk.Enabled = false;
             }
@@ -169,7 +173,8 @@ namespace GetSystemStatusGUI {
                     networkForm.Show();
                     btnFocusNetwork.Enabled = true;
                 }
-            } else {
+            }
+            else {
                 if (networkForm != null) networkForm.Hide();
                 btnFocusNetwork.Enabled = false;
             }
@@ -185,7 +190,8 @@ namespace GetSystemStatusGUI {
                     loadGPUFormLocation();
                     gpuForm.TopMost = gPUFormToolStripMenuItem.Checked;
                 }
-            } else {
+            }
+            else {
                 if (gpuForm != null) gpuForm.Dispose();
                 btnFocusGPU.Enabled = false;
             }
@@ -414,7 +420,8 @@ namespace GetSystemStatusGUI {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("DoNotShow", "GPU", "true", iniFile);
-            } else {
+            }
+            else {
                 INIHelper.Write("DoNotShow", "GPU", "false", iniFile);
             }
         }
@@ -434,7 +441,8 @@ namespace GetSystemStatusGUI {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("LoadAtStartup", "Location", "true", iniFile);
-            } else {
+            }
+            else {
                 INIHelper.Write("LoadAtStartup", "Location", "false", iniFile);
             }
         }
@@ -443,7 +451,8 @@ namespace GetSystemStatusGUI {
             ToolStripMenuItem here = sender as ToolStripMenuItem;
             if (here.Checked) {
                 INIHelper.Write("LoadAtStartup", "Size", "true", iniFile);
-            } else {
+            }
+            else {
                 INIHelper.Write("LoadAtStartup", "Size", "false", iniFile);
             }
         }
@@ -517,13 +526,16 @@ namespace GetSystemStatusGUI {
                     if (control is CheckBox) {
                         CheckBox cb = control as CheckBox;
                         cb.Font = Utility.ScaleFont(cb.Font, scale);
-                    } else if (control is ComboBox) {
+                    }
+                    else if (control is ComboBox) {
                         ComboBox cb = control as ComboBox;
                         cb.Font = Utility.ScaleFont(cb.Font, scale);
-                    } else if (control is Label) {
+                    }
+                    else if (control is Label) {
                         Label lbl = control as Label;
                         lbl.Font = Utility.ScaleFont(lbl.Font, scale);
-                    } else if (control is ToolStrip) {
+                    }
+                    else if (control is ToolStrip) {
                         ToolStrip ts = control as ToolStrip;
                         for (int i = 0; i < ts.Items.Count; i++) {
                             var item = ts.Items[i] as ToolStripMenuItem;
@@ -541,7 +553,8 @@ namespace GetSystemStatusGUI {
             if (here.Checked) {
                 INIHelper.Write("CPUForm", "TopMost", "true", iniFile);
                 cpuForm.TopMost = true;
-            } else {
+            }
+            else {
                 INIHelper.Write("CPUForm", "TopMost", "false", iniFile);
                 cpuForm.TopMost = false;
             }
@@ -552,7 +565,8 @@ namespace GetSystemStatusGUI {
             if (here.Checked) {
                 INIHelper.Write("RAMForm", "TopMost", "true", iniFile);
                 ramForm.TopMost = true;
-            } else {
+            }
+            else {
                 INIHelper.Write("RAMForm", "TopMost", "false", iniFile);
                 ramForm.TopMost = false;
             }
@@ -563,7 +577,8 @@ namespace GetSystemStatusGUI {
             if (here.Checked) {
                 INIHelper.Write("DiskForm", "TopMost", "true", iniFile);
                 diskForm.TopMost = true;
-            } else {
+            }
+            else {
                 INIHelper.Write("DiskForm", "TopMost", "false", iniFile);
                 diskForm.TopMost = false;
             }
@@ -574,7 +589,8 @@ namespace GetSystemStatusGUI {
             if (here.Checked) {
                 INIHelper.Write("NetworkForm", "TopMost", "true", iniFile);
                 networkForm.TopMost = true;
-            } else {
+            }
+            else {
                 INIHelper.Write("NetworkForm", "TopMost", "false", iniFile);
                 networkForm.TopMost = false;
             }
@@ -586,7 +602,8 @@ namespace GetSystemStatusGUI {
                 INIHelper.Write("GPUForm0", "TopMost", "true", iniFile);
                 if (gpuForm != null && !gpuForm.IsDisposed)
                     gpuForm.TopMost = true;
-            } else {
+            }
+            else {
                 INIHelper.Write("GPUForm0", "TopMost", "false", iniFile);
                 if (gpuForm != null && !gpuForm.IsDisposed)
                     gpuForm.TopMost = false;
@@ -620,6 +637,17 @@ namespace GetSystemStatusGUI {
                     return gPUFormToolStripMenuItem.Checked;
                 default:
                     return false;
+            }
+        }
+
+        private void lowDPIModeToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
+            const float scale = 0.75f;
+            bool enableLowDPI = lowDPIModeToolStripMenuItem.Checked;
+            if (enableLowDPI) {
+                cpuForm.EnableLowDPI(scale);
+            }
+            else {
+                cpuForm.DisableLowDPI(scale);
             }
         }
     }
