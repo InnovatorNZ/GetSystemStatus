@@ -59,6 +59,7 @@ namespace GetSystemStatusGUI
 			this.diskFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.networkFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gPUFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.lowDPIModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnFocus = new System.Windows.Forms.Button();
@@ -67,7 +68,6 @@ namespace GetSystemStatusGUI
 			this.btnFocusDisk = new System.Windows.Forms.Button();
 			this.btnFocusNetwork = new System.Windows.Forms.Button();
 			this.btnFocusGPU = new System.Windows.Forms.Button();
-			this.lowDPIModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -147,7 +147,7 @@ namespace GetSystemStatusGUI
             "0.5 sec",
             "0.25 sec"});
 			this.cbUpdateInterval.Location = new System.Drawing.Point(248, 249);
-			this.cbUpdateInterval.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.cbUpdateInterval.Margin = new System.Windows.Forms.Padding(2);
 			this.cbUpdateInterval.Name = "cbUpdateInterval";
 			this.cbUpdateInterval.Size = new System.Drawing.Size(98, 25);
 			this.cbUpdateInterval.TabIndex = 6;
@@ -173,7 +173,7 @@ namespace GetSystemStatusGUI
 			this.btnDiskRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
 			this.btnDiskRefresh.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnDiskRefresh.Location = new System.Drawing.Point(423, 145);
-			this.btnDiskRefresh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.btnDiskRefresh.Margin = new System.Windows.Forms.Padding(2);
 			this.btnDiskRefresh.Name = "btnDiskRefresh";
 			this.btnDiskRefresh.Size = new System.Drawing.Size(26, 27);
 			this.btnDiskRefresh.TabIndex = 8;
@@ -198,8 +198,7 @@ namespace GetSystemStatusGUI
 			// 
 			// menuStrip1
 			// 
-			this.menuStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			this.menuStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.menuStrip1.AutoSize = false;
 			this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
@@ -362,6 +361,14 @@ namespace GetSystemStatusGUI
 			this.gPUFormToolStripMenuItem.Text = "GPU Form(s)";
 			this.gPUFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gPUFormToolStripMenuItem_CheckedChanged);
 			// 
+			// lowDPIModeToolStripMenuItem
+			// 
+			this.lowDPIModeToolStripMenuItem.CheckOnClick = true;
+			this.lowDPIModeToolStripMenuItem.Name = "lowDPIModeToolStripMenuItem";
+			this.lowDPIModeToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.lowDPIModeToolStripMenuItem.Text = "Low DPI mode";
+			this.lowDPIModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.lowDPIModeToolStripMenuItem_CheckedChanged);
+			// 
 			// helpToolStripMenuItem
 			// 
 			this.helpToolStripMenuItem.AutoSize = false;
@@ -381,7 +388,7 @@ namespace GetSystemStatusGUI
 			// btnFocus
 			// 
 			this.btnFocus.Location = new System.Drawing.Point(358, 324);
-			this.btnFocus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.btnFocus.Margin = new System.Windows.Forms.Padding(2);
 			this.btnFocus.Name = "btnFocus";
 			this.btnFocus.Size = new System.Drawing.Size(88, 23);
 			this.btnFocus.TabIndex = 11;
@@ -439,14 +446,6 @@ namespace GetSystemStatusGUI
 			this.btnFocusGPU.TabIndex = 16;
 			this.btnFocusGPU.UseVisualStyleBackColor = true;
 			this.btnFocusGPU.Click += new System.EventHandler(this.btnFocusGPU_Click);
-			// 
-			// lowDPIModeToolStripMenuItem
-			// 
-			this.lowDPIModeToolStripMenuItem.CheckOnClick = true;
-			this.lowDPIModeToolStripMenuItem.Name = "lowDPIModeToolStripMenuItem";
-			this.lowDPIModeToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-			this.lowDPIModeToolStripMenuItem.Text = "Low DPI mode";
-			this.lowDPIModeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.lowDPIModeToolStripMenuItem_CheckedChanged);
 			// 
 			// Form1
 			// 

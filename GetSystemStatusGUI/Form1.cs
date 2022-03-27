@@ -513,27 +513,63 @@ namespace GetSystemStatusGUI {
         private void Form1_DpiChanged(object sender, DpiChangedEventArgs e) {
             if (e.DeviceDpiNew != e.DeviceDpiOld) {
                 float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
-                foreach (var control in this.Controls) {
-                    if (control is CheckBox) {
-                        CheckBox cb = control as CheckBox;
-                        cb.Font = Utility.ScaleFont(cb.Font, scale);
-                    } else if (control is ComboBox) {
-                        ComboBox cb = control as ComboBox;
-                        cb.Font = Utility.ScaleFont(cb.Font, scale);
-                    } else if (control is Label) {
-                        Label lbl = control as Label;
-                        lbl.Font = Utility.ScaleFont(lbl.Font, scale);
-                    } else if (control is ToolStrip) {
-                        ToolStrip ts = control as ToolStrip;
-                        for (int i = 0; i < ts.Items.Count; i++) {
-                            var item = ts.Items[i] as ToolStripMenuItem;
-                            item.Height = (int)Math.Round(item.Height * scale);
-                            item.Width = (int)Math.Round(item.Width * scale);
-                            item.Font = Utility.ScaleFont(item.Font, scale);
-                        }
+                ChangeScale(scale);
+            }
+        }
+
+        private void ChangeScale(float scale) {
+            foreach (var control in this.Controls) {
+                if (control is CheckBox) {
+                    CheckBox cb = control as CheckBox;
+                    cb.Font = Utility.ScaleFont(cb.Font, scale);
+                } else if (control is ComboBox) {
+                    ComboBox cb = control as ComboBox;
+                    cb.Font = Utility.ScaleFont(cb.Font, scale);
+                } else if (control is Label) {
+                    Label lbl = control as Label;
+                    lbl.Font = Utility.ScaleFont(lbl.Font, scale);
+                } else if (control is ToolStrip) {
+                    ToolStrip ts = control as ToolStrip;
+                    for (int i = 0; i < ts.Items.Count; i++) {
+                        var item = ts.Items[i] as ToolStripMenuItem;
+                        item.Height = (int)Math.Round(item.Height * scale);
+                        item.Width = (int)Math.Round(item.Width * scale);
+                        item.Font = Utility.ScaleFont(item.Font, scale);
                     }
                 }
             }
+        }
+
+        public void EnableLowDPI(float scale) {
+            this.ChangeScale(scale);
+            foreach (var control in this.Controls) {
+                if (control is CheckBox) {
+                    CheckBox checkBox = control as CheckBox;
+                    checkBox.Top = (int)Math.Round(checkBox.Top * scale);
+                    checkBox.Left = (int)Math.Round(checkBox.Left * scale);
+                } else if (control is ComboBox) {
+                    ComboBox comboBox = control as ComboBox;
+                    comboBox.Top = (int)Math.Round(comboBox.Top * scale);
+                    comboBox.Left = (int)Math.Round(comboBox.Left * scale);
+                } else if (control is Button) {
+                    Button button = control as Button;
+                    button.Top = (int)Math.Round(button.Top * scale);
+                    button.Left = (int)Math.Round(button.Left * scale);
+                    button.Width = (int)Math.Round(button.Width * scale);
+                    button.Height = (int)Math.Round(button.Height * scale);
+                    button.Font = Utility.ScaleFont(button.Font, scale);
+                } else if (control is Label) {
+                    Label label = control as Label;
+                    label.Top = (int)Math.Round(label.Top * scale);
+                    label.Left = (int)Math.Round(label.Left * scale);
+                }
+            }
+            this.Width = (int)Math.Round(this.Width * scale);
+            this.Height = (int)Math.Round(this.Height * scale);
+        }
+
+        public void DisableLowDPI(float scale) {
+            this.EnableLowDPI(1 / scale);
         }
 
         private void CPUFormToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
@@ -627,10 +663,12 @@ namespace GetSystemStatusGUI {
             const float scale = 0.8f;
             bool enableLowDPI = lowDPIModeToolStripMenuItem.Checked;
             if (enableLowDPI) {
+                this.EnableLowDPI(scale);
                 cpuForm.EnableLowDPI(scale);
                 ramForm.EnableLowDPI(scale);
                 diskForm.EnableLowDPI(scale);
             } else {
+                this.DisableLowDPI(scale);
                 cpuForm.DisableLowDPI(scale);
                 ramForm.DisableLowDPI(scale);
                 diskForm.DisableLowDPI(scale);
