@@ -223,7 +223,8 @@ namespace GetSystemStatusGUI {
                 string unit = csplit[1];
                 if (unit == "ms") Global.interval_ms = (int)Math.Round(ims);
                 else if (unit == "s" || unit == "sec" || unit == "secs") Global.interval_ms = (int)Math.Round(ims * 1000);
-            } catch { }
+            }
+            catch { }
         }
 
         public void btnDiskRefresh_Click(object sender, EventArgs e) {
@@ -470,7 +471,8 @@ namespace GetSystemStatusGUI {
                     this.showCPU.Checked = true;
                     this.cpuForm.Location = cpuLocation;
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 MessageBox.Show("Not valid: " + ex.Message, "Invalid core number", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -627,9 +629,11 @@ namespace GetSystemStatusGUI {
             if (enableLowDPI) {
                 cpuForm.EnableLowDPI(scale);
                 ramForm.EnableLowDPI(scale);
+                diskForm.EnableLowDPI(scale);
             } else {
                 cpuForm.DisableLowDPI(scale);
                 ramForm.DisableLowDPI(scale);
+                diskForm.DisableLowDPI(scale);
             }
         }
     }
