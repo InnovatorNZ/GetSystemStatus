@@ -536,6 +536,9 @@ namespace GetSystemStatusGUI {
                         item.Width = (int)Math.Round(item.Width * scale);
                         item.Font = Utility.ScaleFont(item.Font, scale);
                     }
+                } else if (control is Button) {
+                    Button button = control as Button;
+                    button.Font = Utility.ScaleFont(button.Font, scale);
                 }
             }
         }
@@ -557,7 +560,6 @@ namespace GetSystemStatusGUI {
                     button.Left = (int)Math.Round(button.Left * scale);
                     button.Width = (int)Math.Round(button.Width * scale);
                     button.Height = (int)Math.Round(button.Height * scale);
-                    button.Font = Utility.ScaleFont(button.Font, scale);
                 } else if (control is Label) {
                     Label label = control as Label;
                     label.Top = (int)Math.Round(label.Top * scale);
