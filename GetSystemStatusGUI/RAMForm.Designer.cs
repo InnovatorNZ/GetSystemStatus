@@ -47,11 +47,12 @@
 			// 
 			// lblRAM
 			// 
+			this.lblRAM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lblRAM.Font = new System.Drawing.Font("微软雅黑", 12F);
-			this.lblRAM.Location = new System.Drawing.Point(184, 49);
+			this.lblRAM.Location = new System.Drawing.Point(238, 49);
 			this.lblRAM.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
 			this.lblRAM.Name = "lblRAM";
-			this.lblRAM.Size = new System.Drawing.Size(319, 25);
+			this.lblRAM.Size = new System.Drawing.Size(265, 25);
 			this.lblRAM.TabIndex = 1;
 			this.lblRAM.Text = "Loading usage status...";
 			this.lblRAM.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

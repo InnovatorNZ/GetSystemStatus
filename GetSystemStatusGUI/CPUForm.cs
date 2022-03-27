@@ -167,8 +167,7 @@ namespace GetSystemStatusGUI {
                                 subCharts[i].Series[0].Points.DataBindY(ys[i % cpuInfo.ProcessorCount]);
                         }
                     );
-                    try { Invoke(updateChart); }
-                    catch { break; }
+                    try { Invoke(updateChart); } catch { break; }
                 }
                 Thread.Sleep(Global.interval_ms);
             }
@@ -241,8 +240,7 @@ namespace GetSystemStatusGUI {
                 if (control is Label) {
                     Label label = control as Label;
                     label.Font = Utility.ScaleFont(label.Font, scale);
-                }
-                else if (control is Chart) {
+                } else if (control is Chart) {
                     Chart subchart = control as Chart;
                     foreach (var title in subchart.Titles) {
                         title.Font = Utility.ScaleFont(title.Font, scale);
@@ -266,7 +264,7 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        public void EnableLowDPI(float scale = 0.75f) {
+        public void EnableLowDPI(float scale) {
             this.ChangeScale(scale);
             label1.Left = (int)Math.Round(label1.Left * scale);
             label1.Top = (int)Math.Round(label1.Top * scale);
@@ -279,7 +277,7 @@ namespace GetSystemStatusGUI {
             this.Height = (int)Math.Round(this.Height * scale);
         }
 
-        public void DisableLowDPI(float scale = 0.75f) {
+        public void DisableLowDPI(float scale) {
             this.ChangeScale(1 / scale);
             label1.Left = (int)Math.Round(label1.Left / scale);
             label1.Top = (int)Math.Round(label1.Top / scale);
