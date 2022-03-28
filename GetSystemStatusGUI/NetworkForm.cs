@@ -52,7 +52,7 @@ namespace GetSystemStatusGUI {
                     Chart chart = new Chart();
                     chart.Palette = ChartColorPalette.None;
                     chart.PaletteCustomColors = new Color[] { chartColor };
-                    
+
                     chart.ChartAreas.Add(cid.ToString());
                     chart.ChartAreas[0].AxisY.Minimum = 0;
                     chart.ChartAreas[0].AxisY.Maximum = 100;
@@ -161,42 +161,58 @@ namespace GetSystemStatusGUI {
 
         private void NetworkForm_DpiChanged(object sender, DpiChangedEventArgs e) {
             if (e.DeviceDpiNew != e.DeviceDpiOld) {
+                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
+                ChangeScale(scale);
                 new Action(delegate () {
                     Thread.Sleep(150);
                     Invoke(new Action(delegate () {
                         this.NetworkForm_Resize(sender, e);
                     }));
                 }).BeginInvoke(null, null);
-                float scale = (float)e.DeviceDpiNew / (float)e.DeviceDpiOld;
-                fLineWidth *= scale;
-                fGridWidth *= scale;
-                foreach (var control in this.Controls) {
-                    if (control is Label) {
-                        Label label = control as Label;
-                        label.Font = Utility.ScaleFont(label.Font, scale);
-                    } else if (control is Chart) {
-                        Chart subchart = control as Chart;
-                        foreach (var title in subchart.Titles) {
-                            title.Font = Utility.ScaleFont(title.Font, scale);
-                        }
-                        foreach (var chartarea in subchart.ChartAreas) {
-                            int lineWidth = (int)Math.Round(fLineWidth);
-                            int gridLineWidth = (int)Math.Round(fGridWidth);
-                            chartarea.AxisX.LineWidth = lineWidth;
-                            chartarea.AxisY.LineWidth = lineWidth;
-                            chartarea.AxisX2.LineWidth = lineWidth;
-                            chartarea.AxisY2.LineWidth = lineWidth;
-                            chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
-                            chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
-                            chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
-                        }
-                        foreach (var series in subchart.Series) {
-                            int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
-                            series.BorderWidth = borderWidth;
-                        }
+            }
+        }
+
+        public void ChangeScale(float scale) {
+            fLineWidth *= scale;
+            fGridWidth *= scale;
+            foreach (var control in this.Controls) {
+                if (control is Label) {
+                    Label label = control as Label;
+                    label.Font = Utility.ScaleFont(label.Font, scale);
+                } else if (control is Chart) {
+                    Chart subchart = control as Chart;
+                    foreach (var title in subchart.Titles) {
+                        title.Font = Utility.ScaleFont(title.Font, scale);
+                    }
+                    foreach (var chartarea in subchart.ChartAreas) {
+                        int lineWidth = (int)Math.Round(fLineWidth);
+                        int gridLineWidth = (int)Math.Round(fGridWidth);
+                        chartarea.AxisX.LineWidth = lineWidth;
+                        chartarea.AxisY.LineWidth = lineWidth;
+                        chartarea.AxisX2.LineWidth = lineWidth;
+                        chartarea.AxisY2.LineWidth = lineWidth;
+                        chartarea.AxisX.MajorGrid.LineWidth = gridLineWidth;
+                        chartarea.AxisY.MajorGrid.LineWidth = gridLineWidth;
+                        chartarea.AxisX.MinorGrid.LineWidth = gridLineWidth;
+                    }
+                    foreach (var series in subchart.Series) {
+                        int borderWidth = (int)Math.Floor(series.BorderWidth * scale);
+                        series.BorderWidth = borderWidth;
                     }
                 }
             }
+        }
+
+        public void EnableLowDPI(float scale) {
+            this.ChangeScale(scale);
+            label1.Left = (int)Math.Round(label1.Left * scale);
+            label1.Top = (int)Math.Round(label1.Top * scale);
+            this.Width = (int)Math.Round(this.Width * scale);
+            this.Height = (int)Math.Round(this.Height * scale);
+        }
+
+        public void DisableLowDPI(float scale) {
+            this.EnableLowDPI(1 / scale);
         }
 
         public new void Show() {

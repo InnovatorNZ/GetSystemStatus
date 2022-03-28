@@ -669,11 +669,15 @@ namespace GetSystemStatusGUI {
                 cpuForm.EnableLowDPI(scale);
                 ramForm.EnableLowDPI(scale);
                 diskForm.EnableLowDPI(scale);
+                networkForm.EnableLowDPI(scale);
+                gpuForm.EnableLowDPI(scale);
             } else {
                 this.DisableLowDPI(scale);
                 cpuForm.DisableLowDPI(scale);
                 ramForm.DisableLowDPI(scale);
                 diskForm.DisableLowDPI(scale);
+                networkForm.DisableLowDPI(scale);
+                gpuForm.DisableLowDPI(scale);
             }
         }
     }
