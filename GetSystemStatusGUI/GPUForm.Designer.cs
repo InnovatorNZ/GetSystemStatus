@@ -71,9 +71,9 @@ namespace GetSystemStatusGUI {
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlLightLight;
 			this.ClientSize = new System.Drawing.Size(759, 560);
-			this.Controls.Add(this.chartGPU);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblGPUName);
+			this.Controls.Add(this.chartGPU);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(2);
 			this.Name = "GPUForm";

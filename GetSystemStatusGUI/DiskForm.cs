@@ -247,11 +247,6 @@ namespace GetSystemStatusGUI {
         }
 
         public void DisableLowDPI(float scale) {
-            if (startId == 0) {
-                foreach (var subform in this.moreDiskForms) {
-                    subform.DisableLowDPI(scale);
-                }
-            }
             this.EnableLowDPI(1 / scale);
         }
 

@@ -259,11 +259,6 @@ namespace GetSystemStatusGUI {
         }
 
         public void DisableLowDPI(float scale) {
-            if (id == 0) {
-                foreach (var subform in moreGPUForms) {
-                    subform.DisableLowDPI(scale);
-                }
-            }
             this.EnableLowDPI(1 / scale);
         }
     }
