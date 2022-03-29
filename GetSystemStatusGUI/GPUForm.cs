@@ -244,6 +244,11 @@ namespace GetSystemStatusGUI {
         }
 
         public void EnableLowDPI(float scale) {
+            if (id == 0) {
+                foreach (var subform in moreGPUForms) {
+                    subform.EnableLowDPI(scale);
+                }
+            }
             this.ChangeScale(scale);
             label1.Left = (int)Math.Round(label1.Left * scale);
             label1.Top = (int)Math.Round(label1.Top * scale);
@@ -254,6 +259,11 @@ namespace GetSystemStatusGUI {
         }
 
         public void DisableLowDPI(float scale) {
+            if (id == 0) {
+                foreach (var subform in moreGPUForms) {
+                    subform.DisableLowDPI(scale);
+                }
+            }
             this.EnableLowDPI(1 / scale);
         }
     }

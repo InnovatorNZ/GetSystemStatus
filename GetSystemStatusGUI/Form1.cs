@@ -22,6 +22,7 @@ namespace GetSystemStatusGUI {
         private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
         private bool showVirtual = false;
+        private const float lowDPIScale = 0.8f;
 
         public Form1() {
             SetProcessorAffinity();
@@ -184,6 +185,9 @@ namespace GetSystemStatusGUI {
                     btnFocusGPU.Enabled = true;
                     loadGPUFormLocation();
                     gpuForm.TopMost = gPUFormToolStripMenuItem.Checked;
+                    if (this.lowDPIModeToolStripMenuItem.Checked) {
+                        gpuForm.EnableLowDPI(lowDPIScale);
+                    }
                 }
             } else {
                 if (gpuForm != null) gpuForm.Dispose();
@@ -241,6 +245,9 @@ namespace GetSystemStatusGUI {
             for (int i = 0; i < diskForm.moreDiskForms.Count; i++) {
                 diskForm.moreDiskForms[i].Location = diskLocations[i];
             }
+            if (this.lowDPIModeToolStripMenuItem.Checked) {
+                diskForm.EnableLowDPI(lowDPIScale);
+            }
         }
 
         private void btnNetworkRefresh_Click(object sender, EventArgs e) {
@@ -252,6 +259,9 @@ namespace GetSystemStatusGUI {
             networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
             this.networkForm.Location = networkLocation;
+            if (this.lowDPIModeToolStripMenuItem.Checked) {
+                networkForm.EnableLowDPI(lowDPIScale);
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
@@ -662,7 +672,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void lowDPIModeToolStripMenuItem_CheckedChanged(object sender, EventArgs e) {
-            const float scale = 0.8f;
+            const float scale = lowDPIScale;
             bool enableLowDPI = lowDPIModeToolStripMenuItem.Checked;
             if (enableLowDPI) {
                 this.EnableLowDPI(scale);
@@ -670,14 +680,14 @@ namespace GetSystemStatusGUI {
                 ramForm.EnableLowDPI(scale);
                 diskForm.EnableLowDPI(scale);
                 networkForm.EnableLowDPI(scale);
-                gpuForm.EnableLowDPI(scale);
+                if (gpuForm != null && !gpuForm.IsDisposed) gpuForm.EnableLowDPI(scale);
             } else {
                 this.DisableLowDPI(scale);
                 cpuForm.DisableLowDPI(scale);
                 ramForm.DisableLowDPI(scale);
                 diskForm.DisableLowDPI(scale);
                 networkForm.DisableLowDPI(scale);
-                gpuForm.DisableLowDPI(scale);
+                if (gpuForm != null && !gpuForm.IsDisposed) gpuForm.DisableLowDPI(scale);
             }
         }
     }

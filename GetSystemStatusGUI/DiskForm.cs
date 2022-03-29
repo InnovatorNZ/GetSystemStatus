@@ -234,6 +234,11 @@ namespace GetSystemStatusGUI {
         }
 
         public void EnableLowDPI(float scale) {
+            if (startId == 0) {
+                foreach (var subform in this.moreDiskForms) {
+                    subform.EnableLowDPI(scale);
+                }
+            }
             this.ChangeScale(scale);
             label1.Left = (int)Math.Round(label1.Left * scale);
             label1.Top = (int)Math.Round(label1.Top * scale);
@@ -242,11 +247,12 @@ namespace GetSystemStatusGUI {
         }
 
         public void DisableLowDPI(float scale) {
-            this.ChangeScale(1 / scale);
-            label1.Left = (int)Math.Round(label1.Left / scale);
-            label1.Top = (int)Math.Round(label1.Top / scale);
-            this.Width = (int)Math.Round(this.Width / scale);
-            this.Height = (int)Math.Round(this.Height / scale);
+            if (startId == 0) {
+                foreach (var subform in this.moreDiskForms) {
+                    subform.DisableLowDPI(scale);
+                }
+            }
+            this.EnableLowDPI(1 / scale);
         }
 
 

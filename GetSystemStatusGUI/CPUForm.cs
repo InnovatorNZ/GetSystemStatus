@@ -278,16 +278,7 @@ namespace GetSystemStatusGUI {
         }
 
         public void DisableLowDPI(float scale) {
-            this.ChangeScale(1 / scale);
-            label1.Left = (int)Math.Round(label1.Left / scale);
-            label1.Top = (int)Math.Round(label1.Top / scale);
-            chart1.Left = (int)Math.Round(chart1.Left / scale);
-            chart1.Top = (int)Math.Round(chart1.Top / scale);
-            chart1.Height = (int)Math.Round(chart1.Height / scale);
-            cpuName.Left = this.Width - (int)Math.Round((this.Width - cpuName.Right) / scale) - cpuName.Width;
-            cpuName.Top = (int)Math.Round(cpuName.Top / scale);
-            this.Width = (int)Math.Round(this.Width / scale);
-            this.Height = (int)Math.Round(this.Height / scale);
+            this.EnableLowDPI(1 / scale);
         }
 
         private float GetWinScaling() {
