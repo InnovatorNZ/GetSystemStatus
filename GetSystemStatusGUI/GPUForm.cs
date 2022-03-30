@@ -111,6 +111,9 @@ namespace GetSystemStatusGUI {
                 chartGPU.Titles[engine].Font = new Font(FontFamily.GenericSansSerif, 10);
             }
             GPUForm_Resize(null, null);
+            if (id == 0 && mainForm.lowDPIEnabled) {
+                this.EnableLowDPI(Form1.lowDPIScale);
+            }
             Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
             gpuThread.Start();
         }

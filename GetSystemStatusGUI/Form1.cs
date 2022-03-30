@@ -22,7 +22,10 @@ namespace GetSystemStatusGUI {
         private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
         private bool showVirtual = false;
-        private const float lowDPIScale = 0.8f;
+        public const float lowDPIScale = 0.8f;
+        public bool lowDPIEnabled {
+            get { return this.lowDPIModeToolStripMenuItem.Checked; }
+        }
 
         public Form1() {
             SetProcessorAffinity();
@@ -68,12 +71,10 @@ namespace GetSystemStatusGUI {
                 if (cpuForm == null || cpuForm.IsDisposed)
                     cpuForm = new CPUForm(this);
                 cpuForm.Show();
-                //btnFocusCPU.Visible = true;
                 btnFocusCPU.Enabled = true;
             } else {
                 cpuForm.Hide();
                 btnFocusCPU.Enabled = false;
-                //btnFocusCPU.Visible = false;
             }
         }
 
@@ -108,7 +109,6 @@ namespace GetSystemStatusGUI {
         }
 
         private void buttonExit_Click(object sender, EventArgs e) {
-            //Application.Exit();
             this.Close();
         }
 
@@ -185,9 +185,6 @@ namespace GetSystemStatusGUI {
                     btnFocusGPU.Enabled = true;
                     loadGPUFormLocation();
                     gpuForm.TopMost = gPUFormToolStripMenuItem.Checked;
-                    if (this.lowDPIModeToolStripMenuItem.Checked) {
-                        gpuForm.EnableLowDPI(lowDPIScale);
-                    }
                 }
             } else {
                 if (gpuForm != null) gpuForm.Dispose();
@@ -245,9 +242,6 @@ namespace GetSystemStatusGUI {
             for (int i = 0; i < diskForm.moreDiskForms.Count; i++) {
                 diskForm.moreDiskForms[i].Location = diskLocations[i];
             }
-            if (this.lowDPIModeToolStripMenuItem.Checked) {
-                diskForm.EnableLowDPI(lowDPIScale);
-            }
         }
 
         private void btnNetworkRefresh_Click(object sender, EventArgs e) {
@@ -259,9 +253,6 @@ namespace GetSystemStatusGUI {
             networkForm = new NetworkForm(this, this.showVirtual);
             this.showNetwork.Checked = true;
             this.networkForm.Location = networkLocation;
-            if (this.lowDPIModeToolStripMenuItem.Checked) {
-                networkForm.EnableLowDPI(lowDPIScale);
-            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {

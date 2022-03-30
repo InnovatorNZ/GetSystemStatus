@@ -146,6 +146,9 @@ namespace GetSystemStatusGUI {
             }
             InitialSize();
             DiskForm_Resize(null, null);
+            if (startId == 0 && mainform.lowDPIEnabled) {
+                this.EnableLowDPI(Form1.lowDPIScale);
+            }
             new Action(disk_load_thread).BeginInvoke(null, null);
         }
 

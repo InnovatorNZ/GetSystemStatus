@@ -117,6 +117,9 @@ namespace GetSystemStatusGUI {
             }
             InitialSize();
             NetworkForm_Resize(null, null);
+            if (mainForm.lowDPIEnabled) {
+                this.EnableLowDPI(Form1.lowDPIScale);
+            }
             new Action(network_load_thread).BeginInvoke(null, null);
         }
 
