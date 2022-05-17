@@ -27,7 +27,7 @@ namespace GetSystemStatus {
                 gpuThread.Start();
             }
 #endif
-            for (t = 0; t < 10000; t++) {
+            for (t = 0; t < 10; t++) {
                 Thread.Sleep(1500);
                 Console.Clear();
                 Console.WriteLine("Task Manager Console Edition");
@@ -40,11 +40,18 @@ namespace GetSystemStatus {
                 }
                 Console.WriteLine();
                 //RAM占用
-                int rusage = (int)Math.Round((1.0 - (double)sysInfo.MemoryAvailable / (double)sysInfo.PhysicalMemory) * 100.0);
-                int ramScale = (int)Math.Floor(Math.Log((double)sysInfo.MemoryAvailable, 1024));
-                double memAvail = Math.Round((double)sysInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
-                double memTotal = Math.Round((double)sysInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
-                //Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                if (sysInfo.PhysicalMemory > 0)
+                {
+                    int rusage = (int)Math.Round((1.0 - (double)sysInfo.MemoryAvailable / (double)sysInfo.PhysicalMemory) * 100.0);
+                    int ramScale = (int)Math.Floor(Math.Log((double)sysInfo.MemoryAvailable, 1024));
+                    double memAvail = Math.Round((double)sysInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
+                    double memTotal = Math.Round((double)sysInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
+                    Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                }
+                else
+                {
+                    Console.WriteLine("Memory Available: " + sysInfo.MemoryAvailable);
+                }
                 //磁盘占用与速率
                 string[] disk_load_display = new string[sysInfo.m_DiskNum];
                 for (int i = 0; i < sysInfo.m_DiskNum; i++) {
