@@ -1,4 +1,4 @@
-﻿#define UtiGPU
+﻿//#define UtiGPU
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,7 +44,7 @@ namespace GetSystemStatus {
                 int ramScale = (int)Math.Floor(Math.Log((double)sysInfo.MemoryAvailable, 1024));
                 double memAvail = Math.Round((double)sysInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
                 double memTotal = Math.Round((double)sysInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
-                Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
+                //Console.WriteLine("RAM Usage: {0}/{1}{2} ({3}%)", memTotal - memAvail, memTotal, scale_unit[ramScale], rusage);
                 //磁盘占用与速率
                 string[] disk_load_display = new string[sysInfo.m_DiskNum];
                 for (int i = 0; i < sysInfo.m_DiskNum; i++) {
@@ -246,6 +246,7 @@ namespace GetSystemStatus {
             PerformanceCounterCategory diskPfc = new PerformanceCounterCategory("PhysicalDisk");
             string[] diskInstanceNames = diskPfc.GetInstanceNames();
             m_DiskNum = diskInstanceNames.Length - 1;
+            if (m_DiskNum < 0) m_DiskNum = 0;
             pcDisksRead = new PerformanceCounter[m_DiskNum];
             pcDisksWrite = new PerformanceCounter[m_DiskNum];
             pcDisksLoad = new PerformanceCounter[m_DiskNum];
@@ -273,22 +274,29 @@ namespace GetSystemStatus {
             for (int i = 0; i < m_DiskNum; i++) { pcDisksRead[i].NextValue(); pcDisksWrite[i].NextValue(); pcDisksLoad[i].NextValue(); }
 
             //获得物理内存
-            ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
-            ManagementObjectCollection moc = mc.GetInstances();
-            foreach (ManagementObject mo in moc) {
-                if (mo["TotalPhysicalMemory"] != null) {
-                    m_PhysicalMemory = long.Parse(mo["TotalPhysicalMemory"].ToString());
+            try
+            {
+                ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
+                {
+                    if (mo["TotalPhysicalMemory"] != null)
+                    {
+                        m_PhysicalMemory = long.Parse(mo["TotalPhysicalMemory"].ToString());
+                    }
                 }
-            }
 
-            //CPU名称
-            var st = string.Empty;
-            var driveId = new ManagementObjectSearcher("Select * from Win32_Processor");
-            foreach (var o in driveId.Get()) {
-                var mo = (ManagementObject)o;
-                st = mo["Name"].ToString();
+                //CPU名称
+                var st = string.Empty;
+                var driveId = new ManagementObjectSearcher("Select * from Win32_Processor");
+                foreach (var o in driveId.Get())
+                {
+                    var mo = (ManagementObject)o;
+                    st = mo["Name"].ToString();
+                }
+                cpu_name = st;
             }
-            cpu_name = st;
+            catch (NotImplementedException ex) { }
 
             //网卡性能计数器
             adapters = NetworkInterface.GetAllNetworkInterfaces();
@@ -326,19 +334,24 @@ namespace GetSystemStatus {
                     }
                 }
             }
-
-            //GPU名称
-            var gpumem = new ManagementObjectSearcher("Select * from Win32_VideoController");
-            gpu_name = new List<string>();
-            foreach (var o in gpumem.Get()) {
-                var mo = (ManagementObject)o;
-                string c_gpu_name = (string)mo["name"].ToString();
-                try {
-                    string mem = mo["AdapterRAM"].ToString();
-                    gpu_name.Add(c_gpu_name);
+            try
+            {
+                //GPU名称
+                var gpumem = new ManagementObjectSearcher("Select * from Win32_VideoController");
+                gpu_name = new List<string>();
+                foreach (var o in gpumem.Get())
+                {
+                    var mo = (ManagementObject)o;
+                    string c_gpu_name = (string)mo["name"].ToString();
+                    try
+                    {
+                        string mem = mo["AdapterRAM"].ToString();
+                        gpu_name.Add(c_gpu_name);
+                    }
+                    catch { }
                 }
-                catch { }
             }
+            catch { }
         }
 
         // CPU利用率、核心数

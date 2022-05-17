@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Test {
     class Program {
         static void Main(string[] args) {
-            //TestPerformanceCounter();
+            TestPerformanceCounter();
             for (int i = 1; i <= 2048; i++) {
                 var ret = FactorDisposeRecurse2(i);
                 Console.Write(i.ToString() + ": ");
