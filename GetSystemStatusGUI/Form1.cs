@@ -21,34 +21,58 @@ namespace GetSystemStatusGUI {
         public GPUForm gpuForm;
         private AboutBox1 aboutBox;
         private string iniFile = ".\\config.ini";
+        public bool supportGPU = Environment.OSVersion.Version.Major >= 10;
         private bool showVirtual = false;
+        private string[] startArgs;
         public const float lowDPIScale = 0.8f;
         public bool lowDPIEnabled {
             get { return this.lowDPIModeToolStripMenuItem.Checked; }
+            set { this.lowDPIModeToolStripMenuItem.Checked = value; }
         }
 
-        public Form1() {
+        public Form1(string[] args) {
+            this.startArgs = args;
             SetProcessorAffinity();
             InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e) {
+            if (!supportGPU) {
+                showGPU.Enabled = false;
+                showGPU.Text = "Show GPU (Only available in Windows 10)";
+            }
+            bool doNotShowGPU = bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
+            doNotShowGPUAtStartToolStripMenuItem.Checked = doNotShowGPU;
+
             showCPU.Checked = true;
             showRAM.Checked = true;
             showDisk.Checked = true;
             showNetwork.Checked = true;
-            bool ifShowGPU = !bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
-            doNotShowGPUAtStartToolStripMenuItem.Checked = !ifShowGPU;
+
+            if (startArgs.Length > 0) {
+                bool showcpu = false, showram = false, showdisk = false, shownetwork = false, showgpu = false, lowdpi = false;
+                foreach (string arg in startArgs) {
+                    if (arg.EndsWith("-cpu")) showcpu = true;
+                    else if (arg.EndsWith("-ram")) showram = true;
+                    else if (arg.EndsWith("-disk")) showdisk = true;
+                    else if (arg.EndsWith("-network")) shownetwork = true;
+                    else if (arg.EndsWith("-gpu") && supportGPU) showgpu = true;
+                    else if (arg.EndsWith("-lowdpi")) lowdpi = true;
+                }
+                showCPU.Checked = showcpu;
+                showRAM.Checked = showram;
+                showDisk.Checked = showdisk;
+                showNetwork.Checked = shownetwork;
+                showGPU.Checked = showgpu;
+                lowDPIEnabled = lowdpi;
+            } else {
+                if (supportGPU) showGPU.Checked = !doNotShowGPU;
+            }
+
             bool loadLocation = bool.Parse(INIHelper.Read("LoadAtStartup", "Location", "true", iniFile));
             loadAtStartup.Checked = loadLocation;
             bool loadSize = bool.Parse(INIHelper.Read("LoadAtStartup", "Size", "false", iniFile));
             loadSizeAtStartup.Checked = loadSize;
-            if (Environment.OSVersion.Version.Major < 10) {
-                showGPU.Enabled = false;
-                showGPU.Text = "Show GPU (Only available in Windows 10)";
-            } else {
-                showGPU.Checked = ifShowGPU;
-            }
             if (loadLocation) LoadSavedLocation();
             if (loadSize) LoadSavedSize();
             LoadTopMost();
