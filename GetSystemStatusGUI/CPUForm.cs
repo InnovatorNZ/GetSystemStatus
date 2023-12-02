@@ -303,10 +303,10 @@ namespace GetSystemStatusGUI {
 
         public CPUInfo() {
             ProcessorCount = Environment.ProcessorCount;
-            pcCpuLoad = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            pcCpuLoad = new PerformanceCounter("Processor", "% Idle Time", "_Total");
             pcCpuCoreLoads = new PerformanceCounter[ProcessorCount];
             for (int i = 0; i < ProcessorCount; i++) {
-                pcCpuCoreLoads[i] = new PerformanceCounter("Processor", "% Processor Time", i.ToString());
+                pcCpuCoreLoads[i] = new PerformanceCounter("Processor", "% Idle Time", i.ToString());
             }
             pcCpuLoad.MachineName = ".";
             pcCpuLoad.NextValue();
@@ -331,11 +331,11 @@ namespace GetSystemStatusGUI {
         public int ProcessorCount { get; } = 0;
         public float CpuLoad {
             get {
-                return pcCpuLoad.NextValue();
+                return 100 - pcCpuLoad.NextValue();
             }
         }
         public float CpuCoreLoad(int core_num) {
-            return pcCpuCoreLoads[core_num].NextValue();
+            return 100 - pcCpuCoreLoads[core_num].NextValue();
         }
     }
 }
