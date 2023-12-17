@@ -81,10 +81,13 @@ namespace GetSystemStatusGUI {
         }
 
         private void SetProcessorAffinity() {
+            if (!Global.enableAffinity) return;
             Process proc = Process.GetCurrentProcess();
             long affinityMask = (long)proc.ProcessorAffinity;
             int cpuCnt = Environment.ProcessorCount;
-            long secondMask = affinityMask << (cpuCnt / 2);
+            int doNotUseFirstCores = Global.doNotUseFirstCores;
+            if (doNotUseFirstCores >= cpuCnt) doNotUseFirstCores = cpuCnt / 2;
+            long secondMask = affinityMask << doNotUseFirstCores;
             affinityMask &= secondMask;
             proc.ProcessorAffinity = (IntPtr)affinityMask;
         }
