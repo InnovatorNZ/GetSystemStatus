@@ -78,6 +78,19 @@ namespace GetSystemStatusGUI {
             LoadTopMost();
             FixMainFormDPI();
             FixToolStripDPI();
+
+            foreach (Form form in Application.OpenForms) {
+                if (form != this && DoWindowsOverlap(this, form)) {
+                    this.WindowState = FormWindowState.Minimized;
+                    break;
+                }
+            }
+        }
+
+        public static bool DoWindowsOverlap(Form form1, Form form2) {
+            Rectangle form1Bounds = form1.RectangleToScreen(form1.ClientRectangle);
+            Rectangle form2Bounds = form2.RectangleToScreen(form2.ClientRectangle);
+            return Rectangle.Intersect(form1Bounds, form2Bounds) != Rectangle.Empty;
         }
 
         private void SetProcessorAffinity() {
