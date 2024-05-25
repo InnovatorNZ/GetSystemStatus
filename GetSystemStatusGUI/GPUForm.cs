@@ -138,14 +138,14 @@ namespace GetSystemStatusGUI {
                         delegate () {
                             foreach (var keyValuePair in cGpuUti) {
                                 string cEngine = keyValuePair.Key;
-                                float cUti = keyValuePair.Value;
+                                float cUti = Math.Max(Math.Min(keyValuePair.Value, 100), 0);
                                 ys[cEngine].RemoveAt(0);
                                 ys[cEngine].Add(cUti);
                                 chartGPU.Series[cEngine].Points.DataBindY(ys[cEngine]);
                             }
-                            long dediMem = gpuInfo.GetGPUDedicatedMemory(id);
                             long totalMem = gpuInfo.getAdapterTotalMemory(id);
                             if (totalMem > 0) {
+                                long dediMem = Math.Max(Math.Min(gpuInfo.GetGPUDedicatedMemory(id), totalMem), 0);
                                 float cusage = (float)dediMem / (float)totalMem * 100;
                                 dediUsage.RemoveAt(0);
                                 dediUsage.Add(cusage);
