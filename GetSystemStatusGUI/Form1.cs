@@ -51,13 +51,23 @@ namespace GetSystemStatusGUI {
 
             if (startArgs.Length > 0) {
                 bool showcpu = false, showram = false, showdisk = false, shownetwork = false, showgpu = false, lowdpi = false;
-                foreach (string arg in startArgs) {
+                for (int i = 0; i < startArgs.Length; i++) {
+                    string arg = startArgs[i];
                     if (arg.EndsWith("-cpu")) showcpu = true;
                     else if (arg.EndsWith("-ram")) showram = true;
                     else if (arg.EndsWith("-disk")) showdisk = true;
                     else if (arg.EndsWith("-network")) shownetwork = true;
                     else if (arg.EndsWith("-gpu") && supportGPU) showgpu = true;
                     else if (arg.EndsWith("-lowdpi")) lowdpi = true;
+                    else if (arg.EndsWith("-interval")) {
+                        if (i < startArgs.Length - 1) {
+                            if (float.TryParse(startArgs[i + 1], out float intervalSec)) {
+                                // Global.interval_ms = (int)Math.Round(intervalSec * 1000);
+                                cbUpdateInterval.Text = intervalSec.ToString() + " sec";
+                                i++;
+                            }
+                        }
+                    }
                 }
                 showCPU.Checked = showcpu;
                 showRAM.Checked = showram;
@@ -80,7 +90,7 @@ namespace GetSystemStatusGUI {
             FixToolStripDPI();
 
             foreach (Form form in Application.OpenForms) {
-                if (form != this && DoWindowsOverlap(this, form)) {
+                if (form != this && !form.IsDisposed && form.Visible && DoWindowsOverlap(this, form)) {
                     this.WindowState = FormWindowState.Minimized;
                     break;
                 }
