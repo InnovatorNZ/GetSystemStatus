@@ -34,6 +34,7 @@ namespace GetSystemStatusGUI {
             this.startArgs = args;
             SetProcessorAffinity();
             InitializeComponent();
+            ApplyTheme();
         }
 
         private void Form1_Load(object sender, EventArgs e) {
@@ -41,6 +42,8 @@ namespace GetSystemStatusGUI {
                 showGPU.Enabled = false;
                 showGPU.Text = "Show GPU (Only available in Windows 10)";
             }
+            // 加载主题
+            ApplyTheme();
             bool doNotShowGPU = bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
             doNotShowGPUAtStartToolStripMenuItem.Checked = doNotShowGPU;
 
@@ -97,6 +100,57 @@ namespace GetSystemStatusGUI {
             }
         }
 
+        // 递归设置控件主题色
+        public void ApplyTheme()
+        {
+            Color backColor, foreColor, menuColor;
+            if (Global.IsDarkMode)
+            {
+                backColor = Color.FromArgb(32, 32, 32);
+                foreColor = Color.WhiteSmoke;
+                menuColor = Color.FromArgb(45, 45, 48);
+            }
+            else
+            {
+                backColor = SystemColors.Control;
+                foreColor = SystemColors.ControlText;
+                menuColor = SystemColors.Control;
+            }
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+            ApplyThemeToControls(this.Controls, backColor, foreColor);
+            if (this.MainMenuStrip != null)
+            {
+                this.MainMenuStrip.BackColor = menuColor;
+                this.MainMenuStrip.ForeColor = foreColor;
+            }
+        }
+
+        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
+        {
+            foreach (Control ctrl in controls)
+            {
+                if (ctrl is MenuStrip || ctrl is StatusStrip)
+                {
+                    ctrl.BackColor = backColor;
+                    ctrl.ForeColor = foreColor;
+                }
+                else if (ctrl is Button || ctrl is CheckBox || ctrl is ComboBox || ctrl is Label || ctrl is GroupBox || ctrl is ListBox || ctrl is TextBox)
+                {
+                    ctrl.BackColor = backColor;
+                    ctrl.ForeColor = foreColor;
+                }
+                else if (ctrl is Panel || ctrl is TabControl || ctrl is TabPage)
+                {
+                    ctrl.BackColor = backColor;
+                    ctrl.ForeColor = foreColor;
+                }
+                // 递归
+                if (ctrl.HasChildren)
+                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
+            }
+        }
+
         public static bool DoWindowsOverlap(Form form1, Form form2) {
             Rectangle form1Bounds = form1.RectangleToScreen(form1.ClientRectangle);
             Rectangle form2Bounds = form2.RectangleToScreen(form2.ClientRectangle);
@@ -113,6 +167,13 @@ namespace GetSystemStatusGUI {
             long secondMask = affinityMask << doNotUseFirstCores;
             affinityMask &= secondMask;
             proc.ProcessorAffinity = (IntPtr)affinityMask;
+        }
+
+        // 菜单项：切换深色模式
+        private void darkModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Global.IsDarkMode = !Global.IsDarkMode;
+            ApplyTheme();
         }
 
         private void showCPU_CheckedChanged(object sender, EventArgs e) {

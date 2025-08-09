@@ -60,6 +60,36 @@ namespace GetSystemStatusGUI {
                     }
                 }
             }
+               ApplyTheme();
+        }
+        // 递归设置控件主题色
+        public void ApplyTheme()
+        {
+            Color backColor, foreColor;
+            if (Global.IsDarkMode)
+            {
+                backColor = Color.FromArgb(32, 32, 32);
+                foreColor = Color.WhiteSmoke;
+            }
+            else
+            {
+                backColor = SystemColors.Control;
+                foreColor = SystemColors.ControlText;
+            }
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+            ApplyThemeToControls(this.Controls, backColor, foreColor);
+        }
+
+        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
+        {
+            foreach (Control ctrl in controls)
+            {
+                ctrl.BackColor = backColor;
+                ctrl.ForeColor = foreColor;
+                if (ctrl.HasChildren)
+                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
+            }
         }
 
         protected void setColumnRow(int column, int row) {

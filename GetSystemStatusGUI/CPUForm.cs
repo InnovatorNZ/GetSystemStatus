@@ -36,6 +36,7 @@ namespace GetSystemStatusGUI {
                 this.ProcessorCount = cpuInfo.ProcessorCount;
             else
                 this.ProcessorCount = processorCount;
+            
         }
 
         private void CPUForm_Load(object sender, EventArgs e) {
@@ -124,9 +125,41 @@ namespace GetSystemStatusGUI {
                 }
             }
             InitialSize();
+            
+            ApplyTheme();
             CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);
+        }
+
+        // 递归设置控件主题色
+        public void ApplyTheme()
+        {
+            Color backColor, foreColor;
+            if (Global.IsDarkMode)
+            {
+                backColor = Color.FromArgb(32, 32, 32);
+                foreColor = Color.WhiteSmoke;
+            }
+            else
+            {
+                backColor = SystemColors.Control;
+                foreColor = SystemColors.ControlText;
+            }
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+            ApplyThemeToControls(this.Controls, backColor, foreColor);
+        }
+
+        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
+        {
+            foreach (Control ctrl in controls)
+            {
+                ctrl.BackColor = backColor;
+                ctrl.ForeColor = foreColor;
+                if (ctrl.HasChildren)
+                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
+            }
         }
 
         private void CPUForm_FormClosed(object sender, FormClosedEventArgs e) { }

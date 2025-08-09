@@ -31,6 +31,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void RAMForm_Load(object sender, EventArgs e) {
+            ApplyTheme();
             List<int> list = new List<int>();
             for (int i = 0; i < historyLength; i++) list.Add(0);
             chart1.Series[0].Points.DataBindY(list);
@@ -39,6 +40,36 @@ namespace GetSystemStatusGUI {
             fLineWidth = chart1.ChartAreas[0].AxisX.LineWidth;
             fGridWidth = chart1.ChartAreas[0].AxisX.MajorGrid.LineWidth;
             new Action(ram_update_thread).BeginInvoke(null, null);
+        }
+
+        // 递归设置控件主题色
+        public void ApplyTheme()
+        {
+            Color backColor, foreColor;
+            if (Global.IsDarkMode)
+            {
+                backColor = Color.FromArgb(32, 32, 32);
+                foreColor = Color.WhiteSmoke;
+            }
+            else
+            {
+                backColor = SystemColors.Control;
+                foreColor = SystemColors.ControlText;
+            }
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+            ApplyThemeToControls(this.Controls, backColor, foreColor);
+        }
+
+        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
+        {
+            foreach (Control ctrl in controls)
+            {
+                ctrl.BackColor = backColor;
+                ctrl.ForeColor = foreColor;
+                if (ctrl.HasChildren)
+                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
+            }
         }
 
         public new void Show() {
