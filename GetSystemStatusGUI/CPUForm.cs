@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Management;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace GetSystemStatusGUI {
                 this.ProcessorCount = cpuInfo.ProcessorCount;
             else
                 this.ProcessorCount = processorCount;
-            
+
         }
 
         private void CPUForm_Load(object sender, EventArgs e) {
@@ -125,41 +126,59 @@ namespace GetSystemStatusGUI {
                 }
             }
             InitialSize();
-            
-            ApplyTheme();
+
+            ApplyDarkMode();
             CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);
         }
 
-        // 递归设置控件主题色
-        public void ApplyTheme()
-        {
-            Color backColor, foreColor;
-            if (Global.IsDarkMode)
-            {
-                backColor = Color.FromArgb(32, 32, 32);
-                foreColor = Color.WhiteSmoke;
-            }
-            else
-            {
-                backColor = SystemColors.Control;
-                foreColor = SystemColors.ControlText;
-            }
+        public void ApplyDarkMode() {
+            if (!Global.IsDarkMode) return;
+
+            Color backColor = Color.FromArgb(32, 32, 32);
+            Color foreColor = Color.WhiteSmoke;
+
             this.BackColor = backColor;
             this.ForeColor = foreColor;
+
             ApplyThemeToControls(this.Controls, backColor, foreColor);
         }
 
-        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
-        {
-            foreach (Control ctrl in controls)
-            {
+        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
+            foreach (Control ctrl in controls) {
                 ctrl.BackColor = backColor;
                 ctrl.ForeColor = foreColor;
-                if (ctrl.HasChildren)
+                if (ctrl.HasChildren) {
                     ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
+                } else if (ctrl is Chart) {
+                    Chart chart = (Chart)ctrl;
+                    foreach (var chartarea in chart.ChartAreas) {
+                        chartarea.BackColor = backColor;
+                    }
+                    foreach (var title in chart.Titles) {
+                        title.ForeColor = Color.LightGray;
+                    }
+                }
             }
+        }
+
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int pvAttribute, int cbAttribute);
+
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+        protected override void OnHandleCreated(EventArgs e) {
+            base.OnHandleCreated(e);
+
+            // 启用深色标题栏
+            int useDarkMode = 1;
+            DwmSetWindowAttribute(
+                this.Handle,
+                DWMWA_USE_IMMERSIVE_DARK_MODE,
+                ref useDarkMode,
+                sizeof(int)
+            );
         }
 
         private void CPUForm_FormClosed(object sender, FormClosedEventArgs e) { }
