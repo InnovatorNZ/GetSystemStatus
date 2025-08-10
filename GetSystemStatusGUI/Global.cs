@@ -4,7 +4,7 @@
 		public static int history_length = 60;
 		public static int refresh_gpupc_interval = 5;
 
-		public static bool IsDarkMode = true;
+		public static bool IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
 		public const bool renderAllSubtitleLightGray = true;
 
 		public const bool enableAffinity = true;
