@@ -37,7 +37,6 @@ namespace GetSystemStatusGUI {
                 this.ProcessorCount = cpuInfo.ProcessorCount;
             else
                 this.ProcessorCount = processorCount;
-
         }
 
         private void CPUForm_Load(object sender, EventArgs e) {

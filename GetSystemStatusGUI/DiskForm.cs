@@ -149,8 +149,8 @@ namespace GetSystemStatusGUI {
             if (startId == 0 && mainform.lowDPIEnabled) {
                 this.EnableLowDPI(Form1.lowDPIScale);
             }
-
             ApplyDarkMode();
+
             new Action(disk_load_thread).BeginInvoke(null, null);
         }
 
