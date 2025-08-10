@@ -16,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class CPUForm : Form {
+    public partial class CPUForm : DarkableChart {
         private const int historyLength = 60;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
@@ -131,54 +131,6 @@ namespace GetSystemStatusGUI {
             CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);
-        }
-
-        public void ApplyDarkMode() {
-            if (!Global.IsDarkMode) return;
-
-            Color backColor = Color.FromArgb(32, 32, 32);
-            Color foreColor = Color.WhiteSmoke;
-
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
-
-            ApplyThemeToControls(this.Controls, backColor, foreColor);
-        }
-
-        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
-            foreach (Control ctrl in controls) {
-                ctrl.BackColor = backColor;
-                ctrl.ForeColor = foreColor;
-                if (ctrl.HasChildren) {
-                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
-                } else if (ctrl is Chart) {
-                    Chart chart = (Chart)ctrl;
-                    foreach (var chartarea in chart.ChartAreas) {
-                        chartarea.BackColor = backColor;
-                    }
-                    foreach (var title in chart.Titles) {
-                        title.ForeColor = Color.LightGray;
-                    }
-                }
-            }
-        }
-
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int pvAttribute, int cbAttribute);
-
-        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-
-        protected override void OnHandleCreated(EventArgs e) {
-            base.OnHandleCreated(e);
-
-            // 启用深色标题栏
-            int useDarkMode = 1;
-            DwmSetWindowAttribute(
-                this.Handle,
-                DWMWA_USE_IMMERSIVE_DARK_MODE,
-                ref useDarkMode,
-                sizeof(int)
-            );
         }
 
         private void CPUForm_FormClosed(object sender, FormClosedEventArgs e) { }

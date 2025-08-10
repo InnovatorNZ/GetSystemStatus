@@ -14,7 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class DiskForm : Form {
+    public partial class DiskForm : DarkableChart {
         private DiskInfo diskInfo;
         public List<DiskForm> moreDiskForms { get; private set; }
         private Form1 mainform;
@@ -59,36 +59,6 @@ namespace GetSystemStatusGUI {
                         moreDiskForms.Add(nDiskForm);
                     }
                 }
-            }
-               ApplyTheme();
-        }
-        // 递归设置控件主题色
-        public void ApplyTheme()
-        {
-            Color backColor, foreColor;
-            if (Global.IsDarkMode)
-            {
-                backColor = Color.FromArgb(32, 32, 32);
-                foreColor = Color.WhiteSmoke;
-            }
-            else
-            {
-                backColor = SystemColors.Control;
-                foreColor = SystemColors.ControlText;
-            }
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
-            ApplyThemeToControls(this.Controls, backColor, foreColor);
-        }
-
-        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor)
-        {
-            foreach (Control ctrl in controls)
-            {
-                ctrl.BackColor = backColor;
-                ctrl.ForeColor = foreColor;
-                if (ctrl.HasChildren)
-                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
             }
         }
 
@@ -179,6 +149,8 @@ namespace GetSystemStatusGUI {
             if (startId == 0 && mainform.lowDPIEnabled) {
                 this.EnableLowDPI(Form1.lowDPIScale);
             }
+
+            ApplyDarkMode();
             new Action(disk_load_thread).BeginInvoke(null, null);
         }
 

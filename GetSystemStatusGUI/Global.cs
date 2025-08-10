@@ -4,10 +4,10 @@
 		public static int history_length = 60;
 		public static int refresh_gpupc_interval = 5;
 
-		// 主题设置：深色模式
 		public static bool IsDarkMode = true;
+		public const bool renderAllSubtitleLightGray = true;
 
-		public static bool enableAffinity = true;
-		public static int doNotUseFirstCores = 16;
+		public const bool enableAffinity = true;
+		public const int doNotUseFirstCores = 16;
 	}
 }

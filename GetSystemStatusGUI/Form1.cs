@@ -13,7 +13,7 @@ using System.Diagnostics;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class Form1 : Form {
+    public partial class Form1 : DarkAwareForm {
         public CPUForm cpuForm;
         public RAMForm ramForm;
         public DiskForm diskForm;
@@ -34,7 +34,6 @@ namespace GetSystemStatusGUI {
             this.startArgs = args;
             SetProcessorAffinity();
             InitializeComponent();
-            ApplyTheme();
         }
 
         private void Form1_Load(object sender, EventArgs e) {
@@ -42,8 +41,7 @@ namespace GetSystemStatusGUI {
                 showGPU.Enabled = false;
                 showGPU.Text = "Show GPU (Only available in Windows 10)";
             }
-            // 加载主题
-            ApplyTheme();
+
             bool doNotShowGPU = bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
             doNotShowGPUAtStartToolStripMenuItem.Checked = doNotShowGPU;
 
@@ -92,6 +90,8 @@ namespace GetSystemStatusGUI {
             FixMainFormDPI();
             FixToolStripDPI();
 
+            ApplyTheme();
+
             foreach (Form form in Application.OpenForms) {
                 if (form != this && !form.IsDisposed && form.Visible && DoWindowsOverlap(this, form)) {
                     this.WindowState = FormWindowState.Minimized;
@@ -100,7 +100,6 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        // 递归设置控件主题色
         public void ApplyTheme()
         {
             Color backColor, foreColor, menuColor;
@@ -118,7 +117,9 @@ namespace GetSystemStatusGUI {
             }
             this.BackColor = backColor;
             this.ForeColor = foreColor;
+
             ApplyThemeToControls(this.Controls, backColor, foreColor);
+
             if (this.MainMenuStrip != null)
             {
                 this.MainMenuStrip.BackColor = menuColor;
@@ -145,7 +146,7 @@ namespace GetSystemStatusGUI {
                     ctrl.BackColor = backColor;
                     ctrl.ForeColor = foreColor;
                 }
-                // 递归
+
                 if (ctrl.HasChildren)
                     ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
             }
@@ -167,13 +168,6 @@ namespace GetSystemStatusGUI {
             long secondMask = affinityMask << doNotUseFirstCores;
             affinityMask &= secondMask;
             proc.ProcessorAffinity = (IntPtr)affinityMask;
-        }
-
-        // 菜单项：切换深色模式
-        private void darkModeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Global.IsDarkMode = !Global.IsDarkMode;
-            ApplyTheme();
         }
 
         private void showCPU_CheckedChanged(object sender, EventArgs e) {

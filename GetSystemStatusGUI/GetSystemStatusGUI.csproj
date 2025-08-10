@@ -92,6 +92,12 @@
     <Compile Include="CPUForm.Designer.cs">
       <DependentUpon>CPUForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DarkableChart.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DarkAwareForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DiskForm.cs">
       <SubType>Form</SubType>
     </Compile>
