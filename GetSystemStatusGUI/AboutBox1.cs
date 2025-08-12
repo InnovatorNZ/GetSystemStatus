@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GetSystemStatusGUI {
-	partial class AboutBox1 : Form {
+	partial class AboutBox1 : DarkAwareForm {
 		public AboutBox1() {
 			InitializeComponent();
 			this.Text = String.Format("关于 {0}", AssemblyTitle);
@@ -84,5 +84,9 @@ namespace GetSystemStatusGUI {
 		private void okButton_Click(object sender, EventArgs e) {
 			this.Close();
 		}
-	}
+
+        private void AboutBox1_Load(object sender, EventArgs e) {
+			ApplyDarkMode();
+        }
+    }
 }
