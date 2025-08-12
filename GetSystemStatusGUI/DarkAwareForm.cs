@@ -16,10 +16,10 @@ namespace GetSystemStatusGUI {
 
         protected override void OnHandleCreated(EventArgs e) {
             base.OnHandleCreated(e);
-            SetImmersiveDarkMode(this.Handle, Global.IsDarkMode);
+            SetImmersiveDarkMode(Global.IsDarkMode);
         }
 
-        public static void SetImmersiveDarkMode(IntPtr handle, bool enabled) {
+        public void SetImmersiveDarkMode(bool enabled) {
             if (Environment.OSVersion.Version.Major >= 10) {
                 int attribute = Environment.OSVersion.Version.Build >= 18985
                     ? DWMWA_USE_IMMERSIVE_DARK_MODE
@@ -27,7 +27,7 @@ namespace GetSystemStatusGUI {
 
                 // 启用深色标题栏
                 int value = enabled ? 1 : 0;
-                DwmSetWindowAttribute(handle, attribute, ref value, sizeof(int));
+                DwmSetWindowAttribute(this.Handle, attribute, ref value, sizeof(int));
             }
         }
     }

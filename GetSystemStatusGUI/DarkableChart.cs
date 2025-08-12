@@ -10,19 +10,22 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace GetSystemStatusGUI {
     public class DarkableChart : DarkAwareForm {
 
-        public void ApplyDarkMode() {
-            if (!Global.IsDarkMode) return;
+        public virtual void ApplyDarkMode() {
+            if (Global.IsDarkMode) {
 
-            Color backColor = Color.FromArgb(32, 32, 32);
-            Color foreColor = Color.WhiteSmoke;
+                Color backColor = Color.FromArgb(32, 32, 32);
+                Color foreColor = Color.WhiteSmoke;
 
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
+                this.BackColor = backColor;
+                this.ForeColor = foreColor;
 
-            ApplyThemeToControls(this.Controls, backColor, foreColor);
+                ApplyThemeToControls(this.Controls, backColor, foreColor);
+            }
+
+            SetImmersiveDarkMode(Global.IsDarkMode);
         }
 
-        private static void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
+        protected virtual void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
             foreach (Control ctrl in controls) {
                 ctrl.BackColor = backColor;
                 ctrl.ForeColor = foreColor;

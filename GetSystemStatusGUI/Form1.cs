@@ -13,7 +13,7 @@ using System.Diagnostics;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class Form1 : DarkAwareForm {
+    public partial class Form1 : DarkableChart {
         public CPUForm cpuForm;
         public RAMForm ramForm;
         public DiskForm diskForm;
@@ -40,6 +40,23 @@ namespace GetSystemStatusGUI {
             if (!supportGPU) {
                 showGPU.Enabled = false;
                 showGPU.Text = "Show GPU (Only available in Windows 10)";
+            }
+
+            string darkModeStr = INIHelper.Read("DarkMode", "Mode", "0", iniFile);
+            int darkMode = int.Parse(darkModeStr);
+            switch (darkMode) {
+                case 0:
+                    Global.IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
+                    checkDarkSystemDefault();
+                    break;
+                case 1:
+                    Global.IsDarkMode = true;
+                    checkDarkEnabled();
+                    break;
+                case 2:
+                    Global.IsDarkMode = false;
+                    checkDarkDisabled();
+                    break;
             }
 
             bool doNotShowGPU = bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
@@ -90,7 +107,7 @@ namespace GetSystemStatusGUI {
             FixMainFormDPI();
             FixToolStripDPI();
 
-            ApplyTheme();
+            ApplyDarkMode();
 
             foreach (Form form in Application.OpenForms) {
                 if (form != this && !form.IsDisposed && form.Visible && DoWindowsOverlap(this, form)) {
@@ -100,19 +117,39 @@ namespace GetSystemStatusGUI {
             }
         }
 
+        /*
         public void ApplyTheme() {
-            if (!Global.IsDarkMode) return;
+            if (Global.IsDarkMode) {
+                Color backColor = Color.FromArgb(32, 32, 32);
+                Color foreColor = Color.WhiteSmoke;
 
-            Color backColor = Color.FromArgb(32, 32, 32);
-            Color foreColor = Color.WhiteSmoke;
+                this.BackColor = backColor;
+                this.ForeColor = foreColor;
 
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
+                ApplyThemeToControls(this.Controls, backColor, foreColor);
+            }
 
-            ApplyThemeToControls(this.Controls, backColor, foreColor);
+            SetImmersiveDarkMode(Global.IsDarkMode);
+        }
+        */
+
+        public override void ApplyDarkMode() {
+            base.ApplyDarkMode();
+            // ApplyTheme();
+
+            if (cpuForm != null && !cpuForm.IsDisposed)
+                cpuForm.ApplyDarkMode();
+            if (ramForm != null && !ramForm.IsDisposed)
+                ramForm.ApplyDarkMode();
+            if (diskForm != null && !diskForm.IsDisposed)
+                diskForm.ApplyDarkMode();
+            if (networkForm != null && !networkForm.IsDisposed)
+                networkForm.ApplyDarkMode();
+            if (gpuForm != null && !gpuForm.IsDisposed)
+                gpuForm.ApplyDarkMode();
         }
 
-        private void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
+        protected override void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
             foreach (Control ctrl in controls) {
                 if (ctrl is ToolStrip strip) {
                     RenderToolStrip(strip, foreColor);
@@ -804,6 +841,47 @@ namespace GetSystemStatusGUI {
             public override Color SeparatorLight => Color.FromArgb(64, 64, 70);
 
             public override Color ToolStripBorder => Color.FromArgb(45, 45, 48);
+        }
+
+        private void enableToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = true;
+            ApplyDarkMode();
+
+            INIHelper.Write("DarkMode", "Mode", "1", iniFile);
+            checkDarkEnabled();
+        }
+
+        private void checkDarkEnabled() {
+            enableToolStripMenuItem.Checked = true;
+            systemDefaultToolStripMenuItem.Checked = false;
+            disableToolStripMenuItem.Checked = false;
+        }
+
+        private void systemDefaultToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
+            ApplyDarkMode();
+
+            INIHelper.Write("DarkMode", "Mode", "0", iniFile);
+            checkDarkSystemDefault();
+        }
+
+        private void checkDarkSystemDefault() {
+            systemDefaultToolStripMenuItem.Checked = true;
+            enableToolStripMenuItem.Checked = false;
+            disableToolStripMenuItem.Checked = false;
+        }
+
+        private void disableToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = false;
+
+            INIHelper.Write("DarkMode", "Mode", "2", iniFile);
+            checkDarkDisabled();
+        }
+
+        private void checkDarkDisabled() {
+            disableToolStripMenuItem.Checked = true;
+            enableToolStripMenuItem.Checked = false;
+            systemDefaultToolStripMenuItem.Checked = false;
         }
     }
 }
