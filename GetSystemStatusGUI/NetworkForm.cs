@@ -16,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class NetworkForm : DarkableChart {
+    public partial class NetworkForm : DarkAwareForm {
         private NetworkInfo networkInfo;
         private Chart[] subCharts;
         private Color baseColor = Color.LightCoral;

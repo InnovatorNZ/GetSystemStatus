@@ -14,7 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class DiskForm : DarkableChart {
+    public partial class DiskForm : DarkAwareForm {
         private DiskInfo diskInfo;
         public List<DiskForm> moreDiskForms { get; private set; }
         private Form1 mainform;

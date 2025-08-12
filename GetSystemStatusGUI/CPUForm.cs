@@ -16,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class CPUForm : DarkableChart {
+    public partial class CPUForm : DarkAwareForm {
         private const int historyLength = 60;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);

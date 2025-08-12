@@ -14,7 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class RAMForm : DarkableChart {
+    public partial class RAMForm : DarkAwareForm {
         private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };

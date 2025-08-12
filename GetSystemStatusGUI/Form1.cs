@@ -13,7 +13,7 @@ using System.Diagnostics;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class Form1 : DarkableChart {
+    public partial class Form1 : DarkAwareForm {
         public CPUForm cpuForm;
         public RAMForm ramForm;
         public DiskForm diskForm;
@@ -117,25 +117,8 @@ namespace GetSystemStatusGUI {
             }
         }
 
-        /*
-        public void ApplyTheme() {
-            if (Global.IsDarkMode) {
-                Color backColor = Color.FromArgb(32, 32, 32);
-                Color foreColor = Color.WhiteSmoke;
-
-                this.BackColor = backColor;
-                this.ForeColor = foreColor;
-
-                ApplyThemeToControls(this.Controls, backColor, foreColor);
-            }
-
-            SetImmersiveDarkMode(Global.IsDarkMode);
-        }
-        */
-
         public override void ApplyDarkMode() {
             base.ApplyDarkMode();
-            // ApplyTheme();
 
             if (cpuForm != null && !cpuForm.IsDisposed)
                 cpuForm.ApplyDarkMode();
@@ -147,43 +130,6 @@ namespace GetSystemStatusGUI {
                 networkForm.ApplyDarkMode();
             if (gpuForm != null && !gpuForm.IsDisposed)
                 gpuForm.ApplyDarkMode();
-        }
-
-        protected override void ApplyThemeToControls(Control.ControlCollection controls, Color backColor, Color foreColor) {
-            foreach (Control ctrl in controls) {
-                if (ctrl is ToolStrip strip) {
-                    RenderToolStrip(strip, foreColor);
-                } else if (ctrl is Button || ctrl is CheckBox || ctrl is ComboBox || ctrl is Label || ctrl is GroupBox || ctrl is ListBox || ctrl is TextBox) {
-                    ctrl.BackColor = backColor;
-                    ctrl.ForeColor = foreColor;
-                } else if (ctrl is Panel || ctrl is TabControl || ctrl is TabPage) {
-                    ctrl.BackColor = backColor;
-                    ctrl.ForeColor = foreColor;
-                }
-
-                if (ctrl.HasChildren) {
-                    ApplyThemeToControls(ctrl.Controls, backColor, foreColor);
-                }
-            }
-        }
-
-        private static void RenderToolStrip(ToolStrip toolStrip, Color foreColor) {
-            toolStrip.Renderer = new ToolStripProfessionalRenderer(new DarkMenuColorTable());
-            toolStrip.ForeColor = foreColor;
-
-            foreach (ToolStripMenuItem item in toolStrip.Items) {
-                SetMenuItemColor(item, foreColor);
-            }
-        }
-
-        private static void SetMenuItemColor(ToolStripMenuItem item, Color foreColor) {
-            item.ForeColor = foreColor;
-            foreach (ToolStripItem subItem in item.DropDownItems) {
-                subItem.ForeColor = Color.White;
-                if (subItem is ToolStripMenuItem subMenu) {
-                    SetMenuItemColor(subMenu, foreColor);
-                }
-            }
         }
 
         public static bool DoWindowsOverlap(Form form1, Form form2) {
@@ -817,30 +763,6 @@ namespace GetSystemStatusGUI {
                 networkForm.DisableLowDPI(scale);
                 if (gpuForm != null && !gpuForm.IsDisposed) gpuForm.DisableLowDPI(scale);
             }
-        }
-
-        class DarkMenuColorTable : ProfessionalColorTable {
-            public override Color MenuStripGradientBegin => Color.FromArgb(45, 45, 48);
-            public override Color MenuStripGradientEnd => Color.FromArgb(45, 45, 48);
-
-            public override Color MenuItemSelected => Color.FromArgb(64, 64, 70);
-            public override Color MenuItemSelectedGradientBegin => Color.FromArgb(64, 64, 70);
-            public override Color MenuItemSelectedGradientEnd => Color.FromArgb(64, 64, 70);
-
-            public override Color MenuItemPressedGradientBegin => Color.FromArgb(80, 80, 84);
-            public override Color MenuItemPressedGradientEnd => Color.FromArgb(80, 80, 84);
-
-            public override Color ToolStripDropDownBackground => Color.FromArgb(45, 45, 48);
-
-            public override Color ImageMarginGradientBegin => Color.FromArgb(45, 45, 48);
-            public override Color ImageMarginGradientMiddle => Color.FromArgb(45, 45, 48);
-            public override Color ImageMarginGradientEnd => Color.FromArgb(45, 45, 48);
-
-            public override Color MenuBorder => Color.FromArgb(64, 64, 70);
-            public override Color SeparatorDark => Color.FromArgb(64, 64, 70);
-            public override Color SeparatorLight => Color.FromArgb(64, 64, 70);
-
-            public override Color ToolStripBorder => Color.FromArgb(45, 45, 48);
         }
 
         private void enableToolStripMenuItem_Click(object sender, EventArgs e) {
