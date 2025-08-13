@@ -546,7 +546,7 @@ namespace GetSystemStatusGUI {
             try {
                 if (str != string.Empty) {
                     int core_num = int.Parse(str);
-                    if (core_num < 0 || core_num > 256) throw new Exception("Number of cores is too large or below 0");
+                    if (core_num < 0 || core_num > 448) throw new Exception("Number of cores is too large or below 0");
                     this.showCPU.Text = "Loading CPU...";
                     var cpuLocation = cpuForm.Location;
                     this.showCPU.Checked = false;
@@ -781,7 +781,8 @@ namespace GetSystemStatusGUI {
 
         private void systemDefaultToolStripMenuItem_Click(object sender, EventArgs e) {
             Global.IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
-            ApplyDarkMode();
+            if (Global.IsDarkMode)
+                ApplyDarkMode();
 
             INIHelper.Write("DarkMode", "Mode", "0", iniFile);
             checkDarkSystemDefault();
