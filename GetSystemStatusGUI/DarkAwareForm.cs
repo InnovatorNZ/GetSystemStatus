@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace GetSystemStatusGUI {
+    // 注意：如果无法在设计器中打开继承了此类的窗体，请先切换至`Any CPU`配置、然后重新生成所有项目！
     public class DarkAwareForm : Form {
         public virtual void ApplyDarkMode() {
             if (Global.IsDarkMode) {
