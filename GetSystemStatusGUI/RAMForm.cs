@@ -14,7 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class RAMForm : Form {
+    public partial class RAMForm : DarkAwareForm {
         private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
@@ -38,6 +38,8 @@ namespace GetSystemStatusGUI {
             chart1.Series[0].BorderColor = borderColor;
             fLineWidth = chart1.ChartAreas[0].AxisX.LineWidth;
             fGridWidth = chart1.ChartAreas[0].AxisX.MajorGrid.LineWidth;
+
+            ApplyDarkMode();
             new Action(ram_update_thread).BeginInvoke(null, null);
         }
 

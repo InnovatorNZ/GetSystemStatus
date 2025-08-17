@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Management;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class CPUForm : Form {
+    public partial class CPUForm : DarkAwareForm {
         private const int historyLength = 60;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
@@ -124,6 +125,8 @@ namespace GetSystemStatusGUI {
                 }
             }
             InitialSize();
+
+            ApplyDarkMode();
             CPUForm_Resize(null, null);
 
             new Action(cpu_load_thread).BeginInvoke(null, null);

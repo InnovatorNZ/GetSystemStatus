@@ -13,7 +13,7 @@ using System.Diagnostics;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class Form1 : Form {
+    public partial class Form1 : DarkAwareForm {
         public CPUForm cpuForm;
         public RAMForm ramForm;
         public DiskForm diskForm;
@@ -41,6 +41,24 @@ namespace GetSystemStatusGUI {
                 showGPU.Enabled = false;
                 showGPU.Text = "Show GPU (Only available in Windows 10)";
             }
+
+            string darkModeStr = INIHelper.Read("DarkMode", "Mode", "0", iniFile);
+            int darkMode = int.Parse(darkModeStr);
+            switch (darkMode) {
+                case 0:
+                    Global.IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
+                    checkDarkSystemDefault();
+                    break;
+                case 1:
+                    Global.IsDarkMode = true;
+                    checkDarkEnabled();
+                    break;
+                case 2:
+                    Global.IsDarkMode = false;
+                    checkDarkDisabled();
+                    break;
+            }
+
             bool doNotShowGPU = bool.Parse(INIHelper.Read("DoNotShow", "GPU", "false", iniFile));
             doNotShowGPUAtStartToolStripMenuItem.Checked = doNotShowGPU;
 
@@ -89,12 +107,29 @@ namespace GetSystemStatusGUI {
             FixMainFormDPI();
             FixToolStripDPI();
 
+            ApplyDarkMode();
+
             foreach (Form form in Application.OpenForms) {
                 if (form != this && !form.IsDisposed && form.Visible && DoWindowsOverlap(this, form)) {
                     this.WindowState = FormWindowState.Minimized;
                     break;
                 }
             }
+        }
+
+        public override void ApplyDarkMode() {
+            base.ApplyDarkMode();
+
+            if (cpuForm != null && !cpuForm.IsDisposed)
+                cpuForm.ApplyDarkMode();
+            if (ramForm != null && !ramForm.IsDisposed)
+                ramForm.ApplyDarkMode();
+            if (diskForm != null && !diskForm.IsDisposed)
+                diskForm.ApplyDarkMode();
+            if (networkForm != null && !networkForm.IsDisposed)
+                networkForm.ApplyDarkMode();
+            if (gpuForm != null && !gpuForm.IsDisposed)
+                gpuForm.ApplyDarkMode();
         }
 
         public static bool DoWindowsOverlap(Form form1, Form form2) {
@@ -274,8 +309,7 @@ namespace GetSystemStatusGUI {
                 string unit = csplit[1];
                 if (unit == "ms") Global.interval_ms = (int)Math.Round(ims);
                 else if (unit == "s" || unit == "sec" || unit == "secs") Global.interval_ms = (int)Math.Round(ims * 1000);
-            }
-            catch { }
+            } catch { }
         }
 
         public void btnDiskRefresh_Click(object sender, EventArgs e) {
@@ -512,7 +546,7 @@ namespace GetSystemStatusGUI {
             try {
                 if (str != string.Empty) {
                     int core_num = int.Parse(str);
-                    if (core_num < 0 || core_num > 256) throw new Exception("Number of cores is too large or below 0");
+                    if (core_num < 0 || core_num > 448) throw new Exception("Number of cores is too large or below 0");
                     this.showCPU.Text = "Loading CPU...";
                     var cpuLocation = cpuForm.Location;
                     this.showCPU.Checked = false;
@@ -522,8 +556,7 @@ namespace GetSystemStatusGUI {
                     this.showCPU.Checked = true;
                     this.cpuForm.Location = cpuLocation;
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show("Not valid: " + ex.Message, "Invalid core number", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -730,6 +763,48 @@ namespace GetSystemStatusGUI {
                 networkForm.DisableLowDPI(scale);
                 if (gpuForm != null && !gpuForm.IsDisposed) gpuForm.DisableLowDPI(scale);
             }
+        }
+
+        private void enableToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = true;
+            ApplyDarkMode();
+
+            INIHelper.Write("DarkMode", "Mode", "1", iniFile);
+            checkDarkEnabled();
+        }
+
+        private void checkDarkEnabled() {
+            enableToolStripMenuItem.Checked = true;
+            systemDefaultToolStripMenuItem.Checked = false;
+            disableToolStripMenuItem.Checked = false;
+        }
+
+        private void systemDefaultToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = SystemThemeHelper.IsDarkModeEnabled();
+            if (Global.IsDarkMode)
+                ApplyDarkMode();
+
+            INIHelper.Write("DarkMode", "Mode", "0", iniFile);
+            checkDarkSystemDefault();
+        }
+
+        private void checkDarkSystemDefault() {
+            systemDefaultToolStripMenuItem.Checked = true;
+            enableToolStripMenuItem.Checked = false;
+            disableToolStripMenuItem.Checked = false;
+        }
+
+        private void disableToolStripMenuItem_Click(object sender, EventArgs e) {
+            Global.IsDarkMode = false;
+
+            INIHelper.Write("DarkMode", "Mode", "2", iniFile);
+            checkDarkDisabled();
+        }
+
+        private void checkDarkDisabled() {
+            disableToolStripMenuItem.Checked = true;
+            enableToolStripMenuItem.Checked = false;
+            systemDefaultToolStripMenuItem.Checked = false;
         }
     }
 }

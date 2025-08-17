@@ -14,7 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class DiskForm : Form {
+    public partial class DiskForm : DarkAwareForm {
         private DiskInfo diskInfo;
         public List<DiskForm> moreDiskForms { get; private set; }
         private Form1 mainform;
@@ -149,6 +149,8 @@ namespace GetSystemStatusGUI {
             if (startId == 0 && mainform.lowDPIEnabled) {
                 this.EnableLowDPI(Form1.lowDPIScale);
             }
+            ApplyDarkMode();
+
             new Action(disk_load_thread).BeginInvoke(null, null);
         }
 

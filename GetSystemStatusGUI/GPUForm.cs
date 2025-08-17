@@ -15,7 +15,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class GPUForm : Form {
+    public partial class GPUForm : DarkAwareForm {
         private GPUInfo gpuInfo;
         public List<GPUForm> moreGPUForms { get; private set; }
         private Form1 mainForm;
@@ -114,8 +114,21 @@ namespace GetSystemStatusGUI {
             if (id == 0 && mainForm.lowDPIEnabled) {
                 this.EnableLowDPI(Form1.lowDPIScale);
             }
+
+            ApplyDarkMode();
+
             Thread gpuThread = new Thread(new ThreadStart(GPUPCThread));
             gpuThread.Start();
+        }
+
+        public override void ApplyDarkMode() {
+            base.ApplyDarkMode();
+
+            if (moreGPUForms != null) {
+                foreach (GPUForm form in moreGPUForms) {
+                    form.ApplyDarkMode();
+                }
+            }
         }
 
         private void GPUPCThread() {

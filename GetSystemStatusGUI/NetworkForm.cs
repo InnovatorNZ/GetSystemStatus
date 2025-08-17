@@ -16,7 +16,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
-    public partial class NetworkForm : Form {
+    public partial class NetworkForm : DarkAwareForm {
         private NetworkInfo networkInfo;
         private Chart[] subCharts;
         private Color baseColor = Color.LightCoral;
@@ -120,6 +120,9 @@ namespace GetSystemStatusGUI {
             if (mainForm.lowDPIEnabled) {
                 this.EnableLowDPI(Form1.lowDPIScale);
             }
+
+            ApplyDarkMode();
+
             new Action(network_load_thread).BeginInvoke(null, null);
         }
 
