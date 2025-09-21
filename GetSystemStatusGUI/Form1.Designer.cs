@@ -154,6 +154,8 @@ namespace GetSystemStatusGUI
             this.cbUpdateInterval.Items.AddRange(new object[] {
             "1 sec",
             "2 sec",
+            "3 sec",
+            "5 sec",
             "0.5 sec",
             "0.25 sec"});
             this.cbUpdateInterval.Location = new System.Drawing.Point(310, 311);
@@ -336,7 +338,7 @@ namespace GetSystemStatusGUI
             // 
             this.CPUFormToolStripMenuItem.CheckOnClick = true;
             this.CPUFormToolStripMenuItem.Name = "CPUFormToolStripMenuItem";
-            this.CPUFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.CPUFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.CPUFormToolStripMenuItem.Text = "CPU Form";
             this.CPUFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.CPUFormToolStripMenuItem_CheckedChanged);
             // 
@@ -344,7 +346,7 @@ namespace GetSystemStatusGUI
             // 
             this.ramFormToolStripMenuItem.CheckOnClick = true;
             this.ramFormToolStripMenuItem.Name = "ramFormToolStripMenuItem";
-            this.ramFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.ramFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.ramFormToolStripMenuItem.Text = "RAM Form";
             this.ramFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.ramFormToolStripMenuItem_CheckedChanged);
             // 
@@ -352,7 +354,7 @@ namespace GetSystemStatusGUI
             // 
             this.diskFormToolStripMenuItem.CheckOnClick = true;
             this.diskFormToolStripMenuItem.Name = "diskFormToolStripMenuItem";
-            this.diskFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.diskFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.diskFormToolStripMenuItem.Text = "Disk Form(s)";
             this.diskFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.diskFormToolStripMenuItem_CheckedChanged);
             // 
@@ -360,7 +362,7 @@ namespace GetSystemStatusGUI
             // 
             this.networkFormToolStripMenuItem.CheckOnClick = true;
             this.networkFormToolStripMenuItem.Name = "networkFormToolStripMenuItem";
-            this.networkFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.networkFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.networkFormToolStripMenuItem.Text = "Network Form";
             this.networkFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.networkFormToolStripMenuItem_CheckedChanged);
             // 
@@ -368,7 +370,7 @@ namespace GetSystemStatusGUI
             // 
             this.gPUFormToolStripMenuItem.CheckOnClick = true;
             this.gPUFormToolStripMenuItem.Name = "gPUFormToolStripMenuItem";
-            this.gPUFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.gPUFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.gPUFormToolStripMenuItem.Text = "GPU Form(s)";
             this.gPUFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gPUFormToolStripMenuItem_CheckedChanged);
             // 
