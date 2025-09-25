@@ -329,13 +329,15 @@ namespace GetSystemStatusGUI {
                             float cload = diskInfo.DiskLoad(i + startId);
                             ys[i].Add(cload);
 
-                            if (previousDiskLoads[i] > 0 && !significantChange) {
-                                float loadChange = Math.Abs(cload - previousDiskLoads[i]);
-                                if (loadChange > Global.CHANGE_THRESHOLD_PERCENT) {
-                                    significantChange = true;
+                            if (Global.enableAdaptiveInterval) {
+                                if (!significantChange && previousDiskLoads[i] > 0) {
+                                    float loadChange = Math.Abs(cload - previousDiskLoads[i]);
+                                    if (loadChange > Global.CHANGE_THRESHOLD_PERCENT) {
+                                        significantChange = true;
+                                    }
                                 }
+                                previousDiskLoads[i] = cload;
                             }
-                            previousDiskLoads[i] = cload;
                         } catch (Exception ex) {
                             Action reload = new Action(
                                 delegate () {
@@ -349,15 +351,13 @@ namespace GetSystemStatusGUI {
                     }
 
                     // 自适应调整采集间隔
-                    if (Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
                         if (significantChange) {
                             // 如果有显著变化，使用最小间隔
                             currentInterval = Global.MIN_INTERVAL_MS;
                         } else {
                             // 如果没有显著变化，逐渐增加间隔，但不超过全局间隔
-                            if (currentInterval < Global.interval_ms) {
-                                currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
-                            }
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
                         }
                     } else {
                         currentInterval = Global.interval_ms;

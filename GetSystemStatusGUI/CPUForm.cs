@@ -180,7 +180,7 @@ namespace GetSystemStatusGUI {
                         Invoke(updateChart);
                     } catch { break; }
 
-                    if (Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
                         float loadChange = Math.Abs(currentCpuLoad - previousCpuLoad);
 
                         if (loadChange > Global.CHANGE_THRESHOLD_PERCENT) {

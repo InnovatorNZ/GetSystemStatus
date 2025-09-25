@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,7 +26,6 @@ namespace GetSystemStatusGUI {
         private float fLineWidth = 2;
         private float fGridWidth = 1;
         private int rows = 1, columns = 1;
-        private const int history_length = 60;
         private const double margin_ratio = 35;
         private Form1 mainForm;
 
@@ -43,7 +42,8 @@ namespace GetSystemStatusGUI {
 
         private void NetworkForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
-            for (int i = 0; i < history_length; i++) y.Add(0);
+            for (int i = 0; i < Global.history_length; i++)
+                y.Add(0);
             Utility.FactorDecompose(networkInfo.adapterNum, out columns, out rows);
             subCharts = new Chart[networkInfo.adapterNum];
             for (int i = 0; i < rows; i++) {
@@ -134,7 +134,8 @@ namespace GetSystemStatusGUI {
             int fixHeight = Math.Max(40, marginHorizontal * 2);
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
             int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
-            if (chartHeight <= 0 || chartWidth <= 0 || subCharts == null) return;
+            if (chartHeight <= 0 || chartWidth <= 0 || subCharts == null)
+                return;
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
@@ -227,24 +228,39 @@ namespace GetSystemStatusGUI {
         }
 
         private void network_load_thread() {
+            int currentInterval = Global.MIN_INTERVAL_MS;
+            float[] previousNetworkLoads = new float[networkInfo.adapterNum];
+
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
                 ys[i] = new List<float>();
-                for (int j = 0; j < history_length; j++) ys[i].Add(0);
+                for (int j = 0; j < Global.history_length; j++)
+                    ys[i].Add(0);
             }
             while (!this.IsDisposed && !subCharts[0].IsDisposed) {
                 if (this.Visible) {
                     float[] send_speed = new float[networkInfo.adapterNum];
                     float[] receive_speed = new float[networkInfo.adapterNum];
+                    bool significantChange = false;
+
                     for (int i = 0; i < networkInfo.adapterNum; i++) {
                         float cLoad, cSendSpeed, cReceiveSpeed;
                         try {
                             networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
-                        }
-                        catch (InvalidOperationException) {
+                        } catch (InvalidOperationException) {
                             cLoad = 0;
                             cSendSpeed = 0;
                             cReceiveSpeed = 0;
+                        }
+
+                        if (Global.enableAdaptiveInterval) {
+                            if (previousNetworkLoads[i] > 0 && !significantChange) {
+                                float loadChange = Math.Abs(cLoad - previousNetworkLoads[i]);
+                                if (loadChange > Global.CHANGE_THRESHOLD_PERCENT_NETWORK) {
+                                    significantChange = true;
+                                }
+                            }
+                            previousNetworkLoads[i] = cLoad;
                         }
 
                         ys[i].RemoveAt(0);
@@ -252,6 +268,17 @@ namespace GetSystemStatusGUI {
                         send_speed[i] = cSendSpeed;
                         receive_speed[i] = cReceiveSpeed;
                     }
+
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                        if (significantChange) {
+                            currentInterval = Global.MIN_INTERVAL_MS;
+                        } else {
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
+                        }
+                    } else {
+                        currentInterval = Global.interval_ms;
+                    }
+
                     Action updateChart = new Action(
                         delegate () {
                             for (int i = 0; i < networkInfo.adapterNum; i++) {
@@ -266,10 +293,14 @@ namespace GetSystemStatusGUI {
                             }
                         }
                     );
-                    try { Invoke(updateChart); }
-                    catch { break; }
+                    try {
+                        Invoke(updateChart);
+                    } catch { break; }
+                } else {
+                    // 不可见时使用全局间隔
+                    currentInterval = Global.interval_ms;
                 }
-                Thread.Sleep(Global.interval_ms);
+                Thread.Sleep(currentInterval);
             }
         }
     }
