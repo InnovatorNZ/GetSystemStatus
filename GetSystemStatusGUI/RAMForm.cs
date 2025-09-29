@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -51,12 +51,36 @@ namespace GetSystemStatusGUI {
         private void ram_update_thread() {
             List<int> usageList = new List<int>();
             for (int i = 0; i < historyLength; i++) usageList.Add(0);
+
+            int currentInterval = Global.interval_ms;
+            float prevRAMUsage = 0;
+
             while (!chart1.IsDisposed && !lblRAM.IsDisposed) {
                 if (this.Visible) {
                     int rusage = (int)Math.Round((1.0 - (double)ramInfo.MemoryAvailable / (double)ramInfo.PhysicalMemory) * 100.0);
                     int ramScale = (int)Math.Floor(Math.Log(ramInfo.PhysicalMemory - ramInfo.MemoryAvailable, 1024));
                     double memAvail = Math.Round((double)ramInfo.MemoryAvailable / Math.Pow(1024, ramScale), 1);
                     double memTotal = Math.Round((double)ramInfo.PhysicalMemory / Math.Pow(1024, ramScale), 1);
+                    
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                        bool significantChange = false;
+                        if (prevRAMUsage > 0) {
+                            float usageChange = Math.Abs(rusage - prevRAMUsage);
+                            if (usageChange > Global.CHANGE_THRESHOLD_PERCENT) {
+                                significantChange = true;
+                            }
+                        }
+                        prevRAMUsage = rusage;
+
+                        if (significantChange) {
+                            currentInterval = Global.MIN_INTERVAL_MS;
+                        } else {
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
+                        }
+                    } else {
+                        currentInterval = Global.interval_ms;
+                    }
+                    
                     usageList.RemoveAt(0);
                     usageList.Add(rusage);
                     Action updateChart = new Action(
@@ -72,7 +96,7 @@ namespace GetSystemStatusGUI {
                     );
                     try { Invoke(updateChart); } catch { break; }
                 }
-                Thread.Sleep(Global.interval_ms);
+                Thread.Sleep(currentInterval);
             }
         }
 
