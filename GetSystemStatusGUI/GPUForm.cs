@@ -154,26 +154,33 @@ namespace GetSystemStatusGUI {
                 if (this.Visible) {
                     if (t % Global.refresh_gpupc_interval == 0 && t != 0)
                         gpuInfo.RefreshGPUEnginePerfCntLPL(id);
+
                     Dictionary<string, float> currentGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
 
+                    // 自适应调整采集间隔
                     if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
                         bool significantChange = false;
+
                         foreach (var keyValuePair in currentGpuUti) {
                             string cEngine = keyValuePair.Key;
                             float cUti = Math.Max(Math.Min(keyValuePair.Value, 100), 0);
+
                             if (prevGpuUti.TryGetValue(cEngine, out float pUti)) {
                                 float utiChange = Math.Abs(cUti - pUti);
-                                if (utiChange > Global.CHANGE_THRESHOLD_PERCENT) {
+                                // GPU利用率波动相较更频繁，需同时满足占用变化超过阈值和当前占用超过阈值才可判定
+                                if (utiChange >= Global.CHANGE_THRESHOLD_GPU && cUti >= Global.IDLE_THRESHOLD_GPU) {
                                     significantChange = true;
                                     break;
                                 }
                             }
                         }
+
                         if (significantChange) {
                             currentInterval = Global.MIN_INTERVAL_MS;
                         } else {
                             currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
                         }
+
                         prevGpuUti = currentGpuUti;
                     } else {
                         currentInterval = Global.interval_ms;
@@ -198,10 +205,13 @@ namespace GetSystemStatusGUI {
                             }
                         }
                     );
+
                     try {
                         Invoke(update);
-                    } catch { break; }
+                    }
+                    catch { break; }
                     t++;
+
                 } else {
                     currentInterval = Global.interval_ms;
                 }

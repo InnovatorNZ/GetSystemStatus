@@ -332,13 +332,15 @@ namespace GetSystemStatusGUI {
                             if (Global.enableAdaptiveInterval) {
                                 if (!significantChange && previousDiskLoads[i] > 0) {
                                     float loadChange = Math.Abs(cload - previousDiskLoads[i]);
-                                    if (loadChange > Global.CHANGE_THRESHOLD_PERCENT) {
+                                    // 负载变化比率超过阈值，或当前负载超过闲置阈值
+                                    if (loadChange >= Global.CHANGE_THRESHOLD || cload >= Global.IDLE_THRESHOLD_DISK) {
                                         significantChange = true;
                                     }
                                 }
                                 previousDiskLoads[i] = cload;
                             }
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex) {
                             Action reload = new Action(
                                 delegate () {
                                     Thread.Sleep(100);

@@ -237,6 +237,7 @@ namespace GetSystemStatusGUI {
                 for (int j = 0; j < Global.history_length; j++)
                     ys[i].Add(0);
             }
+
             while (!this.IsDisposed && !subCharts[0].IsDisposed) {
                 if (this.Visible) {
                     float[] send_speed = new float[networkInfo.adapterNum];
@@ -247,16 +248,17 @@ namespace GetSystemStatusGUI {
                         float cLoad, cSendSpeed, cReceiveSpeed;
                         try {
                             networkInfo.SpeedAndLoad(i, out cSendSpeed, out cReceiveSpeed, out cLoad);
-                        } catch (InvalidOperationException) {
+                        }
+                        catch (InvalidOperationException) {
                             cLoad = 0;
                             cSendSpeed = 0;
                             cReceiveSpeed = 0;
                         }
 
                         if (Global.enableAdaptiveInterval) {
-                            if (previousNetworkLoads[i] > 0 && !significantChange) {
+                            if (!significantChange && previousNetworkLoads[i] > 0) {
                                 float loadChange = Math.Abs(cLoad - previousNetworkLoads[i]);
-                                if (loadChange > Global.CHANGE_THRESHOLD_PERCENT_NETWORK) {
+                                if (loadChange >= Global.CHANGE_THRESHOLD_NETWORK || cLoad >= Global.IDLE_THRESHOLD_NETWORK) {
                                     significantChange = true;
                                 }
                             }
@@ -293,9 +295,12 @@ namespace GetSystemStatusGUI {
                             }
                         }
                     );
+
                     try {
                         Invoke(updateChart);
-                    } catch { break; }
+                    }
+                    catch { break; }
+
                 } else {
                     // 不可见时使用全局间隔
                     currentInterval = Global.interval_ms;

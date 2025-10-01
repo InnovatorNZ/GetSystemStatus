@@ -183,10 +183,9 @@ namespace GetSystemStatusGUI {
                     if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
                         float loadChange = Math.Abs(currentCpuLoad - previousCpuLoad);
 
-                        if (loadChange > Global.CHANGE_THRESHOLD_PERCENT) {
+                        if (loadChange >= Global.CHANGE_THRESHOLD) {
                             currentInterval = Global.MIN_INTERVAL_MS;
                         } else {
-                            // 逐渐延长间隔，但不超过用户设定的全局间隔
                             currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
                         }
 
