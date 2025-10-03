@@ -11,7 +11,7 @@
 		public const int doNotUseFirstCores = 16;
 
 		// 自适应采集间隔的配置参数
-		public const bool enableAdaptiveInterval = true;
+		public static volatile bool enableAdaptiveInterval = true;
 		public const int MIN_INTERVAL_MS = 750;             // 最小采集间隔（毫秒）
 		public const int INTERVAL_INCREMENT_MS = 250;       // 间隔增加量（毫秒）
 		public const float CHANGE_THRESHOLD = 5.0f;         // 变化阈值（百分比）

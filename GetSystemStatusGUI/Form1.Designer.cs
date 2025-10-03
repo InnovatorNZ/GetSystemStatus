@@ -64,6 +64,7 @@ namespace GetSystemStatusGUI
             this.systemDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.adaptiveIntervalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnFocus = new System.Windows.Forms.Button();
@@ -294,7 +295,8 @@ namespace GetSystemStatusGUI
             this.fakeToolStripMenuItem,
             this.topMostToolStripMenuItem,
             this.lowDPIModeToolStripMenuItem,
-            this.darkModeToolStripMenuItem});
+            this.darkModeToolStripMenuItem,
+            this.adaptiveIntervalToolStripMenuItem});
             this.optionToolStripMenuItem.Name = "optionToolStripMenuItem";
             this.optionToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
             this.optionToolStripMenuItem.Text = "Option";
@@ -338,7 +340,7 @@ namespace GetSystemStatusGUI
             // 
             this.CPUFormToolStripMenuItem.CheckOnClick = true;
             this.CPUFormToolStripMenuItem.Name = "CPUFormToolStripMenuItem";
-            this.CPUFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.CPUFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.CPUFormToolStripMenuItem.Text = "CPU Form";
             this.CPUFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.CPUFormToolStripMenuItem_CheckedChanged);
             // 
@@ -346,7 +348,7 @@ namespace GetSystemStatusGUI
             // 
             this.ramFormToolStripMenuItem.CheckOnClick = true;
             this.ramFormToolStripMenuItem.Name = "ramFormToolStripMenuItem";
-            this.ramFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.ramFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.ramFormToolStripMenuItem.Text = "RAM Form";
             this.ramFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.ramFormToolStripMenuItem_CheckedChanged);
             // 
@@ -354,7 +356,7 @@ namespace GetSystemStatusGUI
             // 
             this.diskFormToolStripMenuItem.CheckOnClick = true;
             this.diskFormToolStripMenuItem.Name = "diskFormToolStripMenuItem";
-            this.diskFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.diskFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.diskFormToolStripMenuItem.Text = "Disk Form(s)";
             this.diskFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.diskFormToolStripMenuItem_CheckedChanged);
             // 
@@ -362,7 +364,7 @@ namespace GetSystemStatusGUI
             // 
             this.networkFormToolStripMenuItem.CheckOnClick = true;
             this.networkFormToolStripMenuItem.Name = "networkFormToolStripMenuItem";
-            this.networkFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.networkFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.networkFormToolStripMenuItem.Text = "Network Form";
             this.networkFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.networkFormToolStripMenuItem_CheckedChanged);
             // 
@@ -370,7 +372,7 @@ namespace GetSystemStatusGUI
             // 
             this.gPUFormToolStripMenuItem.CheckOnClick = true;
             this.gPUFormToolStripMenuItem.Name = "gPUFormToolStripMenuItem";
-            this.gPUFormToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.gPUFormToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.gPUFormToolStripMenuItem.Text = "GPU Form(s)";
             this.gPUFormToolStripMenuItem.CheckedChanged += new System.EventHandler(this.gPUFormToolStripMenuItem_CheckedChanged);
             // 
@@ -417,6 +419,16 @@ namespace GetSystemStatusGUI
             this.disableToolStripMenuItem.Size = new System.Drawing.Size(278, 26);
             this.disableToolStripMenuItem.Text = "Disable (Restart required)";
             this.disableToolStripMenuItem.Click += new System.EventHandler(this.disableToolStripMenuItem_Click);
+            // 
+            // adaptiveIntervalToolStripMenuItem
+            // 
+            this.adaptiveIntervalToolStripMenuItem.Checked = true;
+            this.adaptiveIntervalToolStripMenuItem.CheckOnClick = true;
+            this.adaptiveIntervalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.adaptiveIntervalToolStripMenuItem.Name = "adaptiveIntervalToolStripMenuItem";
+            this.adaptiveIntervalToolStripMenuItem.Size = new System.Drawing.Size(313, 26);
+            this.adaptiveIntervalToolStripMenuItem.Text = "Adaptive interval";
+            this.adaptiveIntervalToolStripMenuItem.Click += new System.EventHandler(this.adaptiveIntervalToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -585,6 +597,7 @@ namespace GetSystemStatusGUI
         private System.Windows.Forms.ToolStripMenuItem systemDefaultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem adaptiveIntervalToolStripMenuItem;
     }
 }
 
