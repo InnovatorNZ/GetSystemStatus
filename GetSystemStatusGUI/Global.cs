@@ -17,6 +17,7 @@
 		public const float CHANGE_THRESHOLD = 5.0f;         // 变化阈值（百分比）
 		public const float CHANGE_THRESHOLD_NETWORK = 2.5f; // 变化阈值（网络，百分比）
 		public const float CHANGE_THRESHOLD_GPU = 12.5f;    // 变化阈值（GPU，百分比）
+		public const float CHANGE_THRESHOLD_RAM = 2.0f;     // 变化阈值（RAM，百分比）
 		public const float IDLE_THRESHOLD_DISK = 10.0f;     // 闲置阈值（磁盘，百分比）
 		public const float IDLE_THRESHOLD_NETWORK = 5.0f;   // 闲置阈值（网络，百分比）
 		public const float IDLE_THRESHOLD_GPU = 40.0f;      // 闲置阈值（GPU，百分比）

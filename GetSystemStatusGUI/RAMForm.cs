@@ -66,7 +66,7 @@ namespace GetSystemStatusGUI {
                         bool significantChange = false;
                         if (prevRAMUsage > 0) {
                             float usageChange = Math.Abs(rusage - prevRAMUsage);
-                            if (usageChange >= Global.CHANGE_THRESHOLD) {
+                            if (usageChange >= Global.CHANGE_THRESHOLD_RAM) {
                                 significantChange = true;
                             }
                         }
