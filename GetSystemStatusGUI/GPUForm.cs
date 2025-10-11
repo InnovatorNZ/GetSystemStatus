@@ -140,13 +140,13 @@ namespace GetSystemStatusGUI {
 
             List<string> engines = gpuInfo.GetGPUEngines(id);
             foreach (string engine in engines) {
-                List<float> cy = new List<float>(Global.history_length);
-                for (int i = 0; i < Global.history_length; i++)
+                List<float> cy = new List<float>(Global.historyLength);
+                for (int i = 0; i < Global.historyLength; i++)
                     cy.Add(0);
                 ys.Add(engine, cy);
             }
-            List<float> dediUsage = new List<float>();
-            for (int i = 0; i < Global.history_length; i++)
+            List<float> dediUsage = new List<float>(Global.historyLength);
+            for (int i = 0; i < Global.historyLength; i++)
                 dediUsage.Add(0);
 
             int t = 0;

@@ -15,7 +15,6 @@ using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class RAMForm : DarkAwareForm {
-        private const int historyLength = 60;
         private RAMInfo ramInfo;
         private static string[] scale_unit = { "Bytes", "KB", "MB", "GB", "TB" };
         private Color chartColor = Color.FromArgb(105, 139, 0, 139);
@@ -32,7 +31,7 @@ namespace GetSystemStatusGUI {
 
         private void RAMForm_Load(object sender, EventArgs e) {
             List<int> list = new List<int>();
-            for (int i = 0; i < historyLength; i++) list.Add(0);
+            for (int i = 0; i < Global.historyLength; i++) list.Add(0);
             chart1.Series[0].Points.DataBindY(list);
             chart1.PaletteCustomColors[0] = chartColor;
             chart1.Series[0].BorderColor = borderColor;
@@ -50,7 +49,7 @@ namespace GetSystemStatusGUI {
 
         private void ram_update_thread() {
             List<int> usageList = new List<int>();
-            for (int i = 0; i < historyLength; i++) usageList.Add(0);
+            for (int i = 0; i < Global.historyLength; i++) usageList.Add(0);
 
             int currentInterval = Global.interval_ms;
             float prevRAMUsage = 0;

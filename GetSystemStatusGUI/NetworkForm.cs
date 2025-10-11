@@ -41,8 +41,8 @@ namespace GetSystemStatusGUI {
         }
 
         private void NetworkForm_Load(object sender, EventArgs e) {
-            List<int> y = new List<int>();
-            for (int i = 0; i < Global.history_length; i++)
+            List<int> y = new List<int>(Global.historyLength);
+            for (int i = 0; i < Global.historyLength; i++)
                 y.Add(0);
             Utility.FactorDecompose(networkInfo.adapterNum, out columns, out rows);
             subCharts = new Chart[networkInfo.adapterNum];
@@ -234,7 +234,7 @@ namespace GetSystemStatusGUI {
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
                 ys[i] = new List<float>();
-                for (int j = 0; j < Global.history_length; j++)
+                for (int j = 0; j < Global.historyLength; j++)
                     ys[i].Add(0);
             }
 

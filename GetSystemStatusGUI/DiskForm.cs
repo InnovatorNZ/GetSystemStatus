@@ -77,7 +77,7 @@ namespace GetSystemStatusGUI {
 
         private void DiskForm_Load(object sender, EventArgs e) {
             List<int> y = new List<int>();
-            for (int i = 0; i < Global.history_length; i++)
+            for (int i = 0; i < Global.historyLength; i++)
                 y.Add(0);
             //Utility.FactorDecompose(diskInfo.m_DiskNum, out columns, out rows);
             subCharts = new Chart[rows * columns];
@@ -315,8 +315,8 @@ namespace GetSystemStatusGUI {
 
             List<float>[] ys = new List<float>[cDiskNum];
             for (int i = 0; i < cDiskNum; i++) {
-                ys[i] = new List<float>(Global.history_length);
-                for (int j = 0; j < Global.history_length; j++)
+                ys[i] = new List<float>(Global.historyLength);
+                for (int j = 0; j < Global.historyLength; j++)
                     ys[i].Add(0);
             }
             while (!this.IsDisposed && !subCharts[0].IsDisposed) {

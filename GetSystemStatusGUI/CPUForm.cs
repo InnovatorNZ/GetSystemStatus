@@ -17,7 +17,6 @@ using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class CPUForm : DarkAwareForm {
-        private const int historyLength = 60;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
         private Color gridColor = ColorTranslator.FromHtml("#905baeff");
@@ -42,7 +41,7 @@ namespace GetSystemStatusGUI {
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
             List<float> y = new List<float>();
-            for (int i = 0; i < historyLength; i++) y.Add(0);
+            for (int i = 0; i < Global.historyLength; i++) y.Add(0);
             chart1.Series[0].Points.DataBindY(y);
             chart1.Series[0].IsVisibleInLegend = false;
             chart1.PaletteCustomColors[0] = chartColor;
@@ -148,10 +147,10 @@ namespace GetSystemStatusGUI {
         private void cpu_load_thread() {
             List<float> y = new List<float>();
             List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
-            for (int i = 0; i < historyLength * columns; i++) y.Add(0);
+            for (int i = 0; i < Global.historyLength * columns; i++) y.Add(0);
             for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
                 ys[i] = new List<float>();
-                for (int j = 0; j < historyLength; j++) {
+                for (int j = 0; j < Global.historyLength; j++) {
                     ys[i].Add(0);
                 }
             }
