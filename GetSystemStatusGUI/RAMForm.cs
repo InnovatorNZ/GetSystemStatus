@@ -30,7 +30,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void RAMForm_Load(object sender, EventArgs e) {
-            List<int> list = new List<int>();
+            List<int> list = new List<int>(Global.historyLength);
             for (int i = 0; i < Global.historyLength; i++) list.Add(0);
             chart1.Series[0].Points.DataBindY(list);
             chart1.PaletteCustomColors[0] = chartColor;
@@ -48,7 +48,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void ram_update_thread() {
-            List<int> usageList = new List<int>();
+            List<int> usageList = new List<int>(Global.historyLength);
             for (int i = 0; i < Global.historyLength; i++) usageList.Add(0);
 
             int currentInterval = Global.interval_ms;

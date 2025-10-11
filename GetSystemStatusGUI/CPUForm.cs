@@ -40,7 +40,7 @@ namespace GetSystemStatusGUI {
 
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
-            List<float> y = new List<float>();
+            List<float> y = new List<float>(Global.historyLength);
             for (int i = 0; i < Global.historyLength; i++) y.Add(0);
             chart1.Series[0].Points.DataBindY(y);
             chart1.Series[0].IsVisibleInLegend = false;
@@ -145,11 +145,11 @@ namespace GetSystemStatusGUI {
         }
 
         private void cpu_load_thread() {
-            List<float> y = new List<float>();
+            List<float> y = new List<float>(Global.historyLength);
             List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
             for (int i = 0; i < Global.historyLength * columns; i++) y.Add(0);
             for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                ys[i] = new List<float>();
+                ys[i] = new List<float>(Global.historyLength);
                 for (int j = 0; j < Global.historyLength; j++) {
                     ys[i].Add(0);
                 }

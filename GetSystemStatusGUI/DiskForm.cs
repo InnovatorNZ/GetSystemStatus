@@ -76,7 +76,7 @@ namespace GetSystemStatusGUI {
         }
 
         private void DiskForm_Load(object sender, EventArgs e) {
-            List<int> y = new List<int>();
+            List<int> y = new List<int>(Global.historyLength);
             for (int i = 0; i < Global.historyLength; i++)
                 y.Add(0);
             //Utility.FactorDecompose(diskInfo.m_DiskNum, out columns, out rows);

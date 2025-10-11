@@ -233,7 +233,7 @@ namespace GetSystemStatusGUI {
 
             List<float>[] ys = new List<float>[networkInfo.adapterNum];
             for (int i = 0; i < networkInfo.adapterNum; i++) {
-                ys[i] = new List<float>();
+                ys[i] = new List<float>(Global.historyLength);
                 for (int j = 0; j < Global.historyLength; j++)
                     ys[i].Add(0);
             }
