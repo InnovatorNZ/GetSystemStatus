@@ -17,7 +17,6 @@ using static GetSystemStatusGUI.ModuleEnum;
 
 namespace GetSystemStatusGUI {
     public partial class CPUForm : DarkAwareForm {
-        private const int historyLength = 60;
         private Color chartColor = Color.FromArgb(120, Color.DodgerBlue);
         private Color borderColor = Color.FromArgb(180, Color.DodgerBlue);
         private Color gridColor = ColorTranslator.FromHtml("#905baeff");
@@ -41,8 +40,8 @@ namespace GetSystemStatusGUI {
 
         private void CPUForm_Load(object sender, EventArgs e) {
             cpuName.Text = cpuInfo.CpuName;
-            List<float> y = new List<float>();
-            for (int i = 0; i < historyLength; i++) y.Add(0);
+            List<float> y = new List<float>(Global.historyLength);
+            for (int i = 0; i < Global.historyLength; i++) y.Add(0);
             chart1.Series[0].Points.DataBindY(y);
             chart1.Series[0].IsVisibleInLegend = false;
             chart1.PaletteCustomColors[0] = chartColor;
@@ -146,19 +145,24 @@ namespace GetSystemStatusGUI {
         }
 
         private void cpu_load_thread() {
-            List<float> y = new List<float>();
+            List<float> y = new List<float>(Global.historyLength);
             List<float>[] ys = new List<float>[cpuInfo.ProcessorCount];
-            for (int i = 0; i < historyLength * columns; i++) y.Add(0);
+            for (int i = 0; i < Global.historyLength * columns; i++) y.Add(0);
             for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
-                ys[i] = new List<float>();
-                for (int j = 0; j < historyLength; j++) {
+                ys[i] = new List<float>(Global.historyLength);
+                for (int j = 0; j < Global.historyLength; j++) {
                     ys[i].Add(0);
                 }
             }
+
+            int currentInterval = Global.interval_ms;
+            float previousCpuLoad = 0;
             while (!this.IsDisposed && !chart1.IsDisposed) {
                 if (this.Visible) {
+                    float currentCpuLoad = cpuInfo.CpuLoad;
+
                     y.RemoveAt(0);
-                    y.Add(cpuInfo.CpuLoad);
+                    y.Add(currentCpuLoad);
                     for (int i = 0; i < cpuInfo.ProcessorCount; i++) {
                         ys[i].RemoveAt(0);
                         ys[i].Add(cpuInfo.CpuCoreLoad(i));
@@ -170,9 +174,27 @@ namespace GetSystemStatusGUI {
                                 subCharts[i].Series[0].Points.DataBindY(ys[i % cpuInfo.ProcessorCount]);
                         }
                     );
-                    try { Invoke(updateChart); } catch { break; }
+
+                    try {
+                        Invoke(updateChart);
+                    } catch { break; }
+
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                        float loadChange = Math.Abs(currentCpuLoad - previousCpuLoad);
+
+                        if (loadChange >= Global.CHANGE_THRESHOLD) {
+                            currentInterval = Global.MIN_INTERVAL_MS;
+                        } else {
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
+                        }
+
+                        previousCpuLoad = currentCpuLoad;
+                    } else {
+                        currentInterval = Global.interval_ms;
+                    }
                 }
-                Thread.Sleep(Global.interval_ms);
+
+                Thread.Sleep(currentInterval);
             }
         }
 

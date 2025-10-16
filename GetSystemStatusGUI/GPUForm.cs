@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -26,6 +26,7 @@ namespace GetSystemStatusGUI {
         private Color lineColor = Color.FromArgb(150, Color.DeepSkyBlue);
         private float fLineWidth = 2;
         private float fGridWidth = 1;
+        
         public new bool TopMost {
             get { return base.TopMost; }
             set {
@@ -49,6 +50,7 @@ namespace GetSystemStatusGUI {
             }
             this.id = id;
             this.mainForm = mainForm;
+            
             if (id == 0 && gpuInfo.Count > 1) {
                 for (int nid = 1; nid < gpuInfo.Count; nid++) {
                     moreGPUForms.Add(new GPUForm(mainForm, nid));
@@ -133,23 +135,60 @@ namespace GetSystemStatusGUI {
 
         private void GPUPCThread() {
             Dictionary<string, List<float>> ys = new Dictionary<string, List<float>>();
+            int currentInterval = Global.interval_ms;
+            Dictionary<string, float> prevGpuUti = new Dictionary<string, float>(0);
+
             List<string> engines = gpuInfo.GetGPUEngines(id);
             foreach (string engine in engines) {
-                List<float> cy = new List<float>();
-                for (int i = 0; i < Global.history_length; i++) cy.Add(0);
+                List<float> cy = new List<float>(Global.historyLength);
+                for (int i = 0; i < Global.historyLength; i++)
+                    cy.Add(0);
                 ys.Add(engine, cy);
             }
-            List<float> dediUsage = new List<float>();
-            for (int i = 0; i < Global.history_length; i++) dediUsage.Add(0);
+            List<float> dediUsage = new List<float>(Global.historyLength);
+            for (int i = 0; i < Global.historyLength; i++)
+                dediUsage.Add(0);
+
             int t = 0;
             while (!this.IsDisposed && !chartGPU.IsDisposed) {
                 if (this.Visible) {
                     if (t % Global.refresh_gpupc_interval == 0 && t != 0)
                         gpuInfo.RefreshGPUEnginePerfCntLPL(id);
-                    Dictionary<string, float> cGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
+
+                    Dictionary<string, float> currentGpuUti = gpuInfo.GetGPUUtilizationLPL(id);
+
+                    // 自适应调整采集间隔
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                        bool significantChange = false;
+
+                        foreach (var keyValuePair in currentGpuUti) {
+                            string cEngine = keyValuePair.Key;
+                            float cUti = Math.Max(Math.Min(keyValuePair.Value, 100), 0);
+
+                            if (prevGpuUti.TryGetValue(cEngine, out float pUti)) {
+                                float utiChange = Math.Abs(cUti - pUti);
+                                // GPU利用率波动相较更频繁，需同时满足占用变化超过阈值和当前占用超过阈值才可判定
+                                if (utiChange >= Global.CHANGE_THRESHOLD_GPU && cUti >= Global.IDLE_THRESHOLD_GPU) {
+                                    significantChange = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (significantChange) {
+                            currentInterval = Global.MIN_INTERVAL_MS;
+                        } else {
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
+                        }
+
+                        prevGpuUti = currentGpuUti;
+                    } else {
+                        currentInterval = Global.interval_ms;
+                    }
+
                     Action update = new Action(
                         delegate () {
-                            foreach (var keyValuePair in cGpuUti) {
+                            foreach (var keyValuePair in currentGpuUti) {
                                 string cEngine = keyValuePair.Key;
                                 float cUti = Math.Max(Math.Min(keyValuePair.Value, 100), 0);
                                 ys[cEngine].RemoveAt(0);
@@ -166,11 +205,17 @@ namespace GetSystemStatusGUI {
                             }
                         }
                     );
-                    try { Invoke(update); }
+
+                    try {
+                        Invoke(update);
+                    }
                     catch { break; }
                     t++;
+
+                } else {
+                    currentInterval = Global.interval_ms;
                 }
-                Thread.Sleep(Global.interval_ms);
+                Thread.Sleep(currentInterval);
             }
         }
 

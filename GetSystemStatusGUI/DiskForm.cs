@@ -12,11 +12,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using static GetSystemStatusGUI.ModuleEnum;
+using System.Drawing.Drawing2D;
 
 namespace GetSystemStatusGUI {
     public partial class DiskForm : DarkAwareForm {
+
         private DiskInfo diskInfo;
-        public List<DiskForm> moreDiskForms { get; private set; }
+        public List<DiskForm> moreDiskForms {
+            get; private set;
+        }
         private Form1 mainform;
         private readonly int startId;
         private Chart[] subCharts;
@@ -24,14 +28,17 @@ namespace GetSystemStatusGUI {
         private Color borderColor = Color.FromArgb(180, Color.LimeGreen);
         private int rows = 1, columns = 1;
         private const double margin_ratio = 35;
-        private const int history_length = 60;
         private float fLineWidth = 2;
         private float fGridWidth = 1;
         private int cDiskNum {
-            get { return rows * columns; }
+            get {
+                return rows * columns;
+            }
         }
         public new bool TopMost {
-            get { return base.TopMost; }
+            get {
+                return base.TopMost;
+            }
             set {
                 if (startId == 0) {
                     foreach (var subform in this.moreDiskForms) {
@@ -48,6 +55,7 @@ namespace GetSystemStatusGUI {
             diskInfo = new DiskInfo();
             this.mainform = mainform;
             this.startId = startId;
+
             if (startId == 0) {
                 List<int> factors = Utility.FactorDisposeRecurse2(diskInfo.m_DiskNum);
                 this.setColumnRow(factors[0], factors[1]);
@@ -68,8 +76,9 @@ namespace GetSystemStatusGUI {
         }
 
         private void DiskForm_Load(object sender, EventArgs e) {
-            List<int> y = new List<int>();
-            for (int i = 0; i < history_length; i++) y.Add(0);
+            List<int> y = new List<int>(Global.historyLength);
+            for (int i = 0; i < Global.historyLength; i++)
+                y.Add(0);
             //Utility.FactorDecompose(diskInfo.m_DiskNum, out columns, out rows);
             subCharts = new Chart[rows * columns];
             for (int i = 0; i < rows; i++) {
@@ -162,7 +171,10 @@ namespace GetSystemStatusGUI {
             int fixHeight = Math.Max(40, marginHorizontal * 2);
             int chartHeight = (int)Math.Round((double)(this.Size.Height - beginTop - fixHeight - (rows + 1) * marginVertical) / (double)rows);
             int chartWidth = (int)Math.Round((double)(this.Size.Width - endRight - (columns + 1) * marginHorizontal) / (double)columns);
-            if (chartHeight <= 0 || chartWidth <= 0 || subCharts == null) return;
+
+            if (chartHeight <= 0 || chartWidth <= 0 || subCharts == null) 
+                return;
+
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     int cid = i * columns + j;
@@ -298,20 +310,37 @@ namespace GetSystemStatusGUI {
         }
 
         private void disk_load_thread() {
+            int currentInterval = Global.interval_ms;
+            float[] previousDiskLoads = new float[cDiskNum];
+
             List<float>[] ys = new List<float>[cDiskNum];
             for (int i = 0; i < cDiskNum; i++) {
-                ys[i] = new List<float>();
-                for (int j = 0; j < history_length; j++) ys[i].Add(0);
+                ys[i] = new List<float>(Global.historyLength);
+                for (int j = 0; j < Global.historyLength; j++)
+                    ys[i].Add(0);
             }
             while (!this.IsDisposed && !subCharts[0].IsDisposed) {
                 if (this.Visible) {
+                    bool significantChange = false;
+
                     for (int i = 0; i < cDiskNum; i++) {
                         ys[i].RemoveAt(0);
                         try {
                             float cload = diskInfo.DiskLoad(i + startId);
                             ys[i].Add(cload);
+
+                            if (Global.enableAdaptiveInterval) {
+                                if (!significantChange && previousDiskLoads[i] > 0) {
+                                    float loadChange = Math.Abs(cload - previousDiskLoads[i]);
+                                    // 负载变化比率超过阈值，或当前负载超过闲置阈值
+                                    if (loadChange >= Global.CHANGE_THRESHOLD || cload >= Global.IDLE_THRESHOLD_DISK) {
+                                        significantChange = true;
+                                    }
+                                }
+                                previousDiskLoads[i] = cload;
+                            }
                         }
-                        catch {
+                        catch (Exception ex) {
                             Action reload = new Action(
                                 delegate () {
                                     Thread.Sleep(100);
@@ -322,6 +351,20 @@ namespace GetSystemStatusGUI {
                             break;
                         }
                     }
+
+                    // 自适应调整采集间隔
+                    if (Global.enableAdaptiveInterval && Global.interval_ms > Global.MIN_INTERVAL_MS) {
+                        if (significantChange) {
+                            // 如果有显著变化，使用最小间隔
+                            currentInterval = Global.MIN_INTERVAL_MS;
+                        } else {
+                            // 如果没有显著变化，逐渐增加间隔，但不超过全局间隔
+                            currentInterval = Math.Min(currentInterval + Global.INTERVAL_INCREMENT_MS, Global.interval_ms);
+                        }
+                    } else {
+                        currentInterval = Global.interval_ms;
+                    }
+
                     Action updateChart = new Action(
                         delegate () {
                             for (int i = 0; i < cDiskNum; i++) {
@@ -341,10 +384,11 @@ namespace GetSystemStatusGUI {
                             }
                         }
                     );
-                    try { Invoke(updateChart); }
-                    catch { break; }
+                    try {
+                        Invoke(updateChart);
+                    } catch { break; }
                 }
-                Thread.Sleep(Global.interval_ms);
+                Thread.Sleep(currentInterval);
             }
         }
 
@@ -381,8 +425,7 @@ namespace GetSystemStatusGUI {
                 try {
                     int cid = int.Parse(split[0]);
                     m_DiskNum = Math.Max(m_DiskNum, cid + 1);
-                }
-                catch (FormatException) { }
+                } catch (FormatException) { }
             }
             string[] diskInstanceNames = new string[m_DiskNum];
             foreach (string disk in _diskInstanceNames) {
@@ -390,8 +433,7 @@ namespace GetSystemStatusGUI {
                 try {
                     int cid = int.Parse(split[0]);
                     diskInstanceNames[cid] = disk;
-                }
-                catch (FormatException) { }
+                } catch (FormatException) { }
             }
             pcDisksRead = new PerformanceCounter[m_DiskNum];
             pcDisksWrite = new PerformanceCounter[m_DiskNum];
@@ -415,8 +457,7 @@ namespace GetSystemStatusGUI {
                     pcDisksRead[i].NextValue();
                     pcDisksWrite[i].NextValue();
                     pcDisksLoad[i].NextValue();
-                }
-                catch (InvalidOperationException) { }
+                } catch (InvalidOperationException) { }
             }
 
             diskModelCaption = new string[m_DiskNum];
@@ -456,28 +497,37 @@ namespace GetSystemStatusGUI {
         // 磁盘分区卷标
         public string DriveLetters(int id) {
             string driveletter = diskDriveLetters[id];
-            if (driveletter == null) return string.Empty;
-            else return driveletter.Trim();
+            if (driveletter == null)
+                return string.Empty;
+            else
+                return driveletter.Trim();
         }
 
         // 磁盘占用、读写速率
         public float DiskReadTotal {
-            get { return pcDiskRead.NextValue(); }
+            get {
+                return pcDiskRead.NextValue();
+            }
         }
         public float DiskWriteTotal {
-            get { return pcDiskWrite.NextValue(); }
+            get {
+                return pcDiskWrite.NextValue();
+            }
         }
         public float DiskRead(int diskId) {
-            try { return pcDisksRead[diskId].NextValue(); }
-            catch (InvalidOperationException) { return -1; }
+            try {
+                return pcDisksRead[diskId].NextValue();
+            } catch (InvalidOperationException) { return -1; }
         }
         public float DiskWrite(int diskId) {
-            try { return pcDisksWrite[diskId].NextValue(); }
-            catch (InvalidOperationException) { return -1; }
+            try {
+                return pcDisksWrite[diskId].NextValue();
+            } catch (InvalidOperationException) { return -1; }
         }
         public float DiskLoad(int diskId) {
-            try { return Math.Max(0, 100 - pcDisksLoad[diskId].NextValue()); }
-            catch (InvalidOperationException) { return 0; }
+            try {
+                return Math.Max(0, 100 - pcDisksLoad[diskId].NextValue());
+            } catch (InvalidOperationException) { return 0; }
         }
     }
 }

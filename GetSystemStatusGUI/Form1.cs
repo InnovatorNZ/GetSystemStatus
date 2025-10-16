@@ -101,6 +101,11 @@ namespace GetSystemStatusGUI {
             loadAtStartup.Checked = loadLocation;
             bool loadSize = bool.Parse(INIHelper.Read("LoadAtStartup", "Size", "false", iniFile));
             loadSizeAtStartup.Checked = loadSize;
+            
+            bool enableAdaptiveInterval = bool.Parse(INIHelper.Read("AdaptiveInterval", "Enable", "true", iniFile));
+            Global.enableAdaptiveInterval = enableAdaptiveInterval;
+            adaptiveIntervalToolStripMenuItem.Checked = enableAdaptiveInterval;
+            
             if (loadLocation) LoadSavedLocation();
             if (loadSize) LoadSavedSize();
             LoadTopMost();
@@ -805,6 +810,12 @@ namespace GetSystemStatusGUI {
             disableToolStripMenuItem.Checked = true;
             enableToolStripMenuItem.Checked = false;
             systemDefaultToolStripMenuItem.Checked = false;
+        }
+
+        private void adaptiveIntervalToolStripMenuItem_Click(object sender, EventArgs e) {
+            ToolStripMenuItem here = sender as ToolStripMenuItem;
+            Global.enableAdaptiveInterval = here.Checked;
+            INIHelper.Write("AdaptiveInterval", "Enable", here.Checked.ToString(), iniFile);
         }
     }
 }

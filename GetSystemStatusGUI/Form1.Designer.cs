@@ -64,6 +64,7 @@ namespace GetSystemStatusGUI
             this.systemDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.adaptiveIntervalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnFocus = new System.Windows.Forms.Button();
@@ -154,6 +155,8 @@ namespace GetSystemStatusGUI
             this.cbUpdateInterval.Items.AddRange(new object[] {
             "1 sec",
             "2 sec",
+            "3 sec",
+            "5 sec",
             "0.5 sec",
             "0.25 sec"});
             this.cbUpdateInterval.Location = new System.Drawing.Point(310, 311);
@@ -292,7 +295,8 @@ namespace GetSystemStatusGUI
             this.fakeToolStripMenuItem,
             this.topMostToolStripMenuItem,
             this.lowDPIModeToolStripMenuItem,
-            this.darkModeToolStripMenuItem});
+            this.darkModeToolStripMenuItem,
+            this.adaptiveIntervalToolStripMenuItem});
             this.optionToolStripMenuItem.Name = "optionToolStripMenuItem";
             this.optionToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
             this.optionToolStripMenuItem.Text = "Option";
@@ -415,6 +419,16 @@ namespace GetSystemStatusGUI
             this.disableToolStripMenuItem.Size = new System.Drawing.Size(278, 26);
             this.disableToolStripMenuItem.Text = "Disable (Restart required)";
             this.disableToolStripMenuItem.Click += new System.EventHandler(this.disableToolStripMenuItem_Click);
+            // 
+            // adaptiveIntervalToolStripMenuItem
+            // 
+            this.adaptiveIntervalToolStripMenuItem.Checked = true;
+            this.adaptiveIntervalToolStripMenuItem.CheckOnClick = true;
+            this.adaptiveIntervalToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.adaptiveIntervalToolStripMenuItem.Name = "adaptiveIntervalToolStripMenuItem";
+            this.adaptiveIntervalToolStripMenuItem.Size = new System.Drawing.Size(313, 26);
+            this.adaptiveIntervalToolStripMenuItem.Text = "Adaptive interval";
+            this.adaptiveIntervalToolStripMenuItem.Click += new System.EventHandler(this.adaptiveIntervalToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -583,6 +597,7 @@ namespace GetSystemStatusGUI
         private System.Windows.Forms.ToolStripMenuItem systemDefaultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem disableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem adaptiveIntervalToolStripMenuItem;
     }
 }
 
